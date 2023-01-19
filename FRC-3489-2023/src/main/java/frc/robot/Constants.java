@@ -13,14 +13,14 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  /**
-   * The left-to-right distance between the drivetrain wheels
-    *
+    /**
+     * The left-to-right distance between the drivetrain wheels
+     *
     * Should be measured from center to center.
     */
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.54; // FIXME Measure and set trackwidth
     /**
-    * The front-to-back distance between the drivetrain wheels.
+     * The front-to-back distance between the drivetrain wheels.
     *
     * Should be measured from center to center.
     */
@@ -45,8 +45,8 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 6; // FIXME Set back right steer motor ID
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 56; // FIXME Set back right steer encoder ID
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(230.97656250000003 - 180); // 73.2 FIXME Measure and set back right steer offset
-    
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
-  }
+
+    public static class OperatorConstants {
+        public static final int kDriverControllerPort = 0;
+    }
 }
