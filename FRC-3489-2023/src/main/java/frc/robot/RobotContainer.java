@@ -64,15 +64,7 @@ public class RobotContainer {
 
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
+
 
    /**
    * Use this method to define your button->command mappings. Buttons can be created by
@@ -90,16 +82,21 @@ public class RobotContainer {
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
+    
+
     // Back button zeros the gyroscope
-    new Button(m_controller::getBackButton)
+    new Trigger(m_controller::getBackButton)
             // No requirements because we don't need to interrupt anything
             .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
-    new Button(m_controller::getYButton)
+
+            m_driverController.a().onTrue(CommandBase())(m_drivetrainSubsystem::zeroGyroscope);
+            
+    new Trigger(m_controller::getYButton)
       .whenPressed(() -> {
         System.out.println("Full");
         speedModifier = 1;
       });
-    new Button(m_controller::getXButton)
+    new Trigger(m_controller::getXButton)
       .whenPressed(() -> {
         System.out.println("Half");
         speedModifier = 0.5;

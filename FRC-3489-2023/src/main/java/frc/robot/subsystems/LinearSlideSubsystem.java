@@ -20,7 +20,7 @@ public void extendLinearSlide() {
     }
 }
 
-public void lowerLinearSlide() {
+public void closeLinearSlide() {
     if (!bottomLimitSwitch.get()) {
         linearSlideMotor.set(-0.5);
     } else {
