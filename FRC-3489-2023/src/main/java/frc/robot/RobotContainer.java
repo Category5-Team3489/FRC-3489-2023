@@ -13,6 +13,7 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LinearSlideSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -31,7 +32,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final LinearSlideSubsystem m_LinearSlideSubsystem = new LinearSlideSubsystem();
+  //private final LinearSlideSubsystem m_LinearSlideSubsystem = new LinearSlideSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -81,10 +82,11 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
+    m_driverController.back().onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
     
 
-    // Back button zeros the gyroscope
+    /*
+        // Back button zeros the gyroscope
     new Trigger(m_controller::getBackButton)
             // No requirements because we don't need to interrupt anything
             .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
@@ -101,6 +103,7 @@ public class RobotContainer {
         System.out.println("Half");
         speedModifier = 0.5;
       });
+     */
   }
 
 

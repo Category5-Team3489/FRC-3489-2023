@@ -20,6 +20,6 @@ public class Limelight extends SubsystemBase {
 
     }
     public double getArea() {
-        return 
+        return ta. method(() -> method());
     }
 }
