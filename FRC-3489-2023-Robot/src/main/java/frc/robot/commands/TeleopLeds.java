@@ -16,23 +16,25 @@ public class TeleopLeds extends CommandBase {
         addRequirements(leds);
     }
 
-
     @Override
     public void initialize() {
         leds.startTimer();
         leds.setSolidRGB(0, 255, 0);
-
     }
-
 
     @Override
     public void execute() {}
 
     @Override
-    public void end(boolean interrupted) {}
+    public void end(boolean interrupted) {
+        leds.stopLeds();
+    }
 
     @Override
     public boolean isFinished() {
+        if (leds.hasTimeEnded(2)) {
+            return true;
+        }
         return false;
     }
 }

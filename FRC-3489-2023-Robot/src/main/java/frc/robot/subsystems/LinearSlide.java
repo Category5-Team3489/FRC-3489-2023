@@ -68,9 +68,9 @@ public class LinearSlide extends SubsystemBase {
     }
 
     // Worry about invalid extension, rehoming if hits any limit switches????
-    public  getPercentExtended() {
-        return 
-    }
+   // public  getPercentExtended() {
+  //      return 
+    //}
 
     @Override
     public void periodic() {

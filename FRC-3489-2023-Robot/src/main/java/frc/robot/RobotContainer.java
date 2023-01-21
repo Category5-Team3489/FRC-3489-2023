@@ -10,6 +10,7 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.Drive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LinearSlide;
 import frc.robot.subsystems.NavX2;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,6 +31,7 @@ public class RobotContainer {
     private final Drivetrain drivetrain = new Drivetrain();
     private final NavX2 navx = new NavX2();
     private final LinearSlide linearSlide = new LinearSlide();
+    private final Leds leds = new Leds();
 
     // Replace with CommandPS4Controller or CommandJoystick if needed
     private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);

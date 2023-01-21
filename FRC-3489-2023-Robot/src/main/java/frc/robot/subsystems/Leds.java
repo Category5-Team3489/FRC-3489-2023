@@ -14,15 +14,21 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.LedConstants;
+import frc.robot.commands.TeleopLeds;
 
 public class Leds extends SubsystemBase {
 
     public final AddressableLED led = new AddressableLED(LedConstants.LedPort);
     public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LedConstants.Buffer);
 
+    private TeleopLeds teleopLeds;
+
     public final Timer timer = new Timer();
 
+    public boolean hasLightEnded = false;
+
     public Leds() {
+        register();
         led.setLength(buffer.getLength());
         led.setData(buffer);
         led.start();
@@ -36,20 +42,34 @@ public class Leds extends SubsystemBase {
         }
     }
 
+    public void stopLeds() {
+        setSolidRGB(0, 0, 0);
+    }
+
     public void startTimer() {
         timer.start();
     }
-    
-    public void teleopLed() {
-        setSolidRGB(0, 255, 0);
-    }
 
+    public boolean hasTimeEnded(int time) {
+        double currentTime = timer.get();
+        if (currentTime >= time) {
+            hasLightEnded = true;
+            return true;
+        }
+        return false;
+    }
     
     @Override
     public void periodic() {
-        if (DriverStation.isTeleop()) {
-            teleopLed();
+        teleopLight();
+    }
+
+    public void teleopLight() {
+        if (!DriverStation.isTeleop() || hasLightEnded) {
+            return;
         }
+        teleopLeds = new TeleopLeds(this);
+        teleopLeds.schedule();
     }
 
 }

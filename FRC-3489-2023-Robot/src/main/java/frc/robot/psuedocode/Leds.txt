@@ -11,8 +11,8 @@ LED teleop start flash
     if it is teleop 
     turn on leds for a few seconds
 
-LED Commands
-    set leds
-    start timer
-    turn off leds after 2 seconds
-    
+    LED Commands
+        set leds
+        start timer
+        turn off leds after 2 seconds
+        
