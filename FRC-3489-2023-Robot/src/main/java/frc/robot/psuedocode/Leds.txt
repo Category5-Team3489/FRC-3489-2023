@@ -1,0 +1,18 @@
+
+Devices:
+Leds
+
+Functions / Commands:
+LED extension amount
+    if limit switch = true
+    set Leds
+
+LED teleop start flash
+    if it is teleop 
+    turn on leds for a few seconds
+
+LED Commands
+    set leds
+    start timer
+    turn off leds after 2 seconds
+    

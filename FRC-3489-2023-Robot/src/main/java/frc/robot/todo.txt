@@ -1,0 +1,8 @@
+Leds robot has game piece
+
+LED extension amount
+
+LED teleop start flash
+
+Diagnostic:
+    Linear slide: home, mid, top, mid, home
