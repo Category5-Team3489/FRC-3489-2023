@@ -1,0 +1,11 @@
+Intake:
+    2 bag motors
+    2 solenoid
+
+Intake:
+    when button pressed
+    both motors spin at same speed
+
+place:
+    when button pressed 
+    spin at opposite speed

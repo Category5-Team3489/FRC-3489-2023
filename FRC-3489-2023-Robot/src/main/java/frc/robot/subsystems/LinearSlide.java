@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.LinearSlideConstants;
-import frc.robot.commands.HomeLinearSlide;
-import frc.robot.commands.SetLinearSlide;
+import frc.robot.commands.linearslide.HomeLinearSlide;
+import frc.robot.commands.linearslide.SetLinearSlide;
 
 public class LinearSlide extends SubsystemBase {
     private final ShuffleboardTab tab = Constants.getMainTab();

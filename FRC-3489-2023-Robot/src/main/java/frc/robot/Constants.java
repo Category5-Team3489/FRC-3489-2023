@@ -44,8 +44,19 @@ public final class Constants {
     }
 
     public static class LedConstants {
-        public static final int LedPort = 0;
-        public static final int Buffer = 162;
+        public static final int Port = 0;
+        public static final int Length = 162;
+        public static final int TeleopLedLength = 2;
+    }
+
+    public static class IntakeConstants {
+        public static final int RightIntakeMotor = 10;
+        public static final int LeftIntakeMotor = 11;
+
+        public static final double IntakeSpeed = 0.5;
+
+        public static final int IntakeButton = 2;
+        public static final int PlacePieceButton = 5;
     }
 
     public static class DrivetrainConstants {
