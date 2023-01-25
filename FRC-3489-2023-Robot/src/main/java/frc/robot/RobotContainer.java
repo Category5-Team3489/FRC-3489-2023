@@ -77,9 +77,12 @@ public class RobotContainer {
         xbox.button(9).onTrue(new InstantCommand(() -> navx.zeroYaw()));
 
         man.button(LinearSlideConstants.StopButton).onTrue(new InstantCommand(() -> linearSlide.stop()));
+        man.button(LinearSlideConstants.GotoBottomButton).onTrue(new InstantCommand(() -> linearSlide.setRetract()));
 
         man.button(IntakeConstants.IntakeButton).onTrue(new InstantCommand(() -> intake.intake()));
         man.button(IntakeConstants.PlacePieceButton).onTrue(new InstantCommand(() -> intake.placePiece()));
+
+        
 
     }
 

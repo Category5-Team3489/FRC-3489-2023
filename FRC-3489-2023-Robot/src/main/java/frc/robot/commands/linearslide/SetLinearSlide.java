@@ -4,15 +4,69 @@
 
 package frc.robot.commands.linearslide;
 
+import frc.robot.Constants.LinearSlideConstants;
+import frc.robot.commands.leds.LedsCommandBase;
 import frc.robot.subsystems.LinearSlide;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class SetLinearSlide extends CommandBase {
     private final LinearSlide linearSlide;
 
-    public SetLinearSlide(LinearSlide linearSlide, double percentExtended) {
-        this.linearSlide = linearSlide;
+    private final Double percentExtended;
+    private final Double totalPercent;
 
-        addRequirements(linearSlide);
+    public SetLinearSlide(LinearSlide linearSlide, Double percentExtended, Double totalPercent) {
+        this.linearSlide = linearSlide;
+        this.percentExtended = percentExtended;
+        this.totalPercent = totalPercent;
+        
+
+        addRequirements(linearSlide);   
+    }
+
+    @Override
+    public void initialize() {}
+
+    @Override
+    public void execute() {
+        double percentNeeded = totalPercent - percentExtended;
+        //if percent needed is positive, extend, if negative retract
+        if (percentNeeded >= 0) {
+            linearSlide.extend();
+        }
+        if (percentNeeded <= 0) {
+            linearSlide.retract();
+        }
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        linearSlide.stop();
+        //set LEDs
+        if (totalPercent == LinearSlideConstants.FullExtendEncoder) {
+            
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        double percentNeeded = totalPercent - percentExtended;
+
+        //if linear slide is extending and limit switch = true
+        if (percentNeeded >= 0 && linearSlide.isExtended()) {
+                return true;
+        }
+
+        //if linear slide is retracting and limit switch = true
+        if (percentNeeded <= 0 && linearSlide.isRetracted()) {
+            return true;
+        }
+
+        //if linear slide is setting half and position is < 10
+        if (totalPercent == LinearSlideConstants.HalfExtendEncoder && linearSlide.getPosition() <= 10) {
+                return true;
+        }
+        return false;
     }
 }

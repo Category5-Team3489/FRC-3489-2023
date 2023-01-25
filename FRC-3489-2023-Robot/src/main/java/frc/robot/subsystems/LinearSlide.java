@@ -67,6 +67,22 @@ public class LinearSlide extends SubsystemBase {
         hasBeenHomedEntry.setBoolean(hasBeenHomed);
     }
 
+    public void setFullExtend() {
+        setLinearSlide = new SetLinearSlide(null, getPosition(), LinearSlideConstants.FullExtendEncoder);
+        setLinearSlide.schedule();
+    }
+
+    public boolean setHalfExtend() {
+        setLinearSlide = new SetLinearSlide(null, getPosition(), LinearSlideConstants.HalfExtendEncoder);
+        setLinearSlide.schedule();
+        return true;
+    }
+
+    public void setRetract() {
+        setLinearSlide = new SetLinearSlide(null, getPosition(), LinearSlideConstants.FullretractEncoder);
+        setLinearSlide.schedule();
+    }
+
     // Worry about invalid extension, rehoming if hits any limit switches????
    // public  getPercentExtended() {
   //      return 
