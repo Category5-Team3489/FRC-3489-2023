@@ -78,6 +78,8 @@ public class RobotContainer {
 
         man.button(LinearSlideConstants.StopButton).onTrue(new InstantCommand(() -> linearSlide.stop()));
         man.button(LinearSlideConstants.GotoBottomButton).onTrue(new InstantCommand(() -> linearSlide.setRetract()));
+        man.button(LinearSlideConstants.GotoMiddleButton).onTrue(new InstantCommand(() -> linearSlide.setHalfExtend()));
+        man.button(LinearSlideConstants.GotoTopButton).onTrue(new InstantCommand(() -> linearSlide.setRetract()));
 
         man.button(IntakeConstants.IntakeButton).onTrue(new InstantCommand(() -> intake.intake()));
         man.button(IntakeConstants.PlacePieceButton).onTrue(new InstantCommand(() -> intake.placePiece()));
