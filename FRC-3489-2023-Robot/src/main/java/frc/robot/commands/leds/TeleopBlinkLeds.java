@@ -4,6 +4,7 @@
 
 package frc.robot.commands.leds;
 
+import frc.robot.LedColor;
 import frc.robot.Constants.LedConstants;
 import frc.robot.subsystems.Leds;
 import edu.wpi.first.wpilibj.Timer;
@@ -19,7 +20,7 @@ public class TeleopBlinkLeds extends LedsCommandBase {
     public void initialize() {
         timer.start();
 
-        leds.setSolidRGB(0, 255, 0);
+        leds.setSolidColor(LedColor.rgb(0, 255, 0));
     }
 
     @Override

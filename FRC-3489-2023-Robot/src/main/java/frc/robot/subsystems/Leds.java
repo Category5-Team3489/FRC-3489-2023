@@ -7,8 +7,11 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LedColor;
 import frc.robot.Constants.LedConstants;
+import frc.robot.commands.leds.FlashLeds;
 import frc.robot.commands.leds.LedsCommandBase;
 import frc.robot.commands.leds.TeleopBlinkLeds;
 
@@ -29,28 +32,35 @@ public class Leds extends SubsystemBase {
         led.start();
     }
 
-    public void setSolidRGB(int r, int g, int b) {
+    public void setSolidColor(LedColor color) {
         for (var i = 0; i < buffer.getLength(); i++) {
-            buffer.setRGB(i, r, g, b);
+            color.apply(i, buffer);
         }
         led.setData(buffer);
     }
 
     public void stopLeds() {
-        setSolidRGB(0, 0, 0);
+        setSolidColor(LedColor.Off);
     }
     
     @Override
-    public void periodic() {
+    public void periodic() {     
         tryBlinkTeleopLeds();
     }
 
     public void tryBlinkTeleopLeds() {
+        if (DriverStation.isDisabled()) {
+            haveTeleopLedsBlinkedThisEnable = false;
+            return;
+        }
+
         if (!DriverStation.isTeleop() || haveTeleopLedsBlinkedThisEnable) {
             return;
         }
-        TeleopBlinkLeds teleopLeds = new TeleopBlinkLeds(this);
-        setCurrentCommand(teleopLeds);
+        
+        //TeleopBlinkLeds teleopLeds = new TeleopBlinkLeds(this);
+        setCurrentCommand(new FlashLeds(this, LedColor.White, 3, 1, 1));
+        haveTeleopLedsBlinkedThisEnable = true;
     }
 
     private void setCurrentCommand(LedsCommandBase command) {

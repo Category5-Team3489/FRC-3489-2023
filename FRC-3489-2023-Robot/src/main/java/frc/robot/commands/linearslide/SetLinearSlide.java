@@ -22,7 +22,7 @@ public class SetLinearSlide extends CommandBase {
         this.totalPercent = totalPercent;
         
 
-        addRequirements(linearSlide);   
+        addRequirements(linearSlide);
     }
 
     @Override
