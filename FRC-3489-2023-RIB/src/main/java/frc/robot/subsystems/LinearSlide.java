@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -24,10 +23,12 @@ public class LinearSlide extends SubsystemBase {
     private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
     private final NetworkTableEntry tx = limelight.getEntry("tx"); // -29.8 to 29.8 degrees
     private final NetworkTableEntry tid = limelight.getEntry("tid");
+    private final NetworkTableEntry camtran = limelight.getEntry("camtran");
 
     private final ShuffleboardTab tab = Shuffleboard.getTab("RIB");
     private GenericEntry txEntry = tab.add("TX", 0.0).getEntry();
     private GenericEntry tidEntry = tab.add("TID", 0).getEntry();
+    private GenericEntry camtranEntry = tab.add("CamTran", "").getEntry();
     private GenericEntry hasBeenHomedEntry = tab.add("Has Linear Slide Been Homed", false).getEntry();
     private GenericEntry bottomLimitSwitchEntry = tab.add("Is At Bottom", false).getEntry();
     private GenericEntry topLimitSwitchEntry = tab.add("Is At Top", false).getEntry();
@@ -69,6 +70,12 @@ public class LinearSlide extends SubsystemBase {
 
         txEntry.setDouble(tx.getDouble(0.0));
         tidEntry.setInteger(tid.getInteger(-1));
+        var a = camtran.getNumberArray(new Double[] {});
+        String s = "";
+        for (Number n : a) {
+            s += n + ", ";
+        }
+        camtranEntry.setString(s);
 
         if (!DriverStation.isTeleopEnabled()) {
             return;
@@ -89,7 +96,6 @@ public class LinearSlide extends SubsystemBase {
             double speed = tidValue / 25d;
             testMotor.set(speed);
         }
-        
         // if (txValue < -10) {
         //     testMotor.set(0.15);
         // }

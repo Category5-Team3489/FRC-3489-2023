@@ -4,7 +4,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3.Register;
 
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 
 public class Intake extends SubsystemBase{
     public final CANSparkMax rightMotor = new CANSparkMax(1, MotorType.kBrushless);
@@ -12,6 +14,8 @@ public class Intake extends SubsystemBase{
 
     public Intake() {
         register();
+
+        setDefaultCommand(Commands.run(() -> rightMotor.stopMotor(), this).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     }
 
     public void intake() {

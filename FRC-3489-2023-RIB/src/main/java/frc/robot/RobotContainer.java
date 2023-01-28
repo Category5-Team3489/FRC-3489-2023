@@ -13,6 +13,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.LinearSlide;
 import frc.robot.subsystems.TestSubsystem;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -35,7 +36,7 @@ public class RobotContainer {
   //private final Limelight limelight = new Limelight();
 
   // private final TestSubsystem s = new TestSubsystem();
-  private final LinearSlide linearSlide = new LinearSlide();
+  // private final LinearSlide linearSlide = new LinearSlide();
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -60,9 +61,15 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_driverController.button(1).onTrue(new InstantCommand(() -> intake.intake()));
-    m_driverController.button(2).onTrue(new InstantCommand(() -> intake.placePiece()));
-    m_driverController.button(3).onTrue(new InstantCommand(() -> intake.SlowPlacePiece()));
+    m_driverController.button(1)
+      //.debounce(0.1, DebounceType.kBoth)
+      .whileTrue(Commands.run(() -> intake.intake(), intake));
+    m_driverController.button(2)
+      //.debounce(0.1, DebounceType.kBoth)
+      .whileTrue(Commands.run(() -> intake.placePiece(), intake));
+    m_driverController.button(3)
+      //.debounce(0.1, DebounceType.kBoth)
+      .whileTrue(Commands.run(() -> intake.SlowPlacePiece(), intake));
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
