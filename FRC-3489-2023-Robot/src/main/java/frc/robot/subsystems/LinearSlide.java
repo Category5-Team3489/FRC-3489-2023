@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import org.opencv.core.Mat.Tuple2;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -68,18 +66,18 @@ public class LinearSlide extends SubsystemBase {
     }
 
     public void setFullExtend() {
-        setLinearSlide = new SetLinearSlide(null, getPosition(), LinearSlideConstants.FullExtendEncoder);
+        setLinearSlide = new SetLinearSlide(this, getPosition(), LinearSlideConstants.FullExtendEncoder);
         setLinearSlide.schedule();
     }
 
     public boolean setHalfExtend() {
-        setLinearSlide = new SetLinearSlide(null, getPosition(), LinearSlideConstants.HalfExtendEncoder);
+        setLinearSlide = new SetLinearSlide(this, getPosition(), LinearSlideConstants.HalfExtendEncoder);
         setLinearSlide.schedule();
         return true;
     }
 
     public void setRetract() {
-        setLinearSlide = new SetLinearSlide(null, getPosition(), LinearSlideConstants.FullretractEncoder);
+        setLinearSlide = new SetLinearSlide(this, getPosition(), LinearSlideConstants.FullretractEncoder);
         setLinearSlide.schedule();
     }
 

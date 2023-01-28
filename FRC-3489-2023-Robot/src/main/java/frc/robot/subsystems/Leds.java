@@ -4,25 +4,29 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import frc.robot.Constants;
 import frc.robot.LedColor;
 import frc.robot.Constants.LedConstants;
 import frc.robot.commands.leds.FlashLeds;
-import frc.robot.commands.leds.LedsCommandBase;
-import frc.robot.commands.leds.TeleopBlinkLeds;
 
 public class Leds extends SubsystemBase {
+    private final ShuffleboardTab tab = Constants.getMainTab();
+    public GenericEntry teleopLedsFlashEntry = tab.add("Are Teleop Leds Flashing", false).getEntry();
 
     public final AddressableLED led = new AddressableLED(LedConstants.Port);
     public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LedConstants.Length);
 
-    private LedsCommandBase current;
-
-    private boolean haveTeleopLedsBlinkedThisEnable = false;
+    private boolean haveTeleopLedsFlashedThisEnable = false;
 
     public Leds() {
         register();
@@ -45,41 +49,43 @@ public class Leds extends SubsystemBase {
     
     @Override
     public void periodic() {     
-        tryBlinkTeleopLeds();
+        tryFlashTeleopLeds();
     }
 
-    public void tryBlinkTeleopLeds() {
+    public void tryFlashTeleopLeds() {
         if (DriverStation.isDisabled()) {
-            haveTeleopLedsBlinkedThisEnable = false;
+            haveTeleopLedsFlashedThisEnable = false;
             return;
         }
 
-        if (!DriverStation.isTeleop() || haveTeleopLedsBlinkedThisEnable) {
+        if (!DriverStation.isTeleop() || haveTeleopLedsFlashedThisEnable) {
             return;
         }
         
-        //TeleopBlinkLeds teleopLeds = new TeleopBlinkLeds(this);
-        setCurrentCommand(new FlashLeds(this, LedColor.White, 3, 1, 1));
-        haveTeleopLedsBlinkedThisEnable = true;
+        Command command = new FlashLeds(this, LedColor.White, 3, 1, 1)
+            .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+        //Command command = getBlinkForSecondsCommand(LedColor.rgb(255, 0, 0), 5, false, false);
+
+        command.schedule();
+        haveTeleopLedsFlashedThisEnable = true;
     }
 
-    private void setCurrentCommand(LedsCommandBase command) {
-        if (current != null && !current.isFinished()) {
-            current.cancel();
-        }
-        current = command;
-        current.schedule();
-    }
-    private boolean hasCurrentCommand() {
-        if (current == null || current.isFinished()) {
-            return false;
-        }
-        return true;
-    }
-    private boolean isCurrentCommandOverridable() {
-        if (current == null || current.isFinished() || current.isOverridable()) {
-            return true;
-        }
-        return false;
+    public Command getBlinkForSecondsCommand(LedColor color, double seconds, boolean doesRunWhenDisabled, boolean isInteruptable) {
+        Runnable start = () -> {
+            setSolidColor(color);
+            teleopLedsFlashEntry.setBoolean(true);
+        };
+        Runnable end = () -> {
+            stopLeds();
+            teleopLedsFlashEntry.setBoolean(false);
+        };
+
+        InterruptionBehavior interruptBehavior = isInteruptable ?
+            InterruptionBehavior.kCancelSelf : InterruptionBehavior.kCancelIncoming;
+
+        return Commands.startEnd(start, end, this)
+            .withTimeout(seconds)
+            .ignoringDisable(doesRunWhenDisabled)
+            .withInterruptBehavior(interruptBehavior);
     }
 }

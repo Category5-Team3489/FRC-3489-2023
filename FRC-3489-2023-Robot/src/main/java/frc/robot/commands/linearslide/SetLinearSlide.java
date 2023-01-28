@@ -5,7 +5,6 @@
 package frc.robot.commands.linearslide;
 
 import frc.robot.Constants.LinearSlideConstants;
-import frc.robot.commands.leds.LedsCommandBase;
 import frc.robot.subsystems.LinearSlide;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
