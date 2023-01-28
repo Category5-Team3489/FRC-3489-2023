@@ -22,6 +22,7 @@ public class Leds extends SubsystemBase{
             buffer.setRGB(i, r, g, b);
         }
         led.setData(buffer);
+        System.out.println("DSAINNIASINDAS");
     }
 
     

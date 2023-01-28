@@ -38,7 +38,7 @@ public class RobotContainer {
   //private final Limelight limelight = new Limelight();
 
   // private final TestSubsystem s = new TestSubsystem();
-  private final LinearSlide linearSlide = new LinearSlide();
+  // private final LinearSlide linearSlide = new LinearSlide();
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
