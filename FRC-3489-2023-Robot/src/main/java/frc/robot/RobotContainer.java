@@ -16,6 +16,7 @@ import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LinearSlide;
 import frc.robot.subsystems.NavX2;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -81,9 +82,14 @@ public class RobotContainer {
         man.button(LinearSlideConstants.GotoMiddleButton).onTrue(new InstantCommand(() -> linearSlide.setHalfExtend()));
         man.button(LinearSlideConstants.GotoTopButton).onTrue(new InstantCommand(() -> linearSlide.setRetract()));
 
-        man.button(IntakeConstants.IntakeButton).onTrue(new InstantCommand(() -> intake.intake()));
-        man.button(IntakeConstants.PlacePieceButton).onTrue(new InstantCommand(() -> intake.placePiece()));
-        man.button(IntakeConstants.SlowPlaceButton).onTrue(new InstantCommand(() -> intake.SlowPlacePiece()));
+        man.button(IntakeConstants.IntakeButton)
+        .whileTrue(Commands.run(() -> intake.intake(), intake));
+
+        man.button(IntakeConstants.PlacePieceButton)
+        .whileTrue(Commands.run(() -> intake.placePiece(), intake));
+
+        man.button(IntakeConstants.SlowPlaceButton)
+        .whileTrue(Commands.run(() -> intake.SlowPlacePiece(), intake));
 
         
 

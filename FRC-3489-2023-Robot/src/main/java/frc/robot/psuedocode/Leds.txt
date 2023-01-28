@@ -2,6 +2,12 @@
 Devices:
 Leds
 
+Colors:
+Intake = green
+Place Piece = yellow
+Slow Place Piece = blue
+teleop flash = White
+
 Functions / Commands:
 LED extension amount
     if limit switch = true
@@ -15,4 +21,6 @@ LED teleop start flash
         set leds
         start timer
         turn off leds after 2 seconds
+
+Intake Speed
         

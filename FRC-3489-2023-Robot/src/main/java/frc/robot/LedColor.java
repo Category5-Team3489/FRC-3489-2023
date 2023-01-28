@@ -5,6 +5,9 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 public class LedColor {
     public static final LedColor Off = LedColor.rgb(0, 0, 0);
     public static final LedColor White = LedColor.rgb(255, 255, 255);
+    public static final LedColor Green = LedColor.rgb(0, 255, 0);
+    public static final LedColor Yellow = LedColor.rgb(255, 255, 0);
+    public static final LedColor Blue = LedColor.rgb(0, 0, 255);
 
     private boolean isHSV;
     private int a;
