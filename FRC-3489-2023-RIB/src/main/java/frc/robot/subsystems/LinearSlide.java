@@ -18,17 +18,21 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Utils;
 
 public class LinearSlide extends SubsystemBase {
     private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
     private final NetworkTableEntry tx = limelight.getEntry("tx"); // -29.8 to 29.8 degrees
     private final NetworkTableEntry tid = limelight.getEntry("tid");
     private final NetworkTableEntry camtran = limelight.getEntry("camtran");
+    private final NetworkTableEntry tvert = limelight.getEntry("tvert");
 
     private final ShuffleboardTab tab = Shuffleboard.getTab("RIB");
     private GenericEntry txEntry = tab.add("TX", 0.0).getEntry();
     private GenericEntry tidEntry = tab.add("TID", 0).getEntry();
     private GenericEntry camtranEntry = tab.add("CamTran", "").getEntry();
+    private GenericEntry tvertEntry = tab.add("TVERT", 0.0).getEntry();
+    private GenericEntry distEntry = tab.add("Dist", 0.0).getEntry();
     private GenericEntry hasBeenHomedEntry = tab.add("Has Linear Slide Been Homed", false).getEntry();
     private GenericEntry bottomLimitSwitchEntry = tab.add("Is At Bottom", false).getEntry();
     private GenericEntry topLimitSwitchEntry = tab.add("Is At Top", false).getEntry();
@@ -42,10 +46,13 @@ public class LinearSlide extends SubsystemBase {
 
     private boolean hasBeenHomed = false;
 
+    // Target area and distance have inverse square relationship???
+
     public LinearSlide() {
         register();
 
         limelight.getEntry("pipeline").setNumber(1);
+        // limelight.getEntry("pipeline").setNumber(2);
     }
 
     public boolean isAtBottom() {
@@ -76,6 +83,15 @@ public class LinearSlide extends SubsystemBase {
             s += n + ", ";
         }
         camtranEntry.setString(s);
+        double tvertValue = tvert.getDouble(0.0);
+        tvertEntry.setDouble(tvertValue);
+
+        double percent = Utils.step(tvertValue, 48, 21);
+        double distance = Utils.lerp(25, 57, percent * percent);
+        distEntry.setDouble(distance);
+        
+
+        //double percent = 
 
         if (!DriverStation.isTeleopEnabled()) {
             return;

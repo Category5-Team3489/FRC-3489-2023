@@ -24,4 +24,7 @@ public class Utils {
     public static double lerp(double a, double b, double t) {
         return a + t * (b - a);
     }
+    public static double step(double x, double a, double b) {
+        return (x - a) / (b - a);
+    }
 }
