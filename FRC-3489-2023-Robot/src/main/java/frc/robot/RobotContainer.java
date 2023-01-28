@@ -83,6 +83,7 @@ public class RobotContainer {
 
         man.button(IntakeConstants.IntakeButton).onTrue(new InstantCommand(() -> intake.intake()));
         man.button(IntakeConstants.PlacePieceButton).onTrue(new InstantCommand(() -> intake.placePiece()));
+        man.button(IntakeConstants.SlowPlaceButton).onTrue(new InstantCommand(() -> intake.SlowPlacePiece()));
 
         
 

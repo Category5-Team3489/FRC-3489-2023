@@ -28,6 +28,11 @@ public class Intake extends SubsystemBase {
         leftMotor.set(IntakeConstants.IntakeSpeed);
     }
 
+    public void SlowPlacePiece() {
+        rightMotor.set(-IntakeConstants.SlowPlaceSpeed);
+        leftMotor.set(IntakeConstants.SlowPlaceSpeed);
+    }
+
     @Override
     public void periodic() {
 

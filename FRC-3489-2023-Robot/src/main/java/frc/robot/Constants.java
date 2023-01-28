@@ -57,9 +57,11 @@ public final class Constants {
         public static final int LeftIntakeMotor = 11;
 
         public static final double IntakeSpeed = 0.5;
+        public static final double SlowPlaceSpeed = 0.3;
 
         public static final int IntakeButton = 2;
         public static final int PlacePieceButton = 5;
+        public static final int SlowPlaceButton = 6;
     }
 
     public static class DrivetrainConstants {
