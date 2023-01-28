@@ -5,11 +5,19 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.TestSubsystem;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TestCommand extends CommandBase {
+    private final TestSubsystem s;
+
     public TestCommand(TestSubsystem subsystem) {
+        s = subsystem;
+
         addRequirements(subsystem);
     }
 
@@ -24,6 +32,21 @@ public class TestCommand extends CommandBase {
     @Override
     public void execute() {
         System.out.println("execute");
+
+        if (!DriverStation.isTeleopEnabled())
+        {
+            return;
+        }
+
+        if (!s.orchestra.isPlaying())
+        {
+                    s.orchestra.play();
+        }
+
+        // s.testFalcon.set(ControlMode.PercentOutput, 0.15);
+        
+
+        // s.testFalcon.set(0.3);
 
         /*
         if (t.advanceIfElapsed(5))

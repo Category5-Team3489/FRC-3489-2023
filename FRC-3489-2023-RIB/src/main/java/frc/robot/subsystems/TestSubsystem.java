@@ -4,7 +4,15 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.music.Orchestra;
+
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,10 +27,21 @@ import frc.robot.commands.TestLimelight;
 public class TestSubsystem extends SubsystemBase {
     private final ShuffleboardTab tab = Shuffleboard.getTab("RIB");
     private GenericEntry testEntry = tab.add("Test", false).getEntry();
+
+    public TalonFX testFalcon = new WPI_TalonFX(32);
+    
+
+    public Orchestra orchestra;
     
     public TestSubsystem() {
     
         register();
+
+        Collection<TalonFX> motors = new ArrayList<TalonFX>();
+        motors.add(testFalcon);
+        orchestra = new Orchestra(motors, "/home/lvuser/deploy/megalovania.chrp");
+
+        new TestCommand(this).ignoringDisable(true).schedule();
 
         /*
         run(() -> System.out.println("bbbbbbbbbbbbbb"))
@@ -63,9 +82,13 @@ public class TestSubsystem extends SubsystemBase {
             .schedule();
             */
 
+            /* 
         new WaitCommand(2).andThen(() -> System.out.println("AAAAAAAAAAAAA"))
             .alongWith(new WaitCommand(4).andThen(() -> System.out.println("BBBBBBBBBBBBBB")))
             .ignoringDisable(true)
             .schedule();
+            */
+
+        
     }
 }
