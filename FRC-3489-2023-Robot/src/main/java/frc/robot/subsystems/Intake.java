@@ -6,23 +6,20 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LedColor;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.general.LedColor;
 
 public class Intake extends SubsystemBase {
+    private final Leds leds;
 
-    public final WPI_TalonSRX rightMotor = new WPI_TalonSRX(IntakeConstants.RightIntakeMotor);
-    public final WPI_TalonSRX leftMotor = new WPI_TalonSRX(IntakeConstants.LeftIntakeMotor);
+    private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(IntakeConstants.RightIntakeMotor);
+    private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(IntakeConstants.LeftIntakeMotor);
 
-    Leds leds;
+    public Intake(Leds leds) {
+        this.leds = leds;
 
-    public Intake() {
         register();
-
-        setDefaultCommand(Commands.run(() -> stopIntake(), this));
     }
 
     public void intake() {
@@ -37,7 +34,7 @@ public class Intake extends SubsystemBase {
         leds.setSolidColor(LedColor.Yellow);
     }
 
-    public void SlowPlacePiece() {
+    public void slowPlacePiece() {
         rightMotor.set(-IntakeConstants.SlowPlaceSpeed);
         leftMotor.set(IntakeConstants.SlowPlaceSpeed);
         leds.setSolidColor(LedColor.Blue);
@@ -48,10 +45,4 @@ public class Intake extends SubsystemBase {
         leftMotor.stopMotor();
         leds.stopLeds();
     }
-
-    @Override
-    public void periodic() {
-
-    }
-
 }

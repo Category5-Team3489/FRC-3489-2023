@@ -23,8 +23,6 @@ public final class Constants {
     public static class OperatorConstants {
         public static final int XboxPort = 0;
         public static final int ManPort = 1;
-        public static final double TranslationModifier = 0.3;
-        public static final double RotationModifier = 0.3;
     }
 
     public static class LinearSlideConstants {
@@ -64,7 +62,19 @@ public final class Constants {
         public static final int SlowPlaceButton = 6;
     }
 
+    public static class CameraConstants {
+        public static final double[] ServoPositions = { 70, 140 };
+        public static final int ServoStartingPositionIndex = 0;
+
+        public static final int CameraServoButton = 7;
+    }
+
     public static class DrivetrainConstants {
+        public static final int NavXZeroYawButton = 9;
+        
+        public static final double TranslationModifier = 0.3;
+        public static final double RotationModifier = 0.3;
+
         /**
          * The left-to-right distance between the drivetrain wheels
          * Should be measured from center to center.
@@ -76,6 +86,7 @@ public final class Constants {
         */
         public static final double DrivetrainWheelbaseMeters = 0.54;
 
+        // TODO Get better convention for encoder CAN ids
         public static final int FrontLeftModuleDriveMotor = 1;
         public static final int FrontLeftModuleSteerMotor = 2;
         public static final int FrontLeftModuleSteerEncoder = 12;

@@ -4,7 +4,7 @@
 
 package frc.robot.commands.leds;
 
-import frc.robot.LedColor;
+import frc.robot.general.LedColor;
 import frc.robot.subsystems.Leds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -15,8 +15,9 @@ public class FlashLeds extends CommandBase {
     private final int cycles;
     private final double timeOn;
     private final double timeOff;
-    
+
     private final Timer timer = new Timer();
+    
     private int currentCycle = 0;
     private boolean isOn = true;
     
@@ -35,7 +36,6 @@ public class FlashLeds extends CommandBase {
         timer.start();
         leds.setSolidColor(color);
         leds.teleopLedsFlashEntry.setBoolean(true);
-        System.out.println("initialize: " + currentCycle);
     }
 
     @Override
@@ -45,7 +45,6 @@ public class FlashLeds extends CommandBase {
                 isOn = false;
                 leds.stopLeds();
                 leds.teleopLedsFlashEntry.setBoolean(false);
-                System.out.println("off: " + currentCycle);
             }
         }
         else {
@@ -53,18 +52,15 @@ public class FlashLeds extends CommandBase {
                 isOn = true;
                 leds.setSolidColor(color);
                 leds.teleopLedsFlashEntry.setBoolean(true);
-                System.out.println("on: " + currentCycle);
                 currentCycle++;
             }
         }
     }
 
-
     @Override
     public void end(boolean interrupted) {
         leds.stopLeds();
         leds.teleopLedsFlashEntry.setBoolean(false);
-        System.out.println("end: " + currentCycle);
     }
 
     @Override

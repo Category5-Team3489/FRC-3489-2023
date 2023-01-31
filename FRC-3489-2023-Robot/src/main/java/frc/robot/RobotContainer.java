@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import frc.robot.Constants.CameraConstants;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LinearSlideConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Drive;
+import frc.robot.general.Utils;
+import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Intake;
@@ -35,10 +39,12 @@ public class RobotContainer {
     private final NavX2 navx = new NavX2();
     private final LinearSlide linearSlide = new LinearSlide();
     private final Leds leds = new Leds();
-    private final Intake intake = new Intake();
+    private final Intake intake = new Intake(leds);
+    private final DriverCamera driverCamera = new DriverCamera();
 
-    // Replace with CommandPS4Controller or CommandJoystick if needed
+    // Driver Controller
     private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
+    // Manipulator Controller
     private final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -46,12 +52,12 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(new Drive(
             drivetrain,
             navx,
-            () -> -Utils.modifyAxis(xbox.getRawAxis(1)) * Drivetrain.MaxVelocityMetersPerSecond * OperatorConstants.TranslationModifier,
-            () -> -Utils.modifyAxis(xbox.getRawAxis(0)) * Drivetrain.MaxVelocityMetersPerSecond * OperatorConstants.TranslationModifier,
-            () -> -Utils.modifyAxis(xbox.getRawAxis(2)) * Drivetrain.MaxAngularVelocityRadiansPerSecond * OperatorConstants.RotationModifier
+            () -> -Utils.modifyAxis(xbox.getRawAxis(1)) * Drivetrain.MaxVelocityMetersPerSecond * DrivetrainConstants.TranslationModifier,
+            () -> -Utils.modifyAxis(xbox.getRawAxis(0)) * Drivetrain.MaxVelocityMetersPerSecond * DrivetrainConstants.TranslationModifier,
+            () -> -Utils.modifyAxis(xbox.getRawAxis(2)) * Drivetrain.MaxAngularVelocityRadiansPerSecond * DrivetrainConstants.RotationModifier
         ));
 
-        // Configure the trigger bindings
+        // Configure the bindings
         configureBindings();
     }
 
@@ -65,34 +71,38 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
-        // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-        /*
-        new Trigger(exampleSubsystem::exampleCondition)
-            .onTrue(new ExampleCommand(exampleSubsystem));
-        */
+        // Drivetrain Bindings
+        xbox.button(DrivetrainConstants.NavXZeroYawButton).onTrue(new InstantCommand(() -> navx.zeroYaw()));
 
-        // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-        // cancelling on release.
-        // xbox.b().whileTrue(exampleSubsystem.exampleMethodCommand());
+        // Linear Slide Bindings
+        man.button(LinearSlideConstants.StopButton)
+            .onTrue(Commands.runOnce(() -> linearSlide.stop()));
 
-        xbox.button(9).onTrue(new InstantCommand(() -> navx.zeroYaw()));
+        man.button(LinearSlideConstants.GotoBottomButton)
+            .onTrue(Commands.runOnce(() -> linearSlide.setRetract()));
 
-        man.button(LinearSlideConstants.StopButton).onTrue(new InstantCommand(() -> linearSlide.stop()));
-        man.button(LinearSlideConstants.GotoBottomButton).onTrue(new InstantCommand(() -> linearSlide.setRetract()));
-        man.button(LinearSlideConstants.GotoMiddleButton).onTrue(new InstantCommand(() -> linearSlide.setHalfExtend()));
-        man.button(LinearSlideConstants.GotoTopButton).onTrue(new InstantCommand(() -> linearSlide.setRetract()));
+        man.button(LinearSlideConstants.GotoMiddleButton)
+            .onTrue(Commands.runOnce(() -> linearSlide.setHalfExtend()));
 
+        man.button(LinearSlideConstants.GotoTopButton)
+            .onTrue(Commands.runOnce(() -> linearSlide.setRetract()));
+
+        // Intake Bindings
         man.button(IntakeConstants.IntakeButton)
-        .whileTrue(Commands.run(() -> intake.intake(), intake));
+            .whileTrue(Commands.run(() -> intake.intake(), intake))
+            .onFalse(Commands.runOnce(() -> intake.stopIntake(), intake));
 
         man.button(IntakeConstants.PlacePieceButton)
-        .whileTrue(Commands.run(() -> intake.placePiece(), intake));
+            .whileTrue(Commands.run(() -> intake.placePiece(), intake))
+            .onFalse(Commands.runOnce(() -> intake.stopIntake(), intake));
 
         man.button(IntakeConstants.SlowPlaceButton)
-        .whileTrue(Commands.run(() -> intake.SlowPlacePiece(), intake));
+            .whileTrue(Commands.run(() -> intake.slowPlacePiece(), intake))
+            .onFalse(Commands.runOnce(() -> intake.stopIntake(), intake));
 
-        
-
+        // Camera Bindings
+        xbox.button(CameraConstants.CameraServoButton)
+            .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
     }
 
     /**

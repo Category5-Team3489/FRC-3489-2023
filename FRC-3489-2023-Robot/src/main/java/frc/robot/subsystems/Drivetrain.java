@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -21,6 +22,7 @@ public class Drivetrain extends SubsystemBase {
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
      */
     public static final double MaxVoltage = 12.0;
+
     // FIXME Measure the drivetrain's maximum velocity or calculate the theoretical.
     //  The formula for calculating the theoretical maximum velocity is:
     //   <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> * pi
@@ -35,6 +37,7 @@ public class Drivetrain extends SubsystemBase {
     public static final double MaxVelocityMetersPerSecond = 6380.0 / 60.0 *
         SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
         SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
+
     /**
      * The maximum angular velocity of the robot in radians per second.
      * <p>

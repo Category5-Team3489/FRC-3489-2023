@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.general;
 
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 
@@ -50,5 +50,10 @@ public class LedColor {
         else {
             buffer.setHSV(i, a, b, c);
         }
+    }
+
+    public String toString() {
+        String colorspace = isHSV ? "HSV" : "RGB";
+        return colorspace + " " + a + " " + b + " " + c;
     }
 }

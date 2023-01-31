@@ -18,11 +18,12 @@ Belt Driven Linear Slide:
 
 
 Virtual 4 Bar Linkage:
-
+    Neo
+    2 limit switches
 
 Intake:
     2 bag motors
-    2 solenoid
+    1 solenoid??
 
 
 ////////////// MAYBE /////////////

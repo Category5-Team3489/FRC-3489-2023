@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.general;
 
 public class Utils {
     public static double deadband(double value, double deadband) {
@@ -23,5 +23,8 @@ public class Utils {
 
     public static double lerp(double a, double b, double t) {
         return a + t * (b - a);
+    }
+    public static double inverseLerp(double x, double a, double b) {
+        return (x - a) / (b - a);
     }
 }

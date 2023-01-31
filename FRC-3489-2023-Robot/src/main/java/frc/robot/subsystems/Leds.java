@@ -8,23 +8,23 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants;
-import frc.robot.LedColor;
 import frc.robot.Constants.LedConstants;
 import frc.robot.commands.leds.FlashLeds;
+import frc.robot.general.LedColor;
 
 public class Leds extends SubsystemBase {
     private final ShuffleboardTab tab = Constants.getMainTab();
-    public GenericEntry teleopLedsFlashEntry = tab.add("Are Teleop Leds Flashing", false).getEntry();
+    public final GenericEntry teleopLedsFlashEntry = tab.add("Are Teleop LEDs Flashing", false).getEntry();
+    private final GenericEntry colorEntry = tab.add("LED Color", "").getEntry();
 
-    public final AddressableLED led = new AddressableLED(LedConstants.Port);
-    public final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LedConstants.Length);
+    private final AddressableLED led = new AddressableLED(LedConstants.Port);
+    private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LedConstants.Length);
 
     private boolean haveTeleopLedsFlashedThisEnable = false;
 
@@ -41,6 +41,7 @@ public class Leds extends SubsystemBase {
             color.apply(i, buffer);
         }
         led.setData(buffer);
+        colorEntry.setString(color.toString());
     }
 
     public void stopLeds() {
@@ -64,13 +65,12 @@ public class Leds extends SubsystemBase {
         
         Command command = new FlashLeds(this, LedColor.White, 3, 1, 1)
             .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-        //Command command = getBlinkForSecondsCommand(LedColor.rgb(255, 0, 0), 5, false, false);
 
         command.schedule();
         haveTeleopLedsFlashedThisEnable = true;
     }
 
-    public Command getBlinkForSecondsCommand(LedColor color, double seconds, boolean doesRunWhenDisabled, boolean isInteruptable) {
+    public Command getSolidColorForSecondsCommand(LedColor color, double seconds, boolean doesRunWhenDisabled, boolean isInteruptable) {
         Runnable start = () -> {
             setSolidColor(color);
             teleopLedsFlashEntry.setBoolean(true);
