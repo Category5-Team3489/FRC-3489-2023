@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 /**
@@ -19,6 +21,8 @@ public final class Constants {
     public static ShuffleboardTab getMainTab() {
         return Shuffleboard.getTab("2023");
     }
+    public static final ShuffleboardLayout DiagnosticCommands = getMainTab()
+        .getLayout("Diagnostic Commands", BuiltInLayouts.kList);
 
     public static class OperatorConstants {
         public static final int XboxPort = 0;

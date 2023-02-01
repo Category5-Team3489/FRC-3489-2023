@@ -63,7 +63,7 @@ public class Leds extends SubsystemBase {
             return;
         }
         
-        Command command = new FlashLeds(this, LedColor.White, 3, 1, 1)
+        Command command = new FlashLeds(this, LedColor.White, 10, 0.1, 0.1)
             .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
         command.schedule();
@@ -88,4 +88,6 @@ public class Leds extends SubsystemBase {
             .ignoringDisable(doesRunWhenDisabled)
             .withInterruptBehavior(interruptBehavior);
     }
+
+    
 }

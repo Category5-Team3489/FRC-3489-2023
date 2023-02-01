@@ -8,3 +8,9 @@ Diagnostic:
     Linear slide: home, mid, top, mid, home
 
 Shuffleboard constants for positioning of widgets
+
+trigger events in for OnTeleopEnabled
+
+make diagnostics tab in shuffleboard
+
+have boolean box for success and command button in the same group, List layout

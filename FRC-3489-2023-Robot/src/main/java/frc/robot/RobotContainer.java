@@ -19,6 +19,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LinearSlide;
 import frc.robot.subsystems.NavX2;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -73,6 +74,8 @@ public class RobotContainer {
     private void configureBindings() {
         // Drivetrain Bindings
         xbox.button(DrivetrainConstants.NavXZeroYawButton).onTrue(new InstantCommand(() -> navx.zeroYaw()));
+
+        // new Trigger(() -> DriverStation.isTeleopEnabled())
 
         // Linear Slide Bindings
         man.button(LinearSlideConstants.StopButton)
