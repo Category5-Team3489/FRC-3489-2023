@@ -5,45 +5,42 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.util.function.BooleanConsumer;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Triggers;
 import frc.robot.Constants.CameraConstants;
 
 public class DriverCamera extends SubsystemBase {
     private final ShuffleboardTab tab = Constants.getMainTab();
-    public final GenericEntry servoEntry = tab.add("Camera Servo", 0.0).getEntry();
-    public final ComplexWidget servoDiagnosticWidget = Constants.DiagnosticCommands
-        .add("Servo Diagnostic", getServoDiagnosticCommand());
+    private final GenericEntry servoEntry = tab.add("Camera Servo", 0.0).getEntry();
     
     private final Servo servo = new Servo(1);
 
     private int servoPositionIndex = CameraConstants.ServoStartingPositionIndex;
     private boolean servoPositionIndexDirectionReversed = false;
 
-    // TODO Reset servo position on teleop enable???
-
     public DriverCamera() {
         register();
 
-        BooleanConsumer initServo = (boolean interrupted) -> {
+        Runnable resetServoOnTeleopEnabled = () -> {
+            servoPositionIndex = CameraConstants.ServoStartingPositionIndex;
+            servoPositionIndexDirectionReversed = false;
             setServoAngle(CameraConstants.ServoPositions[CameraConstants.ServoStartingPositionIndex]);
         };
 
-        // Set servo angle to default when enabled into teleop mode for first time
-        Commands.waitUntil(() -> DriverStation.isEnabled())
-            .ignoringDisable(true)
-            .finallyDo(initServo)
-            .schedule();
+        Triggers.IsTeleopEnabled.onTrue(Commands.runOnce(resetServoOnTeleopEnabled, this));
 
         servoPositionIndex = CameraConstants.ServoStartingPositionIndex;
+
+        ShuffleboardLayout diagnosticLayout = Constants.createDiagnosticLayout("Driver Camera");
+        diagnosticLayout.withSize(2, 1);
+        diagnosticLayout.add("Servo Diagnostic", getServoDiagnosticCommand());
     }
 
     public void indexServoPosition() {
@@ -70,11 +67,13 @@ public class DriverCamera extends SubsystemBase {
     }
 
     private int servoDiagnosticServoPositionIndexAtStart;
+    private boolean servoDiagnosticServoIndexDirectionReversedAtStart;
     private CommandBase getServoDiagnosticCommand() {
         Timer timer = new Timer();
         return Commands.sequence(
             Commands.runOnce(() -> {
                 servoDiagnosticServoPositionIndexAtStart = servoPositionIndex;
+                servoDiagnosticServoIndexDirectionReversedAtStart = servoPositionIndexDirectionReversed;
             }, this),
             Commands.run(() -> {
                 timer.start();
@@ -86,6 +85,7 @@ public class DriverCamera extends SubsystemBase {
         .withTimeout(4)
         .andThen(() -> {
             servoPositionIndex = servoDiagnosticServoPositionIndexAtStart;
+            servoPositionIndexDirectionReversed = servoDiagnosticServoIndexDirectionReversedAtStart;
             setServoAngle(CameraConstants.ServoPositions[servoPositionIndex]);
         }, this)
         .withName("Run Servo Diagnostic");

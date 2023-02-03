@@ -35,7 +35,6 @@ public class FlashLeds extends CommandBase {
     public void initialize() {
         timer.start();
         leds.setSolidColor(color);
-        leds.teleopLedsFlashEntry.setBoolean(true);
     }
 
     @Override
@@ -44,14 +43,12 @@ public class FlashLeds extends CommandBase {
             if (timer.advanceIfElapsed(timeOn)) {
                 isOn = false;
                 leds.stopLeds();
-                leds.teleopLedsFlashEntry.setBoolean(false);
             }
         }
         else {
             if (timer.advanceIfElapsed(timeOff)) {
                 isOn = true;
                 leds.setSolidColor(color);
-                leds.teleopLedsFlashEntry.setBoolean(true);
                 currentCycle++;
             }
         }
@@ -60,7 +57,6 @@ public class FlashLeds extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         leds.stopLeds();
-        leds.teleopLedsFlashEntry.setBoolean(false);
     }
 
     @Override

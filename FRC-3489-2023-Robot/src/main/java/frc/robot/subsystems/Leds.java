@@ -8,8 +8,10 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -20,7 +22,6 @@ import frc.robot.general.LedColor;
 
 public class Leds extends SubsystemBase {
     private final ShuffleboardTab tab = Constants.getMainTab();
-    public final GenericEntry teleopLedsFlashEntry = tab.add("Are Teleop LEDs Flashing", false).getEntry();
     private final GenericEntry colorEntry = tab.add("LED Color", "").getEntry();
 
     private final AddressableLED led = new AddressableLED(LedConstants.Port);
@@ -28,12 +29,18 @@ public class Leds extends SubsystemBase {
 
     private boolean haveTeleopLedsFlashedThisEnable = false;
 
+    // TODO Limit led setting bandwidth, compare led buffer with applied and unapplied on update then only set if they are different
+
     public Leds() {
         register();
         
         led.setLength(buffer.getLength());
         led.setData(buffer);
         led.start();
+
+        ShuffleboardLayout diagnosticLayout = Constants.createDiagnosticLayout("LEDs");
+        diagnosticLayout.withSize(2, 1);
+        diagnosticLayout.add("LEDs", LedDiognostic());
     }
 
     public void setSolidColor(LedColor color) {
@@ -70,24 +77,24 @@ public class Leds extends SubsystemBase {
         haveTeleopLedsFlashedThisEnable = true;
     }
 
-    public Command getSolidColorForSecondsCommand(LedColor color, double seconds, boolean doesRunWhenDisabled, boolean isInteruptable) {
+    public Command getSolidColorForSecondsCommand(LedColor color, double seconds, boolean isInterruptible) {
         Runnable start = () -> {
             setSolidColor(color);
-            teleopLedsFlashEntry.setBoolean(true);
         };
         Runnable end = () -> {
             stopLeds();
-            teleopLedsFlashEntry.setBoolean(false);
         };
 
-        InterruptionBehavior interruptBehavior = isInteruptable ?
+        InterruptionBehavior interruptBehavior = isInterruptible ?
             InterruptionBehavior.kCancelSelf : InterruptionBehavior.kCancelIncoming;
 
         return Commands.startEnd(start, end, this)
             .withTimeout(seconds)
-            .ignoringDisable(doesRunWhenDisabled)
             .withInterruptBehavior(interruptBehavior);
     }
 
-    
+    public CommandBase LedDiognostic() {
+        return getSolidColorForSecondsCommand(LedColor.White, 5, true)
+            .withName("Set Solid Color");
+    }
 }

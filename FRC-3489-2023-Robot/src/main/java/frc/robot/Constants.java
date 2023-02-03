@@ -18,11 +18,21 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    // Shuffleboard Stuff
     public static ShuffleboardTab getMainTab() {
-        return Shuffleboard.getTab("2023");
+        return Shuffleboard.getTab("Main");
     }
-    public static final ShuffleboardLayout DiagnosticCommands = getMainTab()
-        .getLayout("Diagnostic Commands", BuiltInLayouts.kList);
+    public static ShuffleboardTab getDiagnosticTab() {
+        return Shuffleboard.getTab("Diagnostic");
+    }
+    public static final ShuffleboardLayout createMainLayout(String title) {
+        return getMainTab()
+            .getLayout(title, BuiltInLayouts.kList);
+    }
+    public static final ShuffleboardLayout createDiagnosticLayout(String title) {
+        return getDiagnosticTab()
+            .getLayout(title, BuiltInLayouts.kList);
+    }
 
     public static class OperatorConstants {
         public static final int XboxPort = 0;
@@ -41,6 +51,8 @@ public final class Constants {
         
         public static final double ExtendSpeed = 0.3;
         public static final double RetractSpeed = -0.3;
+
+        public static final double SetPositionTolerancePercentage = 0.025;
 
         public static final double EncoderCountLength = 1000;
         public static final double FullExtendEncoder = 100;

@@ -2,15 +2,19 @@ Leds robot has game piece
 
 LED extension amount
 
-LED teleop start flash
-
 Diagnostic:
     Linear slide: home, mid, top, mid, home
-
-Shuffleboard constants for positioning of widgets
 
 trigger events in for OnTeleopEnabled
 
 make diagnostics tab in shuffleboard
 
 have boolean box for success and command button in the same group, List layout
+
+make more things final 
+
+
+//////////////
+Update controlled device data in shuffleboard on robotPerioidic, in subsystem periodic
+no only on changes
+if robot is disabled when motor is moving, it will stop, but shuffleboard will still say it is moving

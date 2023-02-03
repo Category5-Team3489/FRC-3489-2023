@@ -5,17 +5,17 @@
 package frc.robot.commands.linearslide;
 
 import frc.robot.Constants.LinearSlideConstants;
-import frc.robot.subsystems.LinearSlide;
+import frc.robot.subsystems.LinearSlideOld;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class SetLinearSlide extends CommandBase {
-    private final LinearSlide linearSlide;
+    private final LinearSlideOld linearSlide;
 
     private final Double percentExtended;
     private final Double totalPercent;
 
-    public SetLinearSlide(LinearSlide linearSlide, Double percentExtended, Double totalPercent) {
+    public SetLinearSlide(LinearSlideOld linearSlide, Double percentExtended, Double totalPercent) {
         this.linearSlide = linearSlide;
         this.percentExtended = percentExtended;
         this.totalPercent = totalPercent;

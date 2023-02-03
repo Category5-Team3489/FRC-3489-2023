@@ -1,0 +1,3 @@
+NEOS get method has cached speed from stopMotor and set
+
+TalonSRX get method only has speed cached from set and not STOP MOTOR

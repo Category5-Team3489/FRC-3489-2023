@@ -4,13 +4,13 @@
 
 package frc.robot.commands.linearslide;
 
-import frc.robot.subsystems.LinearSlide;
+import frc.robot.subsystems.LinearSlideOld;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class HomeLinearSlide extends CommandBase {
-    private final LinearSlide linearSlide;
+    private final LinearSlideOld linearSlide;
 
-    public HomeLinearSlide(LinearSlide linearSlide) {
+    public HomeLinearSlide(LinearSlideOld linearSlide) {
         this.linearSlide = linearSlide;
 
         addRequirements(linearSlide);

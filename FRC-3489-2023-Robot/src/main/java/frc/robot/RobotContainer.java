@@ -19,7 +19,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LinearSlide;
 import frc.robot.subsystems.NavX2;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -75,20 +74,19 @@ public class RobotContainer {
         // Drivetrain Bindings
         xbox.button(DrivetrainConstants.NavXZeroYawButton).onTrue(new InstantCommand(() -> navx.zeroYaw()));
 
-        // new Trigger(() -> DriverStation.isTeleopEnabled())
-
+        // TODO FIX
         // Linear Slide Bindings
         man.button(LinearSlideConstants.StopButton)
             .onTrue(Commands.runOnce(() -> linearSlide.stop()));
 
         man.button(LinearSlideConstants.GotoBottomButton)
-            .onTrue(Commands.runOnce(() -> linearSlide.setRetract()));
+            .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(0)));
 
         man.button(LinearSlideConstants.GotoMiddleButton)
-            .onTrue(Commands.runOnce(() -> linearSlide.setHalfExtend()));
+            .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(0.5)));
 
-        man.button(LinearSlideConstants.GotoTopButton)
-            .onTrue(Commands.runOnce(() -> linearSlide.setRetract()));
+        xbox.button(8)
+            .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(1)));
 
         // Intake Bindings
         man.button(IntakeConstants.IntakeButton)
