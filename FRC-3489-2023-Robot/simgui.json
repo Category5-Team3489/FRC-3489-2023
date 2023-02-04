@@ -27,10 +27,17 @@
       "/Shuffleboard/Diagnostic/Driver Camera/Servo Diagnostic": "Command",
       "/Shuffleboard/Diagnostic/Intake/Intake Diagnostic": "Command",
       "/Shuffleboard/Diagnostic/LEDs/LEDs": "Command",
-      "/Shuffleboard/Diagnostic/Linear Slide/Linear Slide Diagnostic": "Command"
+      "/Shuffleboard/Diagnostic/Linear Slide/Linear Slide Diagnostic": "Command",
+      "/Shuffleboard/Main/Arm/Update Constants": "Command"
     }
   },
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
+    "Transitory Values": {
+      "open": false
+    },
     "transitory": {
       "Shuffleboard": {
         "open": true

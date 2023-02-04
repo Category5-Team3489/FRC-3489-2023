@@ -40,7 +40,8 @@ public final class Constants {
     }
 
     public static class ArmConstants {
-        public static final int MotorDeviceId = 312321;
+        public static final int MotorDeviceId = 1;
+        public static final int LimitSwitchChannel = 1;
     }
 
     public static class LinearSlideConstants {
