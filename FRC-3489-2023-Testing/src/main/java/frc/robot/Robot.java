@@ -43,7 +43,30 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         double speed = xbox.getRawAxis(1);
-        set(speed);
+        double slow = xbox.getRawAxis(3);
+        if (xbox.getRawButton(1)) {
+            set(-0.4);
+        }
+        else if (xbox.getRawButton(2)) {
+            set(-0.75);
+        }
+        else if (xbox.getRawButton(3)) {
+            set(0.4);
+        }
+        else if (xbox.getRawButton(4)) {
+            set(0.75);
+        }
+        else {
+            if (Math.abs(speed) > 0.025) {
+                set(-speed);
+            }
+            else if (Math.abs(slow) > 0.025) {
+                set(-slow * 0.25);
+            }
+            else {
+                set(0);
+            }
+        }
     }
 
     @Override
@@ -64,8 +87,15 @@ public class Robot extends TimedRobot {
     @Override
     public void simulationPeriodic() {}
 
+    long runs = 0;
     private void set(double speed) {
         left.set(speed);
         right.set(-speed);
+
+        if (runs % 2 == 0) {
+            System.out.println(speed);
+        }
+
+        runs++;
     }
 }
