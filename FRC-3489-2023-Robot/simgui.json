@@ -16,6 +16,12 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/DigitalInput[24]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[25]": "Digital Input",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon SRX [10]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon SRX [11]": "Motor Controller",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/Shuffleboard/2023/Diagnostic Commands/Intake Diagnostic": "Command",
       "/Shuffleboard/2023/Diagnostic Commands/Servo Diagnostic": "Command",
       "/Shuffleboard/Diagnostic/Driver Camera/Servo Diagnostic": "Command",
