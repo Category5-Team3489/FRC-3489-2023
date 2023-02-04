@@ -55,9 +55,9 @@ public final class Constants {
         public static final double SetPositionTolerancePercentage = 0.025;
 
         public static final double EncoderCountLength = 1000;
-        public static final double FullExtendEncoder = 100;
-        public static final double HalfExtendEncoder = 100;
-        public static final double FullretractEncoder = -100;
+        public static final double FullExtendEncoder = 1000;
+        public static final double HalfExtendEncoder = 500;
+        public static final double FullretractEncoder = 0;
     }
 
     public static class LedConstants {

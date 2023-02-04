@@ -80,13 +80,13 @@ public class RobotContainer {
             .onTrue(Commands.runOnce(() -> linearSlide.stop()));
 
         man.button(LinearSlideConstants.GotoBottomButton)
-            .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(0)));
+            .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(LinearSlideConstants.FullretractEncoder)));
 
         xbox.button(9)
-            .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(0.5)));
+            .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(LinearSlideConstants.HalfExtendEncoder)));
 
         xbox.button(8)
-            .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(1)));
+            .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(LinearSlideConstants.FullExtendEncoder)));
 
         // Intake Bindings
         man.button(IntakeConstants.IntakeButton)

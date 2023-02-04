@@ -6,9 +6,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Triggers;
@@ -37,6 +39,10 @@ public class LinearSlide extends SubsystemBase {
             .withSize(2, 1);
         linearSlidePosition = mainLayout.add("Linear Slide Position", " ").getEntry();
         linearSlideEncoderPosition = mainLayout.add("Linear Slide Encoder Position", 0.0).getEntry();
+
+        ShuffleboardLayout diagnosticLayout = Constants.createDiagnosticLayout("Linear Slide")
+            .withSize(2, 1);
+        diagnosticLayout.add("Linear Slide Diagnostic", linearSlideDiagnostic());
 
         new Trigger(() -> isRetracted())
             .onTrue(new InstantCommand(() -> {
@@ -144,12 +150,84 @@ public class LinearSlide extends SubsystemBase {
     }
 
     public void setShuffleBoardPosition(double position) {
-        if(position == 1000) {
+        if(position == LinearSlideConstants.FullExtendEncoder) {
             linearSlidePosition.setString("Extended");
-        } else if(position == 500) {
+        } else if(position == LinearSlideConstants.HalfExtendEncoder) {
             linearSlidePosition.setString("Half Extended");
-        } else if(position == 0) {
+        } else if(position == LinearSlideConstants.FullretractEncoder) {
             linearSlidePosition.setString("Retracted");
+        }
+    }
+
+    public CommandBase linearSlideDiagnostic() {
+        return Commands.sequence(
+            Commands.race(
+                Commands.run(() -> {
+                    gotoPercentExtended(LinearSlideConstants.FullretractEncoder);
+                    setLinearSlide();
+                }, this),
+                Commands.run(() -> {
+                    new WaitCommand(5);
+                })
+            ),
+            Commands.race(
+                Commands.run(() -> {
+                    gotoPercentExtended(LinearSlideConstants.HalfExtendEncoder);
+                    setLinearSlide();
+                }, this),
+                Commands.run(() -> {
+                    new WaitCommand(5);
+                })
+            ),
+            Commands.race(
+                Commands.run(() -> {
+                    gotoPercentExtended(LinearSlideConstants.FullExtendEncoder);
+                    setLinearSlide();
+                    new WaitCommand(5);
+                }, this),
+                Commands.run(() -> {
+                    new WaitCommand(5);
+                })
+            ),
+            Commands.race(
+                Commands.run(() -> {
+                    gotoPercentExtended(LinearSlideConstants.HalfExtendEncoder);
+                    setLinearSlide();
+                }, this),
+                Commands.run(() -> {
+                    new WaitCommand(5);
+                })
+            ),
+            Commands.race(
+                Commands.run(() -> {
+                    gotoPercentExtended(LinearSlideConstants.FullretractEncoder);
+                    setLinearSlide();
+                }, this),
+                Commands.run(() -> {
+                    new WaitCommand(5);
+                })
+            )
+        )
+        .withName("Run Linear Slide Diagnostic");
+    }
+
+    public void setLinearSlide() {
+        if (Math.abs(getPercentExtended() - getPercentExtendedAtPosition(position)) <= LinearSlideConstants.SetPositionTolerancePercentage) { // Is at set position and within tolerance
+            stop();
+            hasSetPosition = true;
+            setShuffleBoardPosition(position);
+            linearSlideEncoderPosition.setDouble(getPositionAtPercentExtended(position));
+            
+        }
+        else { // Has not arrived at set position, keep moving in the direction that is towards the set position
+            if(getPosition() - position <= 0) {
+                extend();
+                linearSlidePosition.setString("Extending");
+            }
+            else{
+                retract();
+                linearSlidePosition.setString("Retracting");
+            }
         }
     }
 }
