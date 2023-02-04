@@ -1,0 +1,25 @@
+Devices:
+    CANSparkMax: Motor
+    DigitalInput: Limit Switch
+
+Functions:
+    GotoHome:
+        Goto home until limit switch is hit
+        Set encoder position to 0
+        Shuffleboard: Is Homed = true
+
+    GotoPosition:
+        Position Closed Loop Control
+        https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Position%20Closed%20Loop%20Control/src/main/java/frc/robot/Robot.java
+        If hits limit switch while doing that, home based off of that
+
+Shuffleboard:
+    Is Homed
+    Set Motor Speed
+    Position in Degrees
+    Position in Percentage
+    Position in Encoder Count
+    Limit Switch
+
+Diagnostics:
+    HomeHalfFullHalfHome

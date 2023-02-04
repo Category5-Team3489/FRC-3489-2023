@@ -1,0 +1,25 @@
+Devices:
+    WPI_TalonSRX: Left Motor
+    WPI_TalonSRX: Right Motor
+    DigitalInput: Through-beam sensor
+
+Functions:
+    Set(State state):
+        Off
+        Grab
+        Place
+        PlaceCube
+        PlaceCone
+
+Shuffleboard:
+    Gripper State:
+        Off
+        Grab
+        Place
+        PlaceCube
+        PlaceCone
+    Set Motor Speed
+
+Diagnostics:
+    GrabOffPlaceOff
+    ThroughBeamTest: Manually trigger sensor, green boolean box if happens after 10 sec, red if not

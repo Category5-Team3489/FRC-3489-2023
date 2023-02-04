@@ -22,3 +22,6 @@ if robot is disabled when motor is moving, it will stop, but shuffleboard will s
 widget for percent extended
 and encoder clicks
 ^^^^^^^ Linear SLide	
+
+
+wrap motors with class, have way of setting shuffleboard data

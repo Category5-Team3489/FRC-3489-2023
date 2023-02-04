@@ -1,0 +1,16 @@
+Devices:
+    4 LED Strips: 2 on side of hypotenuse of dorrito, 2 on top of hypotenuse of dorrito
+
+Functions:
+    Periodic:
+        Gripper
+        If no command to glow yellow or purple:
+            Poll Slide Position Percentage and Update LEDs
+            Poll Arm Position Percentage and Update LEDs
+        else:
+            Glow commanded color for set time after button press?
+
+
+Shuffleboard:
+
+Diagnostics:

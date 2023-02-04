@@ -39,6 +39,10 @@ public final class Constants {
         public static final int ManPort = 1;
     }
 
+    public static class ArmConstants {
+        public static final int MotorDeviceId = 312321;
+    }
+
     public static class LinearSlideConstants {
         public static final int Motor = 9;
         public static final int BottomLimitSwitch = 24;
