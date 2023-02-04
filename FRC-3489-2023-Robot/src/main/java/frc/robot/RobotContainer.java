@@ -12,6 +12,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Drive;
 import frc.robot.general.Utils;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -35,7 +36,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
     private final Drivetrain drivetrain = new Drivetrain();
     private final NavX2 navx = new NavX2();
     private final LinearSlide linearSlide = new LinearSlide();
@@ -43,6 +43,7 @@ public class RobotContainer {
     private final Intake intake = new Intake(leds);
     private final DriverCamera driverCamera = new DriverCamera();
     private final Gripper gripper = new Gripper();
+    private final Arm arm = new Arm();
 
     // Driver Controller
     private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
@@ -116,6 +117,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
-        return Autos.exampleAuto(exampleSubsystem);
+        return null; // Autos.exampleAuto(exampleSubsystem);
     }
 }
