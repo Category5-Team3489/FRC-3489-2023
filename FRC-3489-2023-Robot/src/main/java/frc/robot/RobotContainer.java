@@ -82,7 +82,7 @@ public class RobotContainer {
         man.button(LinearSlideConstants.GotoBottomButton)
             .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(0)));
 
-        man.button(LinearSlideConstants.GotoMiddleButton)
+        xbox.button(9)
             .onTrue(Commands.runOnce(() -> linearSlide.gotoPercentExtended(0.5)));
 
         xbox.button(8)

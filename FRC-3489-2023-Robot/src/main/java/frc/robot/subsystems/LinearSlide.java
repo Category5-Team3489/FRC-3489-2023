@@ -17,6 +17,8 @@ import frc.robot.Constants.LinearSlideConstants;
 public class LinearSlide extends SubsystemBase {
     private final GenericEntry hasBeenHomedEntry;
     private final GenericEntry motorSpeedEntry;
+    private final GenericEntry linearSlidePosition;
+    private final GenericEntry linearSlideEncoderPosition;
 
     private final CANSparkMax motor = new CANSparkMax(LinearSlideConstants.Motor, MotorType.kBrushless);
     private final DigitalInput bottomLimitSwitch = new DigitalInput(LinearSlideConstants.BottomLimitSwitch);
@@ -31,9 +33,15 @@ public class LinearSlide extends SubsystemBase {
     public LinearSlide() {
         register();
 
+        ShuffleboardLayout mainLayout = Constants.createMainLayout("Linear Slide")
+            .withSize(2, 1);
+        linearSlidePosition = mainLayout.add("Linear Slide Position", " ").getEntry();
+        linearSlideEncoderPosition = mainLayout.add("Linear Slide Encoder Position", 0.0).getEntry();
+
         new Trigger(() -> isRetracted())
             .onTrue(new InstantCommand(() -> {
                 setPosition(0);
+
 
                 if (motor.get() < 0) {
                     stop();
@@ -50,28 +58,38 @@ public class LinearSlide extends SubsystemBase {
 
         new Trigger(() -> !hasBeenHomed)
             .and(Triggers.IsTeleopEnabled)
-            .onTrue(new InstantCommand(() -> retract()));
+            .onTrue(new InstantCommand(() -> {
+                retract();
+                linearSlidePosition.setString("Homing");
+             }))
+             .onFalse(new InstantCommand(() -> {
+                 linearSlidePosition.setString("Homed");
+            }));
 
         new Trigger(() -> hasSetPosition)
             .and(Triggers.IsEnabled)
             .whileTrue(Commands.run(() -> {
                 
-                if (Math.abs(getPercentExtended() - getPositionAtPercentExtended(position)) <= LinearSlideConstants.SetPositionTolerancePercentage) { // Is at set position and within tolerance
+                if (Math.abs(getPercentExtended() - getPercentExtendedAtPosition(position)) <= LinearSlideConstants.SetPositionTolerancePercentage) { // Is at set position and within tolerance
                     stop();
                     hasSetPosition = true;
+                    setShuffleBoardPosition(position);
+                    linearSlideEncoderPosition.setDouble(getPositionAtPercentExtended(position));
+                    
                 }
                 else { // Has not arrived at set position, keep moving in the direction that is towards the set position
                     if(getPosition() - position <= 0) {
                         extend();
+                        linearSlidePosition.setString("Extending");
                     }
                     else{
                         retract();
+                        linearSlidePosition.setString("Retracting");
                     }
                 }
             }, this));
 
-        ShuffleboardLayout mainLayout = Constants.createMainLayout("Linear Slide")
-            .withSize(2, 1);
+        
         hasBeenHomedEntry = mainLayout.add("Has Been Homed", false).getEntry();
         motorSpeedEntry = mainLayout.add("Motor Speed", 0.0).getEntry();
     }
@@ -116,8 +134,22 @@ public class LinearSlide extends SubsystemBase {
         return getPosition() / LinearSlideConstants.EncoderCountLength;
     }
 
+    public double getPercentExtendedAtPosition(double position) {
+        return position / LinearSlideConstants.EncoderCountLength;
+    }
+
     public void gotoPercentExtended(double percentExtended) {
         hasSetPosition = true;
         position = getPositionAtPercentExtended(percentExtended);
+    }
+
+    public void setShuffleBoardPosition(double position) {
+        if(position == 1000) {
+            linearSlidePosition.setString("Extended");
+        } else if(position == 500) {
+            linearSlidePosition.setString("Half Extended");
+        } else if(position == 0) {
+            linearSlidePosition.setString("Retracted");
+        }
     }
 }
