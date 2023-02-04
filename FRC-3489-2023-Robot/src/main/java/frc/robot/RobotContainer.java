@@ -15,6 +15,7 @@ import frc.robot.general.Utils;
 import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LinearSlide;
@@ -41,6 +42,7 @@ public class RobotContainer {
     private final Leds leds = new Leds();
     private final Intake intake = new Intake(leds);
     private final DriverCamera driverCamera = new DriverCamera();
+    private final Gripper gripper = new Gripper();
 
     // Driver Controller
     private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
@@ -90,7 +92,7 @@ public class RobotContainer {
 
         // Intake Bindings
         man.button(IntakeConstants.IntakeButton)
-            .whileTrue(Commands.run(() -> intake.intake(), intake))
+            .whileTrue(Commands.run(() -> intake.placePiece(), intake))
             .onFalse(Commands.runOnce(() -> intake.stopIntake(), intake));
 
         man.button(IntakeConstants.PlacePieceButton)
@@ -104,6 +106,7 @@ public class RobotContainer {
         // Camera Bindings
         xbox.button(CameraConstants.CameraServoButton)
             .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
+
     }
 
     /**

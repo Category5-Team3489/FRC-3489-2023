@@ -73,6 +73,7 @@ public final class Constants {
     public static class IntakeConstants {
         public static final int RightIntakeMotor = 10;
         public static final int LeftIntakeMotor = 11;
+        public static final int GripperSensor = 12;
 
         public static final double IntakeSpeed = 0.5;
         public static final double SlowPlaceSpeed = 0.3;
