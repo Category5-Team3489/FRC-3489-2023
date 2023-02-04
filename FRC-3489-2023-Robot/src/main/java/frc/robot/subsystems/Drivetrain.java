@@ -67,8 +67,16 @@ public class Drivetrain extends SubsystemBase {
 
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+    // private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, null, null, null);
+
     public Drivetrain() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+
+        // odometry.update(null, new SwerveModulePosition[] {
+        //     new SwerveModulePosition(null, n)
+        // });
+
+        // odometry.resetPosition(null, null, null);
 
         // There are 4 methods you can call to create your swerve modules.
         // The method you use depends on what motors you are using.
