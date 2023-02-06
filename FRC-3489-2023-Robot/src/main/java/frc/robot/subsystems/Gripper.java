@@ -20,7 +20,7 @@ public class Gripper extends SubsystemBase {
 
     public final DigitalInput gripperSensor = new DigitalInput(IntakeConstants.GripperSensor);
     
-    public IntakeState intakeState;
+    public IntakeState intakeState = IntakeState.off;
 
     public Gripper() {
         register();
@@ -29,7 +29,7 @@ public class Gripper extends SubsystemBase {
             .withSize(2, 1);
         mainLayout.addDouble("Right Intake Speed", () -> rightMotor.get());
         mainLayout.addDouble("Left Intake Speed", () -> leftMotor.get());
-        mainLayout.addString("Left Intake Speed", () -> intakeState.toString());
+        mainLayout.addString("Intake State", () -> intakeState.toString());
 
     }
 
