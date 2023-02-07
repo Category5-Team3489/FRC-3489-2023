@@ -9,7 +9,6 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
-import frc.robot.general.Utils;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
@@ -50,9 +49,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(new Drive(
             drivetrain,
             navx,
-            () -> -Utils.modifyAxis(xbox.getRawAxis(1)) * Drivetrain.MaxVelocityMetersPerSecond * DrivetrainConstants.TranslationModifier,
-            () -> -Utils.modifyAxis(xbox.getRawAxis(0)) * Drivetrain.MaxVelocityMetersPerSecond * DrivetrainConstants.TranslationModifier,
-            () -> -Utils.modifyAxis(xbox.getRawAxis(2)) * Drivetrain.MaxAngularVelocityRadiansPerSecond * DrivetrainConstants.RotationModifier
+            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(1)) * Drivetrain.MaxVelocityMetersPerSecond * DrivetrainConstants.TranslationModifier,
+            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(0)) * Drivetrain.MaxVelocityMetersPerSecond * DrivetrainConstants.TranslationModifier,
+            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(2)) * Drivetrain.MaxAngularVelocityRadiansPerSecond * DrivetrainConstants.RotationModifier
         ));
 
         // Configure the bindings
@@ -88,7 +87,6 @@ public class RobotContainer {
         // Camera Bindings
         xbox.button(CameraConstants.CameraServoButton)
             .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
-
     }
 
     /**

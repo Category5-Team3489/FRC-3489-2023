@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
@@ -35,8 +36,8 @@ public class Drivetrain extends SubsystemBase {
      * This is a measure of how fast the robot should be able to drive in a straight line.
      */
     public static final double MaxVelocityMetersPerSecond = 6380.0 / 60.0 *
-        SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
-        SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
+        SdsModuleConfigurations.MK4_L2.getDriveReduction() *
+        SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
 
     /**
      * The maximum angular velocity of the robot in radians per second.
@@ -102,54 +103,54 @@ public class Drivetrain extends SubsystemBase {
 
         // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
         // you MUST change it. If you do not, your code will crash on startup.
-        frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
+        frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
         // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
         tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                 .withSize(2, 4)
                 .withPosition(0, 0),
             // This can either be STANDARD or FAST depending on your gear configuration
-            Mk3SwerveModuleHelper.GearRatio.STANDARD,
+            Mk4SwerveModuleHelper.GearRatio.L2,
             // This is the ID of the drive motor
-            FrontLeftModuleDriveMotor,
+            FrontLeftModuleDriveMotorDeviceId,
             // This is the ID of the steer motor
-            FrontLeftModuleSteerMotor,
+            FrontLeftModuleSteerMotorDeviceId,
             // This is the ID of the steer encoder
-            FrontLeftModuleSteerEncoder,
+            FrontLeftModuleSteerEncoderDeviceId,
             // This is how much the steer encoder is offset from true zero (In our case, zero is facing straight forward)
             FrontLeftModuleSteerOffset
         );
 
         // We will do the same for the other modules
-        frontRightModule = Mk3SwerveModuleHelper.createFalcon500(
+        frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Front Right Module", BuiltInLayouts.kList)
                 .withSize(2, 4)
                 .withPosition(2, 0),
-            Mk3SwerveModuleHelper.GearRatio.STANDARD,
-            FrontRightModuleDriveMotor,
-            FrontRightModuleSteerMotor,
-            FrontRightModuleSteerEncoder,
+                Mk4SwerveModuleHelper.GearRatio.L2,
+            FrontRightModuleDriveMotorDeviceId,
+            FrontRightModuleSteerMotorDeviceId,
+            FrontRightModuleSteerEncoderDeviceId,
             FrontRightModuleSteerOffset
         );
 
-        backLeftModule = Mk3SwerveModuleHelper.createFalcon500(
+        backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Left Module", BuiltInLayouts.kList)
                 .withSize(2, 4)
                 .withPosition(4, 0),
-            Mk3SwerveModuleHelper.GearRatio.STANDARD,
-            BackLeftModuleDriveMotor,
-            BackLeftModuleSteerMotor,
-            BackLeftModuleSteerEncoder,
+            Mk4SwerveModuleHelper.GearRatio.L2,
+            BackLeftModuleDriveMotorDeviceId,
+            BackLeftModuleSteerMotorDeviceId,
+            BackLeftModuleSteerEncoderDeviceId,
             BackLeftModuleSteerOffset
         );
 
-        backRightModule = Mk3SwerveModuleHelper.createFalcon500(
+        backRightModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Right Module", BuiltInLayouts.kList)
                 .withSize(2, 4)
                 .withPosition(6, 0),
-            Mk3SwerveModuleHelper.GearRatio.STANDARD,
-            BackRightModuleDriveMotor,
-            BackRightModuleSteerMotor,
-            BackRightModuleSteerEncoder,
+            Mk4SwerveModuleHelper.GearRatio.L2,
+            BackRightModuleDriveMotorDeviceId,
+            BackRightModuleSteerMotorDeviceId,
+            BackRightModuleSteerEncoderDeviceId,
             BackRightModuleSteerOffset
         );
     }

@@ -4,7 +4,7 @@
 
 package frc.robot.commands.archive.linearslide;
 
-import frc.robot.Constants.LinearSlideConstants;
+import frc.robot.subsystems.archive.LinearSlide;
 import frc.robot.subsystems.archive.LinearSlideOld;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -42,7 +42,7 @@ public class SetLinearSlide extends CommandBase {
     public void end(boolean interrupted) {
         linearSlide.stop();
         //set LEDs
-        if (totalPercent == LinearSlideConstants.FullExtendEncoder) {
+        if (totalPercent == LinearSlide.FullExtendEncoder) {
             
         }
     }
@@ -62,7 +62,7 @@ public class SetLinearSlide extends CommandBase {
         }
 
         //if linear slide is setting half and position is < 10
-        if (totalPercent == LinearSlideConstants.HalfExtendEncoder && linearSlide.getPosition() <= 10) {
+        if (totalPercent == LinearSlide.HalfExtendEncoder && linearSlide.getPosition() <= 10) {
                 return true;
         }
         return false;

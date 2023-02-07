@@ -4,10 +4,15 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -16,10 +21,18 @@ import edu.wpi.first.wpilibj.XboxController;
  * project.
  */
 public class Robot extends TimedRobot {
+    private final ShuffleboardTab tab = Shuffleboard.getTab("Testing");
+    private final DoubleSupplier range;
+
     private WPI_TalonSRX left = new WPI_TalonSRX(1);
     private WPI_TalonSRX right = new WPI_TalonSRX(3);
 
     private XboxController xbox = new XboxController(0);
+
+    public Robot() {
+        var rangeEntry = tab.add("Range", 0).getEntry();
+        range = () -> rangeEntry.getDouble(0);
+    }
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -32,26 +45,30 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {}
 
     @Override
-    public void autonomousInit() {}
+    public void autonomousInit() {
+
+    }
 
     @Override
     public void autonomousPeriodic() {}
 
     @Override
-    public void teleopInit() {}
+    public void teleopInit() {
+
+    }
 
     @Override
     public void teleopPeriodic() {
         double speed = xbox.getRawAxis(1);
         double slow = xbox.getRawAxis(3);
         if (xbox.getRawButton(1)) {
-            set(-0.4);
+            set(-range.getAsDouble());
         }
         else if (xbox.getRawButton(2)) {
             set(-0.75);
         }
         else if (xbox.getRawButton(3)) {
-            set(0.4);
+            set(range.getAsDouble());
         }
         else if (xbox.getRawButton(4)) {
             set(0.75);
@@ -70,7 +87,9 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+
+    }
 
     @Override
     public void disabledPeriodic() {}

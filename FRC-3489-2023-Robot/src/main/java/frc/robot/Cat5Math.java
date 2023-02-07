@@ -1,6 +1,6 @@
-package frc.robot.general;
+package frc.robot;
 
-public class Utils {
+public class Cat5Math {
     public static double deadband(double value, double deadband) {
         if (Math.abs(value) > deadband) {
             if (value > 0.0) {

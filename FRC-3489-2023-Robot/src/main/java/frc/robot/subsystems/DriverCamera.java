@@ -12,12 +12,12 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Cat5Shuffleboard;
 import frc.robot.Triggers;
 import frc.robot.Constants.CameraConstants;
 
 public class DriverCamera extends SubsystemBase {
-    private final ShuffleboardTab tab = Constants.getMainTab();
+    private final ShuffleboardTab tab = Cat5Shuffleboard.getMainTab();
     private final GenericEntry servoEntry = tab.add("Camera Servo", 0.0).getEntry();
     
     private final Servo servo = new Servo(1);
@@ -38,7 +38,7 @@ public class DriverCamera extends SubsystemBase {
 
         servoPositionIndex = CameraConstants.ServoStartingPositionIndex;
 
-        ShuffleboardLayout diagnosticLayout = Constants.createDiagnosticLayout("Driver Camera");
+        ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("Driver Camera");
         diagnosticLayout.withSize(2, 1);
         diagnosticLayout.add("Servo Diagnostic", getServoDiagnosticCommand());
     }

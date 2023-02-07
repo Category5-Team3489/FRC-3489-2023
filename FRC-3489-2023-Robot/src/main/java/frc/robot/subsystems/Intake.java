@@ -13,12 +13,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
+import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.general.LedColor;
 
 public class Intake extends SubsystemBase {
-    private final ShuffleboardTab tab = Constants.getMainTab();
+    private final ShuffleboardTab tab = Cat5Shuffleboard.getMainTab();
     private final GenericEntry intakeEntry = tab.add("Intake", 0.0).getEntry();
 
     private final Leds leds;
@@ -31,7 +31,7 @@ public class Intake extends SubsystemBase {
 
         register();
 
-        ShuffleboardLayout diagnosticLayout = Constants.createDiagnosticLayout("Intake")
+        ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("Intake")
             .withSize(2, 1);
         diagnosticLayout.add("Intake Diagnostic", getIntakeDiagnosticCommand());
     }

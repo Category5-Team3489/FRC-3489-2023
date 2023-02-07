@@ -23,7 +23,6 @@ public class NavX2 extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        // TODO Should we be using the magnetometer?
         // if (navx.isMagnetometerCalibrated()) {
         //     return Rotation2d.fromDegrees(navx.getFusedHeading());
         // }

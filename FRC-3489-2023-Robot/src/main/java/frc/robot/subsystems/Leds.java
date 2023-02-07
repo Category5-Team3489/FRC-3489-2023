@@ -15,13 +15,13 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
-import frc.robot.Constants;
+import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants.LedConstants;
 import frc.robot.commands.leds.FlashLeds;
 import frc.robot.general.LedColor;
 
 public class Leds extends SubsystemBase {
-    private final ShuffleboardTab tab = Constants.getMainTab();
+    private final ShuffleboardTab tab = Cat5Shuffleboard.getMainTab();
     private final GenericEntry colorEntry = tab.add("LED Color", "").getEntry();
 
     private final AddressableLED led = new AddressableLED(LedConstants.Port);
@@ -38,7 +38,7 @@ public class Leds extends SubsystemBase {
         led.setData(buffer);
         led.start();
 
-        ShuffleboardLayout diagnosticLayout = Constants.createDiagnosticLayout("LEDs");
+        ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("LEDs");
         diagnosticLayout.withSize(2, 1);
         diagnosticLayout.add("LEDs", LedDiognostic());
     }

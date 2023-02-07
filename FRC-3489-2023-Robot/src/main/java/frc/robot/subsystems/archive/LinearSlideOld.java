@@ -12,18 +12,36 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.LinearSlideConstants;
+import frc.robot.Cat5Shuffleboard;
 import frc.robot.commands.archive.linearslide.HomeLinearSlide;
 import frc.robot.commands.archive.linearslide.SetLinearSlide;
 
 public class LinearSlideOld extends SubsystemBase {
-    private final ShuffleboardTab tab = Constants.getMainTab();
+    public static final int Motor = 9;
+    public static final int BottomLimitSwitch = 24;
+    public static final int TopLimitSwitch = 25;
+    
+    public static final int GotoBottomButton = 11;
+    public static final int GotoMiddleButton = 8;
+    public static final int GotoTopButton = 7;
+    public static final int StopButton = 12;
+    
+    public static final double ExtendSpeed = 0.3;
+    public static final double RetractSpeed = -0.3;
+
+    public static final double SetPositionTolerancePercentage = 0.025;
+
+    public static final double EncoderCountLength = 1000;
+    public static final double FullExtendEncoder = 1000;
+    public static final double HalfExtendEncoder = 500;
+    public static final double FullretractEncoder = 0;
+
+    private final ShuffleboardTab tab = Cat5Shuffleboard.getMainTab();
     private GenericEntry hasBeenHomedEntry = tab.add("Has Linear Slide Been Homed", false).getEntry();
 
-    private final CANSparkMax motor = new CANSparkMax(LinearSlideConstants.Motor, MotorType.kBrushless);
-    private final DigitalInput bottomLimitSwitch = new DigitalInput(LinearSlideConstants.BottomLimitSwitch);
-    private final DigitalInput topLimitSwitch = new DigitalInput(LinearSlideConstants.TopLimitSwitch);
+    private final CANSparkMax motor = new CANSparkMax(Motor, MotorType.kBrushless);
+    private final DigitalInput bottomLimitSwitch = new DigitalInput(BottomLimitSwitch);
+    private final DigitalInput topLimitSwitch = new DigitalInput(TopLimitSwitch);
 
     private HomeLinearSlide homeLinearSlide;
     private SetLinearSlide setLinearSlide;
@@ -50,10 +68,10 @@ public class LinearSlideOld extends SubsystemBase {
         motor.stopMotor();
     }
     public void retract() {
-        motor.set(LinearSlideConstants.RetractSpeed);
+        motor.set(RetractSpeed);
     }
     public void extend() {
-        motor.set(LinearSlideConstants.ExtendSpeed);
+        motor.set(ExtendSpeed);
     }
 
     public double getPosition() {
@@ -66,18 +84,18 @@ public class LinearSlideOld extends SubsystemBase {
     }
 
     public void setFullExtend() {
-        setLinearSlide = new SetLinearSlide(this, getPosition(), LinearSlideConstants.FullExtendEncoder);
+        setLinearSlide = new SetLinearSlide(this, getPosition(), FullExtendEncoder);
         setLinearSlide.schedule();
     }
 
     public boolean setHalfExtend() {
-        setLinearSlide = new SetLinearSlide(this, getPosition(), LinearSlideConstants.HalfExtendEncoder);
+        setLinearSlide = new SetLinearSlide(this, getPosition(), HalfExtendEncoder);
         setLinearSlide.schedule();
         return true;
     }
 
     public void setRetract() {
-        setLinearSlide = new SetLinearSlide(this, getPosition(), LinearSlideConstants.FullretractEncoder);
+        setLinearSlide = new SetLinearSlide(this, getPosition(), FullretractEncoder);
         setLinearSlide.schedule();
     }
 

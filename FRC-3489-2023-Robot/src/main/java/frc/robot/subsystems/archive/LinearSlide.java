@@ -12,19 +12,37 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
+import frc.robot.Cat5Shuffleboard;
 import frc.robot.Triggers;
-import frc.robot.Constants.LinearSlideConstants;
 
 public class LinearSlide extends SubsystemBase {
+    public static final int Motor = 9;
+    public static final int BottomLimitSwitch = 24;
+    public static final int TopLimitSwitch = 25;
+    
+    public static final int GotoBottomButton = 11;
+    public static final int GotoMiddleButton = 8;
+    public static final int GotoTopButton = 7;
+    public static final int StopButton = 12;
+    
+    public static final double ExtendSpeed = 0.3;
+    public static final double RetractSpeed = -0.3;
+
+    public static final double SetPositionTolerancePercentage = 0.025;
+
+    public static final double EncoderCountLength = 1000;
+    public static final double FullExtendEncoder = 1000;
+    public static final double HalfExtendEncoder = 500;
+    public static final double FullretractEncoder = 0;
+
     private final GenericEntry hasBeenHomedEntry;
     private final GenericEntry motorSpeedEntry;
     private final GenericEntry linearSlidePosition;
     private final GenericEntry linearSlideEncoderPosition;
 
-    private final CANSparkMax motor = new CANSparkMax(LinearSlideConstants.Motor, MotorType.kBrushless);
-    private final DigitalInput bottomLimitSwitch = new DigitalInput(LinearSlideConstants.BottomLimitSwitch);
-    private final DigitalInput topLimitSwitch = new DigitalInput(LinearSlideConstants.TopLimitSwitch);
+    private final CANSparkMax motor = new CANSparkMax(Motor, MotorType.kBrushless);
+    private final DigitalInput bottomLimitSwitch = new DigitalInput(BottomLimitSwitch);
+    private final DigitalInput topLimitSwitch = new DigitalInput(TopLimitSwitch);
 
     private boolean hasBeenHomed = false;
     private boolean hasSetPosition = false;
@@ -35,12 +53,12 @@ public class LinearSlide extends SubsystemBase {
     public LinearSlide() {
         register();
 
-        ShuffleboardLayout mainLayout = Constants.createMainLayout("Linear Slide")
+        ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Linear Slide")
             .withSize(2, 1);
         linearSlidePosition = mainLayout.add("Linear Slide Position", " ").getEntry();
         linearSlideEncoderPosition = mainLayout.add("Linear Slide Encoder Position", 0.0).getEntry();
 
-        ShuffleboardLayout diagnosticLayout = Constants.createDiagnosticLayout("Linear Slide")
+        ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("Linear Slide")
             .withSize(2, 1);
         diagnosticLayout.add("Linear Slide Diagnostic", linearSlideDiagnostic());
 
@@ -55,7 +73,7 @@ public class LinearSlide extends SubsystemBase {
             }));
         new Trigger(() -> isExtended())
             .onTrue(new InstantCommand(() -> {
-                setPosition(LinearSlideConstants.EncoderCountLength);
+                setPosition(EncoderCountLength);
 
                 if (motor.get() > 0) {
                     stop();
@@ -76,7 +94,7 @@ public class LinearSlide extends SubsystemBase {
             .and(Triggers.IsEnabled)
             .whileTrue(Commands.run(() -> {
                 
-                if (Math.abs(getPercentExtended() - getPercentExtendedAtPosition(position)) <= LinearSlideConstants.SetPositionTolerancePercentage) { // Is at set position and within tolerance
+                if (Math.abs(getPercentExtended() - getPercentExtendedAtPosition(position)) <= SetPositionTolerancePercentage) { // Is at set position and within tolerance
                     stop();
                     hasSetPosition = true;
                     setShuffleBoardPosition(position);
@@ -116,11 +134,11 @@ public class LinearSlide extends SubsystemBase {
         motorSpeedEntry.setDouble(0);
     }
     public void retract() {
-        motor.set(LinearSlideConstants.RetractSpeed);
+        motor.set(RetractSpeed);
         motorSpeedEntry.setDouble(motor.get());
     }
     public void extend() {
-        motor.set(LinearSlideConstants.ExtendSpeed);
+        motor.set(ExtendSpeed);
         motorSpeedEntry.setDouble(motor.get());
     }
 
@@ -134,14 +152,14 @@ public class LinearSlide extends SubsystemBase {
     }
 
     public double getPositionAtPercentExtended(double percentExtended) {
-        return LinearSlideConstants.EncoderCountLength * percentExtended;
+        return EncoderCountLength * percentExtended;
     }
     public double getPercentExtended() {
-        return getPosition() / LinearSlideConstants.EncoderCountLength;
+        return getPosition() / EncoderCountLength;
     }
 
     public double getPercentExtendedAtPosition(double position) {
-        return position / LinearSlideConstants.EncoderCountLength;
+        return position / EncoderCountLength;
     }
 
     public void gotoPercentExtended(double percentExtended) {
@@ -150,11 +168,11 @@ public class LinearSlide extends SubsystemBase {
     }
 
     public void setShuffleBoardPosition(double position) {
-        if(position == LinearSlideConstants.FullExtendEncoder) {
+        if(position == FullExtendEncoder) {
             linearSlidePosition.setString("Extended");
-        } else if(position == LinearSlideConstants.HalfExtendEncoder) {
+        } else if(position == HalfExtendEncoder) {
             linearSlidePosition.setString("Half Extended");
-        } else if(position == LinearSlideConstants.FullretractEncoder) {
+        } else if(position == FullretractEncoder) {
             linearSlidePosition.setString("Retracted");
         }
     }
@@ -163,7 +181,7 @@ public class LinearSlide extends SubsystemBase {
         return Commands.sequence(
             Commands.race(
                 Commands.run(() -> {
-                    gotoPercentExtended(LinearSlideConstants.FullretractEncoder);
+                    gotoPercentExtended(FullretractEncoder);
                     setLinearSlide();
                 }, this),
                 Commands.run(() -> {
@@ -172,7 +190,7 @@ public class LinearSlide extends SubsystemBase {
             ),
             Commands.race(
                 Commands.run(() -> {
-                    gotoPercentExtended(LinearSlideConstants.HalfExtendEncoder);
+                    gotoPercentExtended(HalfExtendEncoder);
                     setLinearSlide();
                 }, this),
                 Commands.run(() -> {
@@ -181,7 +199,7 @@ public class LinearSlide extends SubsystemBase {
             ),
             Commands.race(
                 Commands.run(() -> {
-                    gotoPercentExtended(LinearSlideConstants.FullExtendEncoder);
+                    gotoPercentExtended(FullExtendEncoder);
                     setLinearSlide();
                     new WaitCommand(5);
                 }, this),
@@ -191,7 +209,7 @@ public class LinearSlide extends SubsystemBase {
             ),
             Commands.race(
                 Commands.run(() -> {
-                    gotoPercentExtended(LinearSlideConstants.HalfExtendEncoder);
+                    gotoPercentExtended(HalfExtendEncoder);
                     setLinearSlide();
                 }, this),
                 Commands.run(() -> {
@@ -200,7 +218,7 @@ public class LinearSlide extends SubsystemBase {
             ),
             Commands.race(
                 Commands.run(() -> {
-                    gotoPercentExtended(LinearSlideConstants.FullretractEncoder);
+                    gotoPercentExtended(FullretractEncoder);
                     setLinearSlide();
                 }, this),
                 Commands.run(() -> {
@@ -212,7 +230,7 @@ public class LinearSlide extends SubsystemBase {
     }
 
     public void setLinearSlide() {
-        if (Math.abs(getPercentExtended() - getPercentExtendedAtPosition(position)) <= LinearSlideConstants.SetPositionTolerancePercentage) { // Is at set position and within tolerance
+        if (Math.abs(getPercentExtended() - getPercentExtendedAtPosition(position)) <= SetPositionTolerancePercentage) { // Is at set position and within tolerance
             stop();
             hasSetPosition = true;
             setShuffleBoardPosition(position);

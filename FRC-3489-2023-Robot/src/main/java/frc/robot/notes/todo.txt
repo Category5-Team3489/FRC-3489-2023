@@ -25,3 +25,10 @@ and encoder clicks
 
 
 wrap motors with class, have way of setting shuffleboard data
+
+
+
+
+
+
+Refactor consatnts

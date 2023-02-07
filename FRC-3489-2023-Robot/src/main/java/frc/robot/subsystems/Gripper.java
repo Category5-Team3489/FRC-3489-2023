@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 
@@ -25,7 +26,7 @@ public class Gripper extends SubsystemBase {
     public Gripper() {
         register();
 
-        ShuffleboardLayout mainLayout = Constants.createMainLayout("Linear Slide")
+        ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Linear Slide")
             .withSize(2, 1);
         mainLayout.addDouble("Right Intake Speed", () -> rightMotor.get());
         mainLayout.addDouble("Left Intake Speed", () -> leftMotor.get());

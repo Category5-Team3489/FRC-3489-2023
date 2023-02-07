@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 
@@ -43,7 +44,7 @@ public class Arm extends SubsystemBase {
         encoder = motor.getEncoder();
 
         // Shuffleboard
-        ShuffleboardLayout mainLayout = Constants.createMainLayout("Arm")
+        ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Arm")
             .withSize(2, 1);
         mainLayout.addBoolean("Is Homed", () -> isHomed);
         mainLayout.addDouble("Set Motor Speed", () -> motor.get());
