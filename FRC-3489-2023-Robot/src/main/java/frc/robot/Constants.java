@@ -18,6 +18,10 @@ public final class Constants {
         public static final int ManPort = 1;
     }
 
+    public static class PowerDistributionConstants{
+        public static final int PDHCanID = 35;
+    }
+
     public static class ArmConstants {
         public static final int MotorDeviceId = 1;
         public static final int LimitSwitchChannel = 1;
