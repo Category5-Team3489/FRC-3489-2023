@@ -21,41 +21,47 @@ public class Gripper extends SubsystemBase {
 
     public final DigitalInput gripperSensor = new DigitalInput(IntakeConstants.GripperSensor);
     
-    public IntakeState intakeState = IntakeState.off;
+    public IntakeState intakeState = IntakeState.Off;
+    public String triggerLaser = "Trigger Laser Sensor";
+    
+    ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("Gripper")
+    .withSize(2, 1);
 
     public Gripper() {
         register();
 
-        ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Linear Slide")
+        ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Gripper")
             .withSize(2, 1);
         mainLayout.addDouble("Right Intake Speed", () -> rightMotor.get());
         mainLayout.addDouble("Left Intake Speed", () -> leftMotor.get());
         mainLayout.addString("Intake State", () -> intakeState.toString());
 
+        
+
     }
 
-    enum IntakeState {
-        off,
+    public enum IntakeState {
+        Off,
         Grab,
         Place,
         PlaceCube,
-        PlaceCone
+        PlaceCone,
+        LaserDiagnostic
     }
 
     public void setState(IntakeState intakeState) {
         this.intakeState = intakeState;
 
         Timer timer = new Timer();
-        timer.start();
 
         switch(intakeState) {
-            case off:
+            case Off:
                 stopIntake();
             break;
             case Grab:
                 Commands.run(() -> grab(), this)
                     .until(() -> gripperSensor.get())
-                    .andThen(() -> setState(IntakeState.off))
+                    .andThen(() -> setState(IntakeState.Off))
                     .schedule();
             break;
             case Place:
@@ -63,14 +69,17 @@ public class Gripper extends SubsystemBase {
                     Commands.run(() -> place(), this),
                     new WaitCommand(2)
                 )
-                .andThen(() -> setState(IntakeState.off))
+                .andThen(() -> setState(IntakeState.Off))
                 .schedule();
                 
             break;
             case PlaceCube:
                 Commands.run(() -> {
-                    if (!gripperSensor.get() && timer.hasElapsed(2)) {
-                        setState(IntakeState.off);
+                    if (!gripperSensor.get()) {
+                        timer.start();
+                        if (timer.hasElapsed(2)) {
+                            setState(IntakeState.Off);
+                        }
                     }
                     else {
                         placeCube();
@@ -81,14 +90,25 @@ public class Gripper extends SubsystemBase {
             break;
             case PlaceCone:
                 Commands.run(() -> {
-                    if (!gripperSensor.get() && timer.hasElapsed(2)) {
-                        setState(IntakeState.off);
+                    if (!gripperSensor.get()) {
+                        timer.start();
+                        if (timer.hasElapsed(2)) {
+                            setState(IntakeState.Off);
+                        }
                     }
                     else {
                         placeCone();
                     }
                 }, this)
                     .schedule();
+            break;
+            case LaserDiagnostic:
+                timer.start();
+                diagnosticLayout.addString("Test Laser Sensor", () -> triggerLaser);
+                if (timer.hasElapsed(6) || !gripperSensor.get()) {
+                    diagnosticLayout.addBoolean("Test Laser Sensor", () -> gripperSensor.get());
+                    setState(IntakeState.Off);
+                }
             break;
         }
     }
@@ -116,5 +136,9 @@ public class Gripper extends SubsystemBase {
     public void stopIntake() {
         rightMotor.stopMotor();
         leftMotor.stopMotor();
+    }
+
+    public void gripperDiagnostic() {
+
     }
 }
