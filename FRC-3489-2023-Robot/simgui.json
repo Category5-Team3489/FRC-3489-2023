@@ -25,6 +25,8 @@
       "/Shuffleboard/2023/Diagnostic Commands/Intake Diagnostic": "Command",
       "/Shuffleboard/2023/Diagnostic Commands/Servo Diagnostic": "Command",
       "/Shuffleboard/Diagnostic/Driver Camera/Servo Diagnostic": "Command",
+      "/Shuffleboard/Diagnostic/Gripper/Laser Diagnostic": "Command",
+      "/Shuffleboard/Diagnostic/Gripper/Test Laser Sensor": "Command",
       "/Shuffleboard/Diagnostic/Intake/Intake Diagnostic": "Command",
       "/Shuffleboard/Diagnostic/LEDs/LEDs": "Command",
       "/Shuffleboard/Diagnostic/Linear Slide/Linear Slide Diagnostic": "Command",

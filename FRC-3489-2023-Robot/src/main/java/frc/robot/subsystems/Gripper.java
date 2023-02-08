@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import javax.tools.Diagnostic;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.networktables.GenericEntry;
@@ -7,6 +9,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,22 +25,27 @@ public class Gripper extends SubsystemBase {
     public final DigitalInput gripperSensor = new DigitalInput(IntakeConstants.GripperSensor);
     
     public IntakeState intakeState = IntakeState.Off;
-    public String triggerLaser = "Trigger Laser Sensor";
     
-    ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("Gripper")
-    .withSize(2, 1);
+    private final GenericEntry laserDiagnostic;
 
+    ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("Gripper")
+            .withSize(2, 4);
+
+    
     public Gripper() {
         register();
 
         ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Gripper")
-            .withSize(2, 1);
+            .withSize(2, 4);
         mainLayout.addDouble("Right Intake Speed", () -> rightMotor.get());
         mainLayout.addDouble("Left Intake Speed", () -> leftMotor.get());
         mainLayout.addString("Intake State", () -> intakeState.toString());
+        mainLayout.addBoolean("Gripper Laser", () -> gripperSensor.get());
 
-        
+        diagnosticLayout.addBoolean("Gripper Laser", () -> gripperSensor.get());
+        diagnosticLayout.add("Test Intake", intakeDiagnostic());
 
+        laserDiagnostic = diagnosticLayout.add("Intake Diagnostic", true).getEntry();
     }
 
     public enum IntakeState {
@@ -46,13 +54,14 @@ public class Gripper extends SubsystemBase {
         Place,
         PlaceCube,
         PlaceCone,
-        LaserDiagnostic
+        laserDiagnostic
     }
 
     public void setState(IntakeState intakeState) {
         this.intakeState = intakeState;
 
         Timer timer = new Timer();
+        timer.start();
 
         switch(intakeState) {
             case Off:
@@ -76,7 +85,7 @@ public class Gripper extends SubsystemBase {
             case PlaceCube:
                 Commands.run(() -> {
                     if (!gripperSensor.get()) {
-                        timer.start();
+                        //timer.start();
                         if (timer.hasElapsed(2)) {
                             setState(IntakeState.Off);
                         }
@@ -91,7 +100,7 @@ public class Gripper extends SubsystemBase {
             case PlaceCone:
                 Commands.run(() -> {
                     if (!gripperSensor.get()) {
-                        timer.start();
+                        //timer.start();
                         if (timer.hasElapsed(2)) {
                             setState(IntakeState.Off);
                         }
@@ -102,13 +111,12 @@ public class Gripper extends SubsystemBase {
                 }, this)
                     .schedule();
             break;
-            case LaserDiagnostic:
-                timer.start();
-                diagnosticLayout.addString("Test Laser Sensor", () -> triggerLaser);
-                if (timer.hasElapsed(6) || !gripperSensor.get()) {
-                    diagnosticLayout.addBoolean("Test Laser Sensor", () -> gripperSensor.get());
-                    setState(IntakeState.Off);
+            case laserDiagnostic:
+            Commands.run(() -> {
+                if (!gripperSensor.get()) {
+                        setState(IntakeState.Off);
                 }
+            }, this);
             break;
         }
     }
@@ -138,7 +146,26 @@ public class Gripper extends SubsystemBase {
         leftMotor.stopMotor();
     }
 
-    public void gripperDiagnostic() {
-
+    public boolean getLaserSenor() {
+        return gripperSensor.get();
     }
+
+    public CommandBase intakeDiagnostic() {
+        return Commands.race(
+            Commands.runOnce(() -> setState(IntakeState.Grab), this),
+            new WaitCommand(3))
+        .andThen(Commands.race(
+            Commands.runOnce(() -> setState(IntakeState.Place), this),
+            new WaitCommand(3)))
+        .andThen(Commands.race(
+            Commands.runOnce(() -> setState(IntakeState.PlaceCone), this),
+            new WaitCommand(3)))
+        .andThen(Commands.race(
+            Commands.runOnce(() -> setState(IntakeState.PlaceCube), this),
+            new WaitCommand(3)))
+        .andThen(Commands.runOnce(() -> setState(IntakeState.Off), this))
+        .withName("Intake Diagnostic");
+    }
+
+
 }
