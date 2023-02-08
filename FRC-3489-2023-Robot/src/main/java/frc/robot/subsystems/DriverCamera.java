@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Cat5Shuffleboard;
-import frc.robot.Triggers;
+import frc.robot.Cat5Triggers;
 import frc.robot.Constants.CameraConstants;
 
 public class DriverCamera extends SubsystemBase {
@@ -34,7 +34,7 @@ public class DriverCamera extends SubsystemBase {
             setServoAngle(CameraConstants.ServoPositions[CameraConstants.ServoStartingPositionIndex]);
         };
 
-        Triggers.IsTeleopEnabled.onTrue(Commands.runOnce(resetServoOnTeleopEnabled, this));
+        Cat5Triggers.IsTeleopEnabled.onTrue(Commands.runOnce(resetServoOnTeleopEnabled, this));
 
         servoPositionIndex = CameraConstants.ServoStartingPositionIndex;
 

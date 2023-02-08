@@ -6,14 +6,12 @@ package frc.robot;
 
 import frc.robot.Constants.CameraConstants;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.NavX2;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,7 +32,6 @@ public class RobotContainer {
     private final Drivetrain drivetrain = new Drivetrain();
     private final NavX2 navx = new NavX2();
     private final Leds leds = new Leds();
-    private final Intake intake = new Intake(leds);
     private final DriverCamera driverCamera = new DriverCamera();
     private final Gripper gripper = new Gripper();
     private final Arm arm = new Arm();
@@ -70,19 +67,6 @@ public class RobotContainer {
     private void configureBindings() {
         // Drivetrain Bindings
         xbox.button(DrivetrainConstants.NavXZeroYawButton).onTrue(new InstantCommand(() -> navx.zeroYaw()));
-
-        // Intake Bindings
-        man.button(IntakeConstants.IntakeButton)
-            .whileTrue(Commands.run(() -> intake.placePiece(), intake))
-            .onFalse(Commands.runOnce(() -> intake.stopIntake(), intake));
-
-        man.button(IntakeConstants.PlacePieceButton)
-            .whileTrue(Commands.run(() -> intake.placePiece(), intake))
-            .onFalse(Commands.runOnce(() -> intake.stopIntake(), intake));
-
-        man.button(IntakeConstants.SlowPlaceButton)
-            .whileTrue(Commands.run(() -> intake.slowPlacePiece(), intake))
-            .onFalse(Commands.runOnce(() -> intake.stopIntake(), intake));
 
         // Camera Bindings
         xbox.button(CameraConstants.CameraServoButton)

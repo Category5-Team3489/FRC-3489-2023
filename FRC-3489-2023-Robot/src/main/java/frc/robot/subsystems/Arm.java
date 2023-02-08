@@ -49,6 +49,19 @@ public class Arm extends SubsystemBase {
         mainLayout.addBoolean("Is Homed", () -> isHomed);
         mainLayout.addDouble("Set Motor Speed", () -> motor.get());
 
+        var testLayout = Cat5Shuffleboard.getMainTab()
+            .getLayout("test", BuiltInLayouts.kGrid)
+            .withProperties(Map.of("Number of columns", 1, "Number of rows", 3));
+
+            // TODO THIS GRID STUFF WORKS
+        testLayout.add("a", "aaa")
+            .withPosition(0, 3);
+            testLayout.add("c", "ccc")
+            .withPosition(0, 1);
+        testLayout.add("b", "bbb")
+            .withPosition(0, 2);
+        
+
         var pGainEntry = mainLayout.add("P Gain", 0).getEntry();
         var iGainEntry = mainLayout.add("I Gain", 0).getEntry();
         var dGainEntry = mainLayout.add("D Gain", 0).getEntry();

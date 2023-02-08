@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Cat5Shuffleboard;
-import frc.robot.Triggers;
+import frc.robot.Cat5Triggers;
 
 public class LinearSlide extends SubsystemBase {
     public static final int Motor = 9;
@@ -81,7 +81,7 @@ public class LinearSlide extends SubsystemBase {
             }));
 
         new Trigger(() -> !hasBeenHomed)
-            .and(Triggers.IsTeleopEnabled)
+            .and(Cat5Triggers.IsTeleopEnabled)
             .onTrue(new InstantCommand(() -> {
                 retract();
                 linearSlidePosition.setString("Homing");
@@ -91,7 +91,7 @@ public class LinearSlide extends SubsystemBase {
             }));
 
         new Trigger(() -> hasSetPosition)
-            .and(Triggers.IsEnabled)
+            .and(Cat5Triggers.IsEnabled)
             .whileTrue(Commands.run(() -> {
                 
                 if (Math.abs(getPercentExtended() - getPercentExtendedAtPosition(position)) <= SetPositionTolerancePercentage) { // Is at set position and within tolerance

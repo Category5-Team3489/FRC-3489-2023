@@ -27,8 +27,14 @@ and encoder clicks
 wrap motors with class, have way of setting shuffleboard data
 
 
-
+Icing on cake, use triggers to check for robot events
+    Voltage drops low
+    Current draw high
+    anything bad starts happening
+    report/log that
 
 
 
 Refactor consatnts
+
+rename IntakeConstants to gripper constants
