@@ -23,7 +23,7 @@ import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants;
 import frc.robot.Constants.V4BarConstants;
 
-public class V4Bar extends SubsystemBase {
+public class Arm extends SubsystemBase {
     // Devices
     private final CANSparkMax motor = new CANSparkMax(V4BarConstants.MotorDeviceId, MotorType.kBrushless);
     private final DigitalInput limitSwitch = new DigitalInput(V4BarConstants.LimitSwitchChannel);
@@ -36,7 +36,7 @@ public class V4Bar extends SubsystemBase {
 
     // Add safety with encoder clicks so cant rotate to far up, theta is zero at horizontal
 
-    public V4Bar() {
+    public Arm() {
         register();
 
         motor.restoreFactoryDefaults();

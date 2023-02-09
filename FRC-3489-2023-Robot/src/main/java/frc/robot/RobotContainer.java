@@ -8,7 +8,7 @@ import frc.robot.Constants.CameraConstants;
 import frc.robot.Constants.NavX2Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
-import frc.robot.subsystems.V4Bar;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
@@ -31,7 +31,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final Drivetrain drivetrain = new Drivetrain();
     private final Gripper gripper = new Gripper();
-    private final V4Bar v4bar = new V4Bar();
+    private final Arm arm = new Arm();
     private final NavX2 navx = new NavX2();
     private final DriverCamera driverCamera = new DriverCamera();
     private final Leds leds = new Leds();

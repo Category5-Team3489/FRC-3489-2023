@@ -1,26 +1,16 @@
-
 Devices:
-Leds
+    4 LED Strips: 2 on side of hypotenuse of dorrito, 2 on top of hypotenuse of dorrito
 
-Colors:
-Intake = green
-Place Piece = yellow
-Slow Place Piece = blue
-teleop flash = White
+Functions:
+    Periodic:
+        Gripper
+        If no command to glow yellow or purple:
+            Poll Slide Position Percentage and Update LEDs
+            Poll Arm Position Percentage and Update LEDs
+        else:
+            Glow commanded color for set time after button press?
 
-Functions / Commands:
-LED extension amount
-    if limit switch = true
-    set Leds
 
-LED teleop start flash
-    if it is teleop 
-    turn on leds for a few seconds
+Shuffleboard:
 
-    LED Commands
-        set leds
-        start timer
-        turn off leds after 2 seconds
-
-Intake Speed
-        
+Diagnostics:
