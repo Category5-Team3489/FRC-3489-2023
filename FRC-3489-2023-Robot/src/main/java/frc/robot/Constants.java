@@ -22,7 +22,7 @@ public final class Constants {
         public static final int Module = 35;
     }
 
-    public static class ArmConstants {
+    public static class V4BarConstants {
         public static final int MotorDeviceId = 1;
         public static final int LimitSwitchChannel = 1;
     }

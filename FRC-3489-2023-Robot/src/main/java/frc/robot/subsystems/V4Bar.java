@@ -21,12 +21,12 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants;
-import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.V4BarConstants;
 
-public class Arm extends SubsystemBase {
+public class V4Bar extends SubsystemBase {
     // Devices
-    private final CANSparkMax motor = new CANSparkMax(ArmConstants.MotorDeviceId, MotorType.kBrushless);
-    private final DigitalInput limitSwitch = new DigitalInput(ArmConstants.LimitSwitchChannel);
+    private final CANSparkMax motor = new CANSparkMax(V4BarConstants.MotorDeviceId, MotorType.kBrushless);
+    private final DigitalInput limitSwitch = new DigitalInput(V4BarConstants.LimitSwitchChannel);
     private final SparkMaxPIDController pidController;
     private final RelativeEncoder encoder;
 
@@ -34,7 +34,9 @@ public class Arm extends SubsystemBase {
 
     private boolean isHomed = false;
 
-    public Arm() {
+    // Add safety with encoder clicks so cant rotate to far up, theta is zero at horizontal
+
+    public V4Bar() {
         register();
 
         motor.restoreFactoryDefaults();
@@ -104,10 +106,10 @@ public class Arm extends SubsystemBase {
 
     }
 
-    public void gotoHome() {
+    public void goToHome() {
 
     }
-    public void gotoPosition(double position) {
+    public void goToPosition(double position) {
 
     }
 
