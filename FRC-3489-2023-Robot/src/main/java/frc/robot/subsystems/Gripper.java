@@ -17,13 +17,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants;
-import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.GripperConstants;
 
 public class Gripper extends SubsystemBase {
-    public final WPI_TalonSRX rightMotor = new WPI_TalonSRX(IntakeConstants.RightIntakeMotor);
-    public final WPI_TalonSRX leftMotor = new WPI_TalonSRX(IntakeConstants.RightIntakeMotor);
+    public final WPI_TalonSRX rightMotor = new WPI_TalonSRX(GripperConstants.RightMotor);
+    public final WPI_TalonSRX leftMotor = new WPI_TalonSRX(GripperConstants.RightMotor);
 
-    public final DigitalInput gripperSensor = new DigitalInput(IntakeConstants.GripperSensor);
+    public final DigitalInput gripperSensor = new DigitalInput(GripperConstants.SensorChannel);
     
     public IntakeState intakeState = IntakeState.Off;
     
@@ -123,23 +123,23 @@ public class Gripper extends SubsystemBase {
     }
 
     public void grab() {
-        rightMotor.set(IntakeConstants.IntakeSpeed);
-        leftMotor.set(-IntakeConstants.IntakeSpeed);
+        rightMotor.set(GripperConstants.IntakeSpeed);
+        leftMotor.set(-GripperConstants.IntakeSpeed);
     }
 
     public void place() {
-        rightMotor.set(-IntakeConstants.IntakeSpeed);
-        leftMotor.set(IntakeConstants.IntakeSpeed);
+        rightMotor.set(-GripperConstants.IntakeSpeed);
+        leftMotor.set(GripperConstants.IntakeSpeed);
     }
 
     public void placeCube() {
-        rightMotor.set(-IntakeConstants.SlowPlaceSpeed);
-        leftMotor.set(IntakeConstants.SlowPlaceSpeed);
+        rightMotor.set(-GripperConstants.SlowPlaceSpeed);
+        leftMotor.set(GripperConstants.SlowPlaceSpeed);
     }
 
     public void placeCone() {
-        rightMotor.set(-IntakeConstants.SlowPlaceSpeed);
-        leftMotor.set(IntakeConstants.SlowPlaceSpeed);
+        rightMotor.set(-GripperConstants.SlowPlaceSpeed);
+        leftMotor.set(GripperConstants.SlowPlaceSpeed);
     }
 
     public void stopIntake() {

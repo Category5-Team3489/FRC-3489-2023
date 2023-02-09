@@ -7,9 +7,9 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class PowerDistributionData extends SubsystemBase {
+public class PowerDistributionHub extends SubsystemBase {
     // Devices
-    PowerDistribution PDH = new PowerDistribution(Constants.PowerDistributionConstants.PDHCanID, ModuleType.kRev);
+    PowerDistribution PDH = new PowerDistribution(Constants.PowerDistributionHubConstants.Module, ModuleType.kRev);
 
     //Get Data
     public double getPDHTemperature(){
@@ -40,6 +40,4 @@ public class PowerDistributionData extends SubsystemBase {
     public PowerDistributionStickyFaults getStickyFaults(){
         return PDH.getStickyFaults();
     }
-
-
 }

@@ -18,8 +18,8 @@ public final class Constants {
         public static final int ManPort = 1;
     }
 
-    public static class PowerDistributionConstants{
-        public static final int PDHCanID = 35;
+    public static class PowerDistributionHubConstants {
+        public static final int Module = 35;
     }
 
     public static class ArmConstants {
@@ -27,16 +27,19 @@ public final class Constants {
         public static final int LimitSwitchChannel = 1;
     }
 
+    public static class NavX2Constants {
+        public static final int ZeroYawXboxButton = 9;
+    }
+
     public static class LedConstants {
         public static final int Port = 0;
         public static final int Length = 162;
-        public static final int TeleopLedLength = 2;
     }
 
-    public static class IntakeConstants {
-        public static final int RightIntakeMotor = 10;
-        public static final int LeftIntakeMotor = 11;
-        public static final int GripperSensor = 12;
+    public static class GripperConstants {
+        public static final int LeftMotor = 11;
+        public static final int RightMotor = 10;
+        public static final int SensorChannel = 12;
 
         public static final double IntakeSpeed = 0.5;
         public static final double SlowPlaceSpeed = 0.3;
@@ -47,19 +50,13 @@ public final class Constants {
     }
 
     public static class CameraConstants {
+        public static final int IndexServoPositionXboxButton = 7;
+
         public static final double[] ServoPositions = { 70, 140 };
         public static final int ServoStartingPositionIndex = 0;
-
-        public static final int CameraServoButton = 7;
     }
 
     public static class DrivetrainConstants {
-        public static final int NavXZeroYawButton = 9;
-        
-        // TODO THIS LIMITS ROBOT SPEED
-        public static final double TranslationModifier = 1.0 / 3.0;
-        public static final double RotationModifier = 1.0 / 3.0;
-
         /**
          * The left-to-right distance between the drivetrain wheels
          * Should be measured from center to center.
