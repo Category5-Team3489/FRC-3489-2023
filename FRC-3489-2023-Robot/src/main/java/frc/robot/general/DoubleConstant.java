@@ -6,9 +6,9 @@ import edu.wpi.first.util.function.BooleanConsumer;
 
 public class DoubleConstant implements Constant {
     private final DoubleConsumer onChange = null;
-    private final BooleanConsumer enableWriting = null;
+    private final BooleanConsumer enableApplying = null;
 
     public DoubleConstant() {
-
+        
     }
 }

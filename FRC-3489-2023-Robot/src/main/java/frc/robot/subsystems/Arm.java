@@ -6,10 +6,12 @@ import java.util.function.DoubleSupplier;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -19,14 +21,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants;
-import frc.robot.Constants.V4BarConstants;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.shuffleboard.Cat5Shuffleboard;
 
 public class Arm extends SubsystemBase {
     // Devices
-    private final CANSparkMax motor = new CANSparkMax(V4BarConstants.MotorDeviceId, MotorType.kBrushless);
-    private final DigitalInput limitSwitch = new DigitalInput(V4BarConstants.LimitSwitchChannel);
+    private final CANSparkMax motor = new CANSparkMax(ArmConstants.MotorDeviceId, MotorType.kBrushless);
+    private final DigitalInput limitSwitch = new DigitalInput(ArmConstants.LimitSwitchChannel);
     private final SparkMaxPIDController pidController;
     private final RelativeEncoder encoder;
 
@@ -40,6 +42,8 @@ public class Arm extends SubsystemBase {
         register();
 
         motor.restoreFactoryDefaults();
+        motor.setIdleMode(IdleMode.kBrake);
+        motor.enableVoltageCompensation(12);
         motor.burnFlash();
 
         pidController = motor.getPIDController();
@@ -60,7 +64,7 @@ public class Arm extends SubsystemBase {
             .withPosition(0, 3);
             testLayout.add("c", "ccc")
             .withPosition(0, 1);
-        testLayout.add("b", "bbb")
+        testLayout.add("b", new InstantCommand())
             .withPosition(0, 2);
         
 
@@ -103,11 +107,15 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-
+        // 0.5
+        // -12, 12
+        // 6
+        // 0.5 * 10 = 5
+        // (6 / 10 ) = 
     }
 
     public void goToHome() {
-
+        
     }
     public void goToPosition(double position) {
 

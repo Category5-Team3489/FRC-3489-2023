@@ -15,10 +15,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
-import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants.LedConstants;
 import frc.robot.commands.leds.FlashLeds;
 import frc.robot.general.LedColor;
+import frc.robot.shuffleboard.Cat5Shuffleboard;
 
 public class Leds extends SubsystemBase {
     private final ShuffleboardTab tab = Cat5Shuffleboard.getMainTab();

@@ -1,11 +1,9 @@
 package frc.robot.subsystems;
 
-import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -25,7 +23,6 @@ public class Drivetrain extends SubsystemBase {
      */
     public static final double MaxVoltage = 12.0;
 
-    // FIXME Measure the drivetrain's maximum velocity or calculate the theoretical.
     //  The formula for calculating the theoretical maximum velocity is:
     //   <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> * pi
     //  By default this value is setup for a Mk3 standard module using Falcon500s to drive.
@@ -46,7 +43,6 @@ public class Drivetrain extends SubsystemBase {
      * This is a measure of how fast the robot can rotate in place.
      */
     // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
-    // FIXME Measure the drivetrain's maximum angular velocity.
     public static final double MaxAngularVelocityRadiansPerSecond = MaxVelocityMetersPerSecond /
         Math.hypot(DrivetrainTrackwidthMeters / 2.0, DrivetrainWheelbaseMeters / 2.0);
 
@@ -74,21 +70,8 @@ public class Drivetrain extends SubsystemBase {
 
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    // private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, null, null, null);
-    // private SwerveDrivePoseEstimator estimator = new SwerveDrivePoseEstimator(null, null, null, null);
-
     public Drivetrain() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-
-        // backRightModule.set(MaxVoltage, BackLeftModuleDriveMotor);
-
-        // odometry.update(null, new SwerveModulePosition[] {
-        //     new SwerveModulePosition(null, n)
-        // });
-
-        // odometry.resetPosition(null, null, null);
-
-        // estimator.addVisionMeasurement(null, 0);
 
         // There are 4 methods you can call to create your swerve modules.
         // The method you use depends on what motors you are using.

@@ -22,7 +22,7 @@ public final class Constants {
         public static final int Module = 35;
     }
 
-    public static class V4BarConstants {
+    public static class ArmConstants {
         public static final int MotorDeviceId = 1;
         public static final int LimitSwitchChannel = 1;
     }
@@ -49,8 +49,10 @@ public final class Constants {
         public static final int SlowPlaceButton = 6;
     }
 
-    public static class CameraConstants {
+    public static class DriverCameraConstants {
         public static final int IndexServoPositionXboxButton = 7;
+
+        public static final int ServoChannel = 1;
 
         public static final double[] ServoPositions = { 70, 140 };
         public static final int ServoStartingPositionIndex = 0;
@@ -68,7 +70,6 @@ public final class Constants {
         */
         public static final double DrivetrainWheelbaseMeters = 0.54;
 
-        // TODO Get better labeling convention for encoder CAN ids
         public static final int FrontLeftModuleDriveMotorDeviceId = 1;
         public static final int FrontLeftModuleSteerMotorDeviceId = 2;
         public static final int FrontLeftModuleSteerEncoderDeviceId = 12;

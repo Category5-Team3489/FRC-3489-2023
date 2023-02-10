@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.Constants.CameraConstants;
+import frc.robot.Constants.DriverCameraConstants;
 import frc.robot.Constants.NavX2Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
@@ -70,7 +70,7 @@ public class RobotContainer {
             .onTrue(Commands.runOnce(() -> navx.zeroYaw(), navx));
 
         // Camera Bindings
-        xbox.button(CameraConstants.IndexServoPositionXboxButton)
+        xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
             .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
     }
 
@@ -80,7 +80,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An example command will be run in autonomous
         return null; // Autos.exampleAuto(exampleSubsystem);
     }
 }

@@ -15,9 +15,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Cat5Shuffleboard;
 import frc.robot.Constants;
 import frc.robot.Constants.GripperConstants;
+import frc.robot.shuffleboard.Cat5Shuffleboard;
 
 public class Gripper extends SubsystemBase {
     public final WPI_TalonSRX rightMotor = new WPI_TalonSRX(GripperConstants.RightMotor);

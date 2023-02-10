@@ -12,31 +12,31 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Cat5Shuffleboard;
 import frc.robot.Cat5Triggers;
-import frc.robot.Constants.CameraConstants;
+import frc.robot.Constants.DriverCameraConstants;
+import frc.robot.shuffleboard.Cat5Shuffleboard;
 
 public class DriverCamera extends SubsystemBase {
     private final ShuffleboardTab tab = Cat5Shuffleboard.getMainTab();
     private final GenericEntry servoEntry = tab.add("Camera Servo", 0.0).getEntry();
     
-    private final Servo servo = new Servo(1);
+    private final Servo servo = new Servo(DriverCameraConstants.ServoChannel);
 
-    private int servoPositionIndex = CameraConstants.ServoStartingPositionIndex;
+    private int servoPositionIndex = DriverCameraConstants.ServoStartingPositionIndex;
     private boolean servoPositionIndexDirectionReversed = false;
 
     public DriverCamera() {
         register();
 
         Runnable resetServoOnTeleopEnabled = () -> {
-            servoPositionIndex = CameraConstants.ServoStartingPositionIndex;
+            servoPositionIndex = DriverCameraConstants.ServoStartingPositionIndex;
             servoPositionIndexDirectionReversed = false;
-            setServoAngle(CameraConstants.ServoPositions[CameraConstants.ServoStartingPositionIndex]);
+            setServoAngle(DriverCameraConstants.ServoPositions[DriverCameraConstants.ServoStartingPositionIndex]);
         };
 
         Cat5Triggers.IsTeleopEnabled.onTrue(Commands.runOnce(resetServoOnTeleopEnabled, this));
 
-        servoPositionIndex = CameraConstants.ServoStartingPositionIndex;
+        servoPositionIndex = DriverCameraConstants.ServoStartingPositionIndex;
 
         ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("Driver Camera");
         diagnosticLayout.withSize(2, 1);
@@ -49,16 +49,16 @@ public class DriverCamera extends SubsystemBase {
         else
             servoPositionIndex--;
             
-        if (servoPositionIndex == CameraConstants.ServoPositions.length) {
+        if (servoPositionIndex == DriverCameraConstants.ServoPositions.length) {
             servoPositionIndexDirectionReversed = true;
-            servoPositionIndex = CameraConstants.ServoPositions.length - 2;
+            servoPositionIndex = DriverCameraConstants.ServoPositions.length - 2;
         }
         else if (servoPositionIndex == -1) {
             servoPositionIndexDirectionReversed = false;
             servoPositionIndex = 1;
         }
 
-        setServoAngle(CameraConstants.ServoPositions[servoPositionIndex]);
+        setServoAngle(DriverCameraConstants.ServoPositions[servoPositionIndex]);
     }
 
     private void setServoAngle(double angle) {
@@ -86,7 +86,7 @@ public class DriverCamera extends SubsystemBase {
         .andThen(() -> {
             servoPositionIndex = servoDiagnosticServoPositionIndexAtStart;
             servoPositionIndexDirectionReversed = servoDiagnosticServoIndexDirectionReversedAtStart;
-            setServoAngle(CameraConstants.ServoPositions[servoPositionIndex]);
+            setServoAngle(DriverCameraConstants.ServoPositions[servoPositionIndex]);
         }, this)
         .withName("Run Servo Diagnostic");
     }
