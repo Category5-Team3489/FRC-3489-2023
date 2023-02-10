@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Cat5Math;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
 
@@ -63,10 +64,17 @@ public class Drivetrain extends SubsystemBase {
     private final SwerveModule backLeftModule;
     private final SwerveModule backRightModule;
 
-    private double frontLeftAngle = 0;
-    private double frontRightAngle = 0;
-    private double backLeftAngle = 0;
-    private double backRightAngle = 0;
+    // [0, 2pi) radians
+    private double frontLeftSteerAngleRadians = 0;
+    private double frontRightSteerAngleRadians = 0;
+    private double backLeftSteerAngleRadians = 0;
+    private double backRightSteerAngleRadians = 0;
+
+    // [0, 2pi) radians
+    private double frontLeftSteerAngleOffsetRadians = 0;
+    private double frontRightSteerAngleOffsetRadians = 0;
+    private double backLeftSteerAngleOffsetRadians = 0;
+    private double backRightSteerAngleOffsetRadians = 0;
 
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
@@ -106,7 +114,7 @@ public class Drivetrain extends SubsystemBase {
             // This is the ID of the steer encoder
             FrontLeftModuleSteerEncoderDeviceId,
             // This is how much the steer encoder is offset from true zero (In our case, zero is facing straight forward)
-            FrontLeftModuleSteerOffset
+            0
         );
 
         // We will do the same for the other modules
@@ -118,7 +126,7 @@ public class Drivetrain extends SubsystemBase {
             FrontRightModuleDriveMotorDeviceId,
             FrontRightModuleSteerMotorDeviceId,
             FrontRightModuleSteerEncoderDeviceId,
-            FrontRightModuleSteerOffset
+            0
         );
 
         backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
@@ -129,7 +137,7 @@ public class Drivetrain extends SubsystemBase {
             BackLeftModuleDriveMotorDeviceId,
             BackLeftModuleSteerMotorDeviceId,
             BackLeftModuleSteerEncoderDeviceId,
-            BackLeftModuleSteerOffset
+            0
         );
 
         backRightModule = Mk4SwerveModuleHelper.createFalcon500(
@@ -140,7 +148,7 @@ public class Drivetrain extends SubsystemBase {
             BackRightModuleDriveMotorDeviceId,
             BackRightModuleSteerMotorDeviceId,
             BackRightModuleSteerEncoderDeviceId,
-            BackRightModuleSteerOffset
+            0
         );
     }
 
@@ -150,19 +158,36 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+    }
+
+    private void driveChassisSpeeds() {
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MaxVelocityMetersPerSecond);
 
-        if (chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0 || chassisSpeeds.omegaRadiansPerSecond != 0) {
-            frontLeftAngle = states[0].angle.getRadians();
-            frontRightAngle = states[1].angle.getRadians();
-            backLeftAngle = states[2].angle.getRadians();
-            backRightAngle = states[3].angle.getRadians();
+        if (chassisSpeeds.vxMetersPerSecond != 0 ||
+            chassisSpeeds.vyMetersPerSecond != 0 ||
+            chassisSpeeds.omegaRadiansPerSecond != 0) {
+            frontLeftSteerAngleRadians = states[0].angle.getRadians();
+            frontRightSteerAngleRadians = states[1].angle.getRadians();
+            backLeftSteerAngleRadians = states[2].angle.getRadians();
+            backRightSteerAngleRadians = states[3].angle.getRadians();
         }
 
-        frontLeftModule.set(states[0].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, frontLeftAngle);
-        frontRightModule.set(states[1].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, frontRightAngle);
-        backLeftModule.set(states[2].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, backLeftAngle);
-        backRightModule.set(states[3].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, backRightAngle);
+        frontLeftModule.set(states[0].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(frontLeftSteerAngleRadians, frontLeftSteerAngleOffsetRadians));
+        frontRightModule.set(states[1].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(frontRightSteerAngleRadians, frontRightSteerAngleOffsetRadians));
+        backLeftModule.set(states[2].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(backLeftSteerAngleRadians, backLeftSteerAngleOffsetRadians));
+        backRightModule.set(states[3].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(backRightSteerAngleRadians, backRightSteerAngleOffsetRadians));
+    }
+
+    // private void drivePercentAngle(double speedPercent, double angleRadians) {
+    //     driveSpeedAngle(speedPercent * MaxVelocityMetersPerSecond, angleRadians);
+    // }
+
+    private void driveSpeedAngle(double speedMetersPerSecond, double angleRadians) {
+        frontLeftModule.set(speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, frontLeftSteerAngleOffsetRadians));
+        frontRightModule.set(speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, frontRightSteerAngleOffsetRadians));
+        backLeftModule.set(speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backLeftSteerAngleOffsetRadians));
+        backRightModule.set(speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backRightSteerAngleOffsetRadians));
     }
 }

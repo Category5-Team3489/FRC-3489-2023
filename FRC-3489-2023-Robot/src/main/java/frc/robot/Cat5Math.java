@@ -27,4 +27,21 @@ public class Cat5Math {
     public static double inverseLerp(double x, double a, double b) {
         return (x - a) / (b - a);
     }
+
+    public static double offsetAngle(double angrad, double offangrad) {
+		double a = angrad + offangrad;
+		while (a < 0) {
+			a += 2.0 * Math.PI;
+		}
+		while (a >= 2.0 * Math.PI) {
+			a -= 2.0 * Math.PI;
+		}
+		if (a < 0) {
+			a = 0;
+		}
+		if (a > 2.0 * Math.PI) {
+			a = 2.0 * Math.PI;
+		}
+		return a;
+	}
 }

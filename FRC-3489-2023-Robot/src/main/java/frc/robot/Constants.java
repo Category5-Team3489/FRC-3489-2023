@@ -73,21 +73,17 @@ public final class Constants {
         public static final int FrontLeftModuleDriveMotorDeviceId = 1;
         public static final int FrontLeftModuleSteerMotorDeviceId = 2;
         public static final int FrontLeftModuleSteerEncoderDeviceId = 12;
-        public static final double FrontLeftModuleSteerOffset = -Math.toRadians(301.46484375 - 360 - 17.5621);
         
         public static final int FrontRightModuleDriveMotorDeviceId = 3;
         public static final int FrontRightModuleSteerMotorDeviceId = 4;
         public static final int FrontRightModuleSteerEncoderDeviceId = 34;
-        public static final double FrontRightModuleSteerOffset = -Math.toRadians(180);
 
         public static final int BackLeftModuleDriveMotorDeviceId = 7;
         public static final int BackLeftModuleSteerMotorDeviceId = 8;
         public static final int BackLeftModuleSteerEncoderDeviceId = 18;
-        public static final double BackLeftModuleSteerOffset = -Math.toRadians(65.21484375 + 18.0861);
 
         public static final int BackRightModuleDriveMotorDeviceId = 5;
         public static final int BackRightModuleSteerMotorDeviceId = 6;
         public static final int BackRightModuleSteerEncoderDeviceId = 56;
-        public static final double BackRightModuleSteerOffset = -Math.toRadians(230.97656250000003 - 180);
     }
 }
