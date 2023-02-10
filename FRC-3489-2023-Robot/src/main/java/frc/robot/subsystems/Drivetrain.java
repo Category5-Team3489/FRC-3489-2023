@@ -67,6 +67,11 @@ public class Drivetrain extends SubsystemBase {
     private final SwerveModule backLeftModule;
     private final SwerveModule backRightModule;
 
+    private double frontLeftAngle = 0;
+    private double frontRightAngle = 0;
+    private double backLeftAngle = 0;
+    private double backRightAngle = 0;
+
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
     // private SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, null, null, null);
@@ -165,9 +170,16 @@ public class Drivetrain extends SubsystemBase {
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MaxVelocityMetersPerSecond);
 
-        frontLeftModule.set(states[0].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, states[0].angle.getRadians());
-        frontRightModule.set(states[1].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, states[1].angle.getRadians());
-        backLeftModule.set(states[2].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, states[2].angle.getRadians());
-        backRightModule.set(states[3].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, states[3].angle.getRadians());
+        if (chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0 || chassisSpeeds.omegaRadiansPerSecond != 0) {
+            frontLeftAngle = states[0].angle.getRadians();
+            frontRightAngle = states[1].angle.getRadians();
+            backLeftAngle = states[2].angle.getRadians();
+            backRightAngle = states[3].angle.getRadians();
+        }
+
+        frontLeftModule.set(states[0].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, frontLeftAngle);
+        frontRightModule.set(states[1].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, frontRightAngle);
+        backLeftModule.set(states[2].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, backLeftAngle);
+        backRightModule.set(states[3].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, backRightAngle);
     }
 }

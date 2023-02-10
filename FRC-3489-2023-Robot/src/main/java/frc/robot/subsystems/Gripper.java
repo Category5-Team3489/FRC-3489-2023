@@ -27,7 +27,7 @@ public class Gripper extends SubsystemBase {
     
     public IntakeState intakeState = IntakeState.Off;
     
-    private final GenericEntry laserDiagnostic;
+    private final GenericEntry laserState;
 
     ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("Gripper")
             .withSize(2, 4);
@@ -43,10 +43,10 @@ public class Gripper extends SubsystemBase {
         mainLayout.addString("Intake State", () -> intakeState.toString());
         mainLayout.addBoolean("Gripper Laser", () -> gripperSensor.get());
 
-        diagnosticLayout.addBoolean("Gripper Laser", () -> gripperSensor.get());
-        diagnosticLayout.add("Test Intake", intakeDiagnostic());
+        laserState = diagnosticLayout.add("Laser State", false).getEntry();
+        diagnosticLayout.add("Laser Diagnostic", laserDiagnostic());
 
-        laserDiagnostic = diagnosticLayout.add("Intake Diagnostic", true).getEntry();
+        diagnosticLayout.add("Test Intake", intakeDiagnostic());
     }
 
     public enum IntakeState {
@@ -67,35 +67,37 @@ public class Gripper extends SubsystemBase {
         switch(intakeState) {
             case Off:
                 stopIntake();
+                System.out.println(intakeState);
             break;
             case Grab:
                 Commands.run(() -> grab(), this)
                     .until(() -> gripperSensor.get())
                     .andThen(() -> setState(IntakeState.Off))
                     .schedule();
+                    System.out.println(intakeState);
             break;
             case Place:
-                Commands.race(
-                    Commands.run(() -> place(), this),
-                    new WaitCommand(2)
-                )
-                .andThen(() -> setState(IntakeState.Off))
-                .schedule();
+                    Commands.run(() -> place(), this)
+                    .withTimeout(2)
+                    .andThen(() -> setState(IntakeState.Off))
+                    .schedule();
+                    System.out.println(intakeState);
                 
             break;
             case PlaceCube:
                 Commands.run(() -> {
                     if (!gripperSensor.get()) {
-                        //timer.start();
                         if (timer.hasElapsed(2)) {
                             setState(IntakeState.Off);
                         }
                     }
                     else {
                         placeCube();
+                        System.out.println(intakeState);
                     }
                 }, this)
                     .schedule();
+                    System.out.println(intakeState);
                 
             break;
             case PlaceCone:
@@ -108,16 +110,18 @@ public class Gripper extends SubsystemBase {
                     }
                     else {
                         placeCone();
+                        System.out.println(intakeState);
                     }
                 }, this)
                     .schedule();
+                    System.out.println(intakeState);
             break;
             case laserDiagnostic:
-            Commands.run(() -> {
-                if (!gripperSensor.get()) {
-                        setState(IntakeState.Off);
-                }
-            }, this);
+                Commands.runOnce(() -> {
+                    if (gripperSensor.get() || timer.hasElapsed(6)) {
+                        laserState.setBoolean(gripperSensor.get());
+                    }
+                }, this);
             break;
         }
     }
@@ -143,8 +147,8 @@ public class Gripper extends SubsystemBase {
     }
 
     public void stopIntake() {
-        rightMotor.stopMotor();
-        leftMotor.stopMotor();
+        rightMotor.set(0);
+        leftMotor.set(0);
     }
 
     public boolean getLaserSenor() {
@@ -152,20 +156,27 @@ public class Gripper extends SubsystemBase {
     }
 
     public CommandBase intakeDiagnostic() {
-        return Commands.race(
-            Commands.runOnce(() -> setState(IntakeState.Grab), this),
-            new WaitCommand(3))
-        .andThen(Commands.race(
-            Commands.runOnce(() -> setState(IntakeState.Place), this),
-            new WaitCommand(3)))
-        .andThen(Commands.race(
-            Commands.runOnce(() -> setState(IntakeState.PlaceCone), this),
-            new WaitCommand(3)))
-        .andThen(Commands.race(
-            Commands.runOnce(() -> setState(IntakeState.PlaceCube), this),
-            new WaitCommand(3)))
-        .andThen(Commands.runOnce(() -> setState(IntakeState.Off), this))
-        .withName("Intake Diagnostic");
+        return Commands.runOnce(() -> setState(IntakeState.Grab), this)
+            .withTimeout(3)
+
+            .andThen(Commands.runOnce(() -> setState(IntakeState.Place), this)
+            .withTimeout(3))
+
+            .andThen(Commands.runOnce(() -> setState(IntakeState.PlaceCone), this)
+            .withTimeout(3))
+
+            .andThen(Commands.runOnce(() -> setState(IntakeState.PlaceCube), this)
+            .withTimeout(3))
+
+            .andThen(Commands.runOnce(() -> stopIntake()))
+            .withName("Intake Diagnostic");
+
+            
+    }
+
+    public CommandBase laserDiagnostic() {
+        return Commands.runOnce(() -> setState(IntakeState.laserDiagnostic), this)
+        .withName("Laser Diagnostic");
     }
 
 
