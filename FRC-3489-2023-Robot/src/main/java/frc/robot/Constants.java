@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -100,6 +102,10 @@ public final class Constants {
         public static final int BackRightModuleDriveMotorDeviceId = 5;
         public static final int BackRightModuleSteerMotorDeviceId = 6;
         public static final int BackRightModuleSteerEncoderDeviceId = 56;
+
+        public static final double TheoreticalMaxVelocityMetersPerSecond = 6380.0 / 60.0 *
+        SdsModuleConfigurations.MK4_L2.getDriveReduction() *
+        SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
     }
 
     public static class PreferencesKeys {

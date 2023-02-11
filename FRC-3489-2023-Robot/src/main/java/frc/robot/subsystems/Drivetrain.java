@@ -8,14 +8,19 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Cat5Math;
+import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.diagnostics.DrivetrainDiagnostics;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
+
+import java.util.function.DoubleSupplier;
 
 public class Drivetrain extends SubsystemBase {
     /**
@@ -35,17 +40,21 @@ public class Drivetrain extends SubsystemBase {
      * <p>
      * This is a measure of how fast the robot should be able to drive in a straight line.
      */
-    public static final double MaxVelocityMetersPerSecond = 6380.0 / 60.0 *
-        SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-        SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
 
+    public static final Drivetrain drivetrain = new Drivetrain();
+    public static final DrivetrainDiagnostics drivetrainDiagnostics = new DrivetrainDiagnostics(drivetrain);
+
+    public static final double theoreticalMaxVelocityMetersPerSecond = DrivetrainConstants.TheoreticalMaxVelocityMetersPerSecond;
+
+    public static double maxVelocityMetersPerSecond = drivetrainDiagnostics.maxVelocityMetersPerSecond;
+    
     /**
      * The maximum angular velocity of the robot in radians per second.
      * <p>
      * This is a measure of how fast the robot can rotate in place.
      */
     // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
-    public static final double MaxAngularVelocityRadiansPerSecond = MaxVelocityMetersPerSecond /
+    public static final DoubleSupplier MaxAngularVelocityRadiansPerSecond = () -> maxVelocityMetersPerSecond /
         Math.hypot(DrivetrainTrackwidthMeters / 2.0, DrivetrainWheelbaseMeters / 2.0);
 
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -60,10 +69,10 @@ public class Drivetrain extends SubsystemBase {
     );
 
     // These are our modules. We initialize them in the constructor.
-    private final SwerveModule frontLeftModule;
-    private final SwerveModule frontRightModule;
-    private final SwerveModule backLeftModule;
-    private final SwerveModule backRightModule;
+    public final SwerveModule frontLeftModule;
+    public final SwerveModule frontRightModule;
+    public final SwerveModule backLeftModule;
+    public final SwerveModule backRightModule;
 
     // [0, 2pi) radians
     private double frontLeftSteerAngleRadians = 0;
@@ -79,8 +88,10 @@ public class Drivetrain extends SubsystemBase {
 
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+
     public Drivetrain() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+
 
         // There are 4 methods you can call to create your swerve modules.
         // The method you use depends on what motors you are using.
@@ -164,7 +175,7 @@ public class Drivetrain extends SubsystemBase {
 
     private void driveChassisSpeeds() {
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MaxVelocityMetersPerSecond);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond);
 
         if (chassisSpeeds.vxMetersPerSecond != 0 ||
             chassisSpeeds.vyMetersPerSecond != 0 ||
@@ -175,20 +186,20 @@ public class Drivetrain extends SubsystemBase {
             backRightSteerAngleRadians = states[3].angle.getRadians();
         }
 
-        frontLeftModule.set(states[0].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(frontLeftSteerAngleRadians, frontLeftSteerAngleOffsetRadians));
-        frontRightModule.set(states[1].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(frontRightSteerAngleRadians, frontRightSteerAngleOffsetRadians));
-        backLeftModule.set(states[2].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(backLeftSteerAngleRadians, backLeftSteerAngleOffsetRadians));
-        backRightModule.set(states[3].speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(backRightSteerAngleRadians, backRightSteerAngleOffsetRadians));
+        frontLeftModule.set(states[0].speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(frontLeftSteerAngleRadians, frontLeftSteerAngleOffsetRadians));
+        frontRightModule.set(states[1].speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(frontRightSteerAngleRadians, frontRightSteerAngleOffsetRadians));
+        backLeftModule.set(states[2].speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(backLeftSteerAngleRadians, backLeftSteerAngleOffsetRadians));
+        backRightModule.set(states[3].speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(backRightSteerAngleRadians, backRightSteerAngleOffsetRadians));
     }
 
-    // private void drivePercentAngle(double speedPercent, double angleRadians) {
-    //     driveSpeedAngle(speedPercent * MaxVelocityMetersPerSecond, angleRadians);
-    // }
+    public void drivePercentAngle(double speedPercent, double angleRadians) {
+        driveSpeedAngle(speedPercent * maxVelocityMetersPerSecond, angleRadians);
+    }
 
     private void driveSpeedAngle(double speedMetersPerSecond, double angleRadians) {
-        frontLeftModule.set(speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, frontLeftSteerAngleOffsetRadians));
-        frontRightModule.set(speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, frontRightSteerAngleOffsetRadians));
-        backLeftModule.set(speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backLeftSteerAngleOffsetRadians));
-        backRightModule.set(speedMetersPerSecond / MaxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backRightSteerAngleOffsetRadians));
+        frontLeftModule.set(speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, frontLeftSteerAngleOffsetRadians));
+        frontRightModule.set(speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, frontRightSteerAngleOffsetRadians));
+        backLeftModule.set(speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backLeftSteerAngleOffsetRadians));
+        backRightModule.set(speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backRightSteerAngleOffsetRadians));
     }
 }

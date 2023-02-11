@@ -8,6 +8,7 @@ import frc.robot.Constants.DriverCameraConstants;
 import frc.robot.Constants.NavX2Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
+import frc.robot.diagnostics.DrivetrainDiagnostics;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
@@ -35,6 +36,7 @@ public class RobotContainer {
     private final NavX2 navx = new NavX2();
     private final DriverCamera driverCamera = new DriverCamera();
     private final Leds leds = new Leds();
+    private final DrivetrainDiagnostics drivetrainDiagnostics = new DrivetrainDiagnostics(drivetrain);
 
     // Driver Controller
     private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
@@ -46,9 +48,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(new Drive(
             drivetrain,
             navx,
-            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(1)) * Drivetrain.MaxVelocityMetersPerSecond,
-            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(0)) * Drivetrain.MaxVelocityMetersPerSecond,
-            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(2)) * Drivetrain.MaxAngularVelocityRadiansPerSecond
+            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(1)) * Drivetrain.theoreticalMaxVelocityMetersPerSecond,
+            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(0)) * Drivetrain.theoreticalMaxVelocityMetersPerSecond,
+            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(2)) * Drivetrain.MaxAngularVelocityRadiansPerSecond.getAsDouble()
         ));
 
         // Configure the bindings
