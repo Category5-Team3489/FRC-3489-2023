@@ -35,6 +35,9 @@ public final class Constants {
     public static class LedConstants {
         public static final int Port = 0;
         public static final int Length = 162;
+
+        public static final int CubeLEDButton = 7;
+        public static final int ConeLEDButton = 8;
     }
 
     public static class GripperConstants {

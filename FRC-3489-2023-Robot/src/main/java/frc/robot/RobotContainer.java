@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.DriverCameraConstants;
+import frc.robot.Constants.LedConstants;
 import frc.robot.Constants.NavX2Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
@@ -16,7 +17,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.NavX2;
-
+import frc.robot.subsystems.Leds.LedState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -79,6 +80,12 @@ public class RobotContainer {
         // Camera Bindings
         xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
             .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
+
+        // LED Bindings
+        man.button(LedConstants.ConeLEDButton)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCone), leds));
+        man.button(LedConstants.CubeLEDButton)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCube), leds));
     }
 
     /**
