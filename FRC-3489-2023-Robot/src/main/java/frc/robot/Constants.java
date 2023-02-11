@@ -30,9 +30,8 @@ public final class Constants {
         public static final int MotorDeviceId = 1;
         public static final int LimitSwitchChannel = 1;
 
-        public static final double NeoCountsPerRotation = 42;
         public static final double V4BarGearRatio = 45 / 1;
-        public static final double RadiansPerEncoderCount = 1 / (NeoCountsPerRotation * V4BarGearRatio * 2 * Math.PI);
+        public static final double RadiansPerEncoderCount = 1 / (V4BarGearRatio * 2 * Math.PI);
         public static final double LimitSwitchAngleRadians = Math.toRadians(-80);
         public static final double MaxAngleRadians = Math.toRadians(90);
 
@@ -40,7 +39,7 @@ public final class Constants {
         public static final double ResistStaticFrictionVolts = 0.05 * 12;
         public static final double HomingVolts = -0.15 * 12;
 
-        public static final double ProportionalGain = 0.1;
+        public static final double ProportionalGainPercentPer = 0.1;
     }
 
     public static class NavX2Constants {
@@ -101,5 +100,9 @@ public final class Constants {
         public static final int BackRightModuleDriveMotorDeviceId = 5;
         public static final int BackRightModuleSteerMotorDeviceId = 6;
         public static final int BackRightModuleSteerEncoderDeviceId = 56;
+    }
+
+    public static class PreferencesKeys {
+        public static final String DrivetrainMaxVelocityMetersPerSecond = "DrivetrainMaxVelocityMetersPerSecond";
     }
 }

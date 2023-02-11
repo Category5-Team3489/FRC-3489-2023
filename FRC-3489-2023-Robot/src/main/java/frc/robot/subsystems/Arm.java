@@ -9,6 +9,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer.InterpolateFunction;
@@ -41,15 +42,19 @@ public class Arm extends SubsystemBase {
     public Arm() {
         register();
 
-        motor.restoreFactoryDefaults();
-        motor.setIdleMode(IdleMode.kBrake);
-        motor.enableVoltageCompensation(12);
-        motor.burnFlash();
-
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
 
-        pidController.setP()
+        motor.restoreFactoryDefaults();
+        motor.setIdleMode(IdleMode.kBrake);
+        motor.enableVoltageCompensation(12);
+        pidController.setOutputRange(getResistGravityVolts(), getAngleRadians(), 0);
+        motor.burnFlash();
+
+        Cat5Shuffleboard.getDiagnosticTab().add("Test Slider", 1)
+            .withWidget(BuiltInWidgets.kNumberSlider)
+            .withProperties(Map.of("min", 0, "max", 1))
+            .getEntry();
     }
 
     @Override
@@ -69,7 +74,7 @@ public class Arm extends SubsystemBase {
     }
 
     private void setAngleRadians(double angleRadians) {
-        pidController.setReference(angleRadians, null)
+        pidController.setReference(0, ControlType.kPosition, 0, 0, ArbFFUnits.kVoltage);
     }
 
     private double getAngleRadians() {
