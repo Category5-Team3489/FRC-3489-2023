@@ -1,49 +1,7 @@
 {
-  "HALProvider": {
-    "DIO": {
-      "window": {
-        "visible": true
-      }
-    },
-    "Other Devices": {
-      "SPARK MAX [9]": {
-        "header": {
-          "open": true
-        }
-      }
-    }
-  },
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo",
-      "/LiveWindow/Ungrouped/DigitalInput[24]": "Digital Input",
-      "/LiveWindow/Ungrouped/DigitalInput[25]": "Digital Input",
-      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
-      "/LiveWindow/Ungrouped/Talon SRX [10]": "Motor Controller",
-      "/LiveWindow/Ungrouped/Talon SRX [11]": "Motor Controller",
-      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
-      "/Shuffleboard/2023/Diagnostic Commands/Intake Diagnostic": "Command",
-      "/Shuffleboard/2023/Diagnostic Commands/Servo Diagnostic": "Command",
-      "/Shuffleboard/Diagnostic/Driver Camera/Servo Diagnostic": "Command",
-      "/Shuffleboard/Diagnostic/Gripper/Laser Diagnostic": "Command",
-      "/Shuffleboard/Diagnostic/Gripper/Test Laser Sensor": "Command",
-      "/Shuffleboard/Diagnostic/Intake/Intake Diagnostic": "Command",
-      "/Shuffleboard/Diagnostic/LEDs/LEDs": "Command",
-      "/Shuffleboard/Diagnostic/Linear Slide/Linear Slide Diagnostic": "Command",
-      "/Shuffleboard/Main/Arm/Update Constants": "Command"
-    }
-  },
-  "NetworkTables": {
-    "Retained Values": {
-      "open": false
-    },
-    "Transitory Values": {
-      "open": false
-    },
-    "transitory": {
-      "Shuffleboard": {
-        "open": true
-      }
+      "/FMSInfo": "FMSInfo"
     }
   }
 }

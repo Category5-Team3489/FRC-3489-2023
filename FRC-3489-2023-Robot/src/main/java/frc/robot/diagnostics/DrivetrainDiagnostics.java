@@ -1,6 +1,7 @@
 package frc.robot.diagnostics;
 
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -18,7 +19,7 @@ public class DrivetrainDiagnostics extends Diagnostics<Drivetrain>{
     public double backLeftMaxVelocity;
     public double backRightMaxVelocity;
     public double averageMaxVelocity;
-    public double maxVelocityMetersPerSecond;
+    public static double maxVelocityMetersPerSecond;
     
     public DrivetrainDiagnostics(Drivetrain subsystem) {
         super(subsystem);
@@ -35,7 +36,6 @@ public class DrivetrainDiagnostics extends Diagnostics<Drivetrain>{
         System.out.println(subsystem.maxVelocityMetersPerSecond);
 
         double maxVelocityMetersPerSecond = Preferences.getDouble(PreferencesKeys.DrivetrainMaxVelocityMetersPerSecond, subsystem.theoreticalMaxVelocityMetersPerSecond);
-        
     }
 
     private void testMaxSpeed() {

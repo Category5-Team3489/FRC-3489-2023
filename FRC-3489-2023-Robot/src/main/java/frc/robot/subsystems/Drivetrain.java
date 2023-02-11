@@ -41,12 +41,9 @@ public class Drivetrain extends SubsystemBase {
      * This is a measure of how fast the robot should be able to drive in a straight line.
      */
 
-    public static final Drivetrain drivetrain = new Drivetrain();
-    public static final DrivetrainDiagnostics drivetrainDiagnostics = new DrivetrainDiagnostics(drivetrain);
-
     public static final double theoreticalMaxVelocityMetersPerSecond = DrivetrainConstants.TheoreticalMaxVelocityMetersPerSecond;
 
-    public static double maxVelocityMetersPerSecond = drivetrainDiagnostics.maxVelocityMetersPerSecond;
+    public static double maxVelocityMetersPerSecond = DrivetrainDiagnostics.maxVelocityMetersPerSecond;
     
     /**
      * The maximum angular velocity of the robot in radians per second.
