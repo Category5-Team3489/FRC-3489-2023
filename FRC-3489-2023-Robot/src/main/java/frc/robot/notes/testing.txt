@@ -1,0 +1,15 @@
+
+What state will the robot be in when we first get it?
+Swerve modules
+NavX2
+Arm
+Gripper
+Limelight?
+
+
+
+What things will we be able to test with it in that state?
+Drivetrain
+    Config swerve drive offsets
+    Teleop control of robot's translation without the heading drifting
+        Fix individual encoder offset drift: https://www.chiefdelphi.com/t/mk4-drift/403628/29

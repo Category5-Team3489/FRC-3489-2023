@@ -5,11 +5,15 @@
 package frc.robot;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
+ * The Constants class provides a convenient place for teams to hold robot-wide
+ * numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants
+ * should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * <p>
+ * It is advised to statically import this class (or one of its inner classes)
+ * wherever the
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
@@ -25,6 +29,18 @@ public final class Constants {
     public static class ArmConstants {
         public static final int MotorDeviceId = 1;
         public static final int LimitSwitchChannel = 1;
+
+        public static final double NeoCountsPerRotation = 42;
+        public static final double V4BarGearRatio = 45 / 1;
+        public static final double RadiansPerEncoderCount = 1 / (NeoCountsPerRotation * V4BarGearRatio * 2 * Math.PI);
+        public static final double LimitSwitchAngleRadians = Math.toRadians(-80);
+        public static final double MaxAngleRadians = Math.toRadians(90);
+
+        public static final double HorizontalResistGravityVolts = 0.05 * 12;
+        public static final double ResistStaticFrictionVolts = 0.05 * 12;
+        public static final double HomingVolts = -0.15 * 12;
+
+        public static final double ProportionalGain = 0.1;
     }
 
     public static class NavX2Constants {
@@ -62,18 +78,18 @@ public final class Constants {
         /**
          * The left-to-right distance between the drivetrain wheels
          * Should be measured from center to center.
-        */
+         */
         public static final double DrivetrainTrackwidthMeters = 0.54;
         /**
          * The front-to-back distance between the drivetrain wheels.
          * Should be measured from center to center.
-        */
+         */
         public static final double DrivetrainWheelbaseMeters = 0.54;
 
         public static final int FrontLeftModuleDriveMotorDeviceId = 1;
         public static final int FrontLeftModuleSteerMotorDeviceId = 2;
         public static final int FrontLeftModuleSteerEncoderDeviceId = 12;
-        
+
         public static final int FrontRightModuleDriveMotorDeviceId = 3;
         public static final int FrontRightModuleSteerMotorDeviceId = 4;
         public static final int FrontRightModuleSteerEncoderDeviceId = 34;
