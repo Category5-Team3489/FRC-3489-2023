@@ -28,22 +28,6 @@ public final class Constants {
         public static final int Module = 35;
     }
 
-    public static class ArmConstants {
-        public static final int MotorDeviceId = 1;
-        public static final int LimitSwitchChannel = 1;
-
-        public static final double V4BarGearRatio = 45 / 1;
-        public static final double RadiansPerEncoderCount = 1 / (V4BarGearRatio * 2 * Math.PI);
-        public static final double LimitSwitchAngleRadians = Math.toRadians(-80);
-        public static final double MaxAngleRadians = Math.toRadians(90);
-
-        public static final double HorizontalResistGravityVolts = 0.05 * 12;
-        public static final double ResistStaticFrictionVolts = 0.05 * 12;
-        public static final double HomingVolts = -0.15 * 12;
-
-        public static final double ProportionalGainPercentPer = 0.1;
-    }
-
     public static class NavX2Constants {
         public static final int ZeroYawXboxButton = 9;
     }

@@ -26,8 +26,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.ArmConstants;
+
+import frc.robot.constants.ArmConstants;
+import frc.robot.shuffleboard.Cat5Grid;
 import frc.robot.shuffleboard.Cat5Shuffleboard;
 
 public class Arm extends SubsystemBase {
@@ -39,6 +40,18 @@ public class Arm extends SubsystemBase {
 
     private boolean isHomed = false;
 
+    /*
+     * Configurable
+        P
+        I
+        D
+        DFilter
+        FF
+        IZone
+        OutputRange
+        IMaxAccum
+     */
+
     public Arm() {
         register();
 
@@ -49,12 +62,13 @@ public class Arm extends SubsystemBase {
         motor.setIdleMode(IdleMode.kBrake);
         motor.enableVoltageCompensation(12);
         pidController.setOutputRange(getResistGravityVolts(), getAngleRadians(), 0);
+        // pidController.setIZone()
         motor.burnFlash();
 
-        Cat5Shuffleboard.getDiagnosticTab().add("Test Slider", 1)
-            .withWidget(BuiltInWidgets.kNumberSlider)
-            .withProperties(Map.of("min", 0, "max", 1))
-            .getEntry();
+        // Cat5Shuffleboard.getDiagnosticTab().add("Test Slider", 1)
+        //     .withWidget(BuiltInWidgets.kNumberSlider)
+        //     .withProperties(Map.of("min", 0, "max", 1))
+        //     .getEntry();
     }
 
     @Override
@@ -78,8 +92,8 @@ public class Arm extends SubsystemBase {
     }
 
     private double getAngleRadians() {
-        double position = encoder.getPosition();
-        return (position * ArmConstants.RadiansPerEncoderCount) + ArmConstants.LimitSwitchAngleRadians;
+        double revolutions = encoder.getPosition();
+        return (revolutions * ArmConstants.RadiansPerRevolution) + ArmConstants.LimitSwitchAngleRadians;
     }
 
     private double getResistGravityVolts() {

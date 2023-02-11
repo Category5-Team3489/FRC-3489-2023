@@ -8,6 +8,7 @@ import frc.robot.Constants.DriverCameraConstants;
 import frc.robot.Constants.NavX2Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
+import frc.robot.constants.ArmConstants;
 import frc.robot.diagnostics.DrivetrainDiagnostics;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriverCamera;
@@ -30,18 +31,22 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    private final Drivetrain drivetrain = new Drivetrain();
-    private final Gripper gripper = new Gripper();
-    private final Arm arm = new Arm();
-    private final NavX2 navx = new NavX2();
-    private final DriverCamera driverCamera = new DriverCamera();
-    private final Leds leds = new Leds();
-    private final DrivetrainDiagnostics drivetrainDiagnostics = new DrivetrainDiagnostics(drivetrain);
+    public final Drivetrain drivetrain = new Drivetrain();
+    public final Gripper gripper = new Gripper();
+    public final Arm arm = new Arm();
+    public final NavX2 navx = new NavX2();
+    public final DriverCamera driverCamera = new DriverCamera();
+    public final Leds leds = new Leds();
+
+    // Constants
+    public final ArmConstants armConstants = new ArmConstants(arm);
+    // Diagnostics
+    public final DrivetrainDiagnostics drivetrainDiagnostics = new DrivetrainDiagnostics(drivetrain);
 
     // Driver Controller
-    private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
+    public final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
     // Manipulator Controller
-    private final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
+    public final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
