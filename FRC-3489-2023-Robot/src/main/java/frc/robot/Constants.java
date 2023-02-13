@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -60,42 +58,5 @@ public final class Constants {
 
         public static final double[] ServoPositions = { 70, 140 };
         public static final int ServoStartingPositionIndex = 0;
-    }
-
-    public static class DrivetrainConstants {
-        /**
-         * The left-to-right distance between the drivetrain wheels
-         * Should be measured from center to center.
-         */
-        public static final double DrivetrainTrackwidthMeters = 0.54;
-        /**
-         * The front-to-back distance between the drivetrain wheels.
-         * Should be measured from center to center.
-         */
-        public static final double DrivetrainWheelbaseMeters = 0.54;
-
-        public static final int FrontLeftModuleDriveMotorDeviceId = 1;
-        public static final int FrontLeftModuleSteerMotorDeviceId = 2;
-        public static final int FrontLeftModuleSteerEncoderDeviceId = 12;
-
-        public static final int FrontRightModuleDriveMotorDeviceId = 3;
-        public static final int FrontRightModuleSteerMotorDeviceId = 4;
-        public static final int FrontRightModuleSteerEncoderDeviceId = 34;
-
-        public static final int BackLeftModuleDriveMotorDeviceId = 7;
-        public static final int BackLeftModuleSteerMotorDeviceId = 8;
-        public static final int BackLeftModuleSteerEncoderDeviceId = 18;
-
-        public static final int BackRightModuleDriveMotorDeviceId = 5;
-        public static final int BackRightModuleSteerMotorDeviceId = 6;
-        public static final int BackRightModuleSteerEncoderDeviceId = 56;
-
-        public static final double TheoreticalMaxVelocityMetersPerSecond = 6380.0 / 60.0 *
-        SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-        SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
-    }
-
-    public static class PreferencesKeys {
-        public static final String DrivetrainMaxVelocityMetersPerSecond = "DrivetrainMaxVelocityMetersPerSecond";
     }
 }

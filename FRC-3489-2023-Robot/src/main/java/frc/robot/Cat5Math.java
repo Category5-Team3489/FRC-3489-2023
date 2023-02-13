@@ -28,8 +28,8 @@ public class Cat5Math {
         return (x - a) / (b - a);
     }
 
-    public static double offsetAngle(double angrad, double offangrad) {
-		double a = angrad + offangrad;
+    public static double offsetAngle(double angrad, double offsetangrad) {
+		double a = angrad + offsetangrad;
 		while (a < 0) {
 			a += 2.0 * Math.PI;
 		}

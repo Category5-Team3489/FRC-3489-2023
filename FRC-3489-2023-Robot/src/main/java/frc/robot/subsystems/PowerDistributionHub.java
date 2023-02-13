@@ -5,39 +5,37 @@ import edu.wpi.first.hal.PowerDistributionStickyFaults;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.PowerDistributionHubConstants;
 
 public class PowerDistributionHub extends SubsystemBase {
-    // Devices
-    PowerDistribution PDH = new PowerDistribution(Constants.PowerDistributionHubConstants.Module, ModuleType.kRev);
+    private final PowerDistribution pdh = new PowerDistribution(PowerDistributionHubConstants.Module, ModuleType.kRev);
 
-    //Get Data
-    public double getPDHTemperature(){
-        return PDH.getTemperature();
+    public double getTemperature() {
+        return pdh.getTemperature();
     }
 
-    public double getInputVoltage(){
-        return PDH.getVoltage();
+    public double getInputVoltage() {
+        return pdh.getVoltage();
     }
 
-    public double[] getChannelVoltageOutputs(){
-       int numChannels = PDH.getNumChannels();
-        double[] voltages = new double[numChannels];
-        for (int i = 0; i < numChannels; i++){
-            voltages[i] = PDH.getCurrent(i);
+    public double[] getChannelCurrents() {
+        int numChannels = pdh.getNumChannels();
+        double[] currents = new double[numChannels];
+        for (int i = 0; i < numChannels; i++) {
+            currents[i] = pdh.getCurrent(i);
         }
-        return voltages;
+        return currents;
     }
 
-    public double getChannelVoltageOutputs(int channel){
-        return PDH.getCurrent(channel);
+    public double getChannelCurrent(int channel) {
+        return pdh.getCurrent(channel);
     }
 
-    public PowerDistributionFaults getFaults(){
-        return PDH.getFaults();
+    public PowerDistributionFaults getFaults() {
+        return pdh.getFaults();
     }
 
-    public PowerDistributionStickyFaults getStickyFaults(){
-        return PDH.getStickyFaults();
+    public PowerDistributionStickyFaults getStickyFaults() {
+        return pdh.getStickyFaults();
     }
 }

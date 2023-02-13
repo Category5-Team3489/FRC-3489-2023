@@ -1,6 +1,5 @@
 package frc.robot.constants;
 
-import edu.wpi.first.wpilibj.Preferences;
 import frc.robot.subsystems.Arm;
 
 public class ArmConstants extends ConstantsBase<Arm> {
