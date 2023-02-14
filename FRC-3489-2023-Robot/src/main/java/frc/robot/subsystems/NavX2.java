@@ -9,9 +9,12 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class NavX2 extends SubsystemBase {
     private final AHRS navx = new AHRS(SPI.Port.kMXP);
+
+    public final Trigger IsCalibrated = new Trigger(() -> !navx.isCalibrating());
     
     public NavX2() {
 

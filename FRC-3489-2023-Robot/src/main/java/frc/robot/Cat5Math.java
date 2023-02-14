@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 public class Cat5Math {
     public static double deadband(double value, double deadband) {
         if (Math.abs(value) > deadband) {
@@ -26,6 +28,9 @@ public class Cat5Math {
     }
     public static double inverseLerp(double x, double a, double b) {
         return (x - a) / (b - a);
+    }
+    public static Pose2d lerp(Pose2d startValue, Pose2d endValue, double t) {
+        return startValue.plus((endValue.minus(startValue)).times(t));
     }
 
     public static double offsetAngle(double angrad, double offsetangrad) {

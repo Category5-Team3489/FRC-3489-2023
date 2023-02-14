@@ -38,6 +38,11 @@ public final class Constants {
         public static final int ConeLEDButton = 8;
     }
 
+    public static class PoseEstimatorConstants {
+        public static final double TimeUntilReadySeconds = 1;
+        public static final double HistorySizeSeconds = 10;
+    }
+
     public static class GripperConstants {
         public static final int LeftMotor = 11;
         public static final int RightMotor = 10;

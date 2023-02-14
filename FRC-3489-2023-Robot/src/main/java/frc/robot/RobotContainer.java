@@ -4,18 +4,15 @@
 
 package frc.robot;
 
-import frc.robot.Constants.DriverCameraConstants;
 import frc.robot.Constants.NavX2Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
-import frc.robot.constants.ArmConstants;
+import frc.robot.constants.DrivetrainConstants;
 import frc.robot.diagnostics.DrivetrainDiagnostics;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Gripper;
-import frc.robot.subsystems.Leds;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
+import frc.robot.subsystems.PoseEstimator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -31,14 +28,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     public final Drivetrain drivetrain = new Drivetrain();
-    public final Gripper gripper = new Gripper();
-    public final Arm arm = new Arm();
     public final NavX2 navx = new NavX2();
-    public final DriverCamera driverCamera = new DriverCamera();
-    public final Leds leds = new Leds();
+    public final Limelight limelight = new Limelight();
+    public final PoseEstimator poseEstimator = new PoseEstimator(drivetrain, navx, limelight);
+    // public final Gripper gripper = new Gripper();
+    // public final Arm arm = new Arm();
+    // public final DriverCamera driverCamera = new DriverCamera();
+    // public final Leds leds = new Leds();
 
     // Constants
-    public final ArmConstants armConstants = new ArmConstants(arm);
+    // public final ArmConstants armConstants = new ArmConstants(arm);
     // Diagnostics
     public final DrivetrainDiagnostics drivetrainDiagnostics = new DrivetrainDiagnostics(drivetrain);
 
@@ -52,9 +51,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(new Drive(
             drivetrain,
             navx,
-            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(1)) * Drivetrain.theoreticalMaxVelocityMetersPerSecond,
-            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(0)) * Drivetrain.theoreticalMaxVelocityMetersPerSecond,
-            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(2)) * Drivetrain.MaxAngularVelocityRadiansPerSecond.getAsDouble()
+            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(1)) * DrivetrainConstants.GetMaxVelocityMetersPerSecond.getAsDouble(),
+            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(0)) * DrivetrainConstants.GetMaxVelocityMetersPerSecond.getAsDouble(),
+            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(2)) * DrivetrainConstants.GetMaxAngularVelocityRadiansPerSecond.getAsDouble()
         ));
 
         // Configure the bindings
@@ -76,8 +75,8 @@ public class RobotContainer {
             .onTrue(Commands.runOnce(() -> navx.zeroYaw(), navx));
 
         // Camera Bindings
-        xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
-            .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
+        // xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
+        //     .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
 
         // LED Bindings
         // man.button(LedConstants.ConeLEDButton)

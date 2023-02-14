@@ -10,6 +10,8 @@ import com.swervedrivespecialties.swervelib.DriveController;
 import com.swervedrivespecialties.swervelib.DriveControllerFactory;
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 
+import frc.robot.constants.DrivetrainConstants;
+
 public final class Falcon500DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
 
@@ -80,6 +82,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
                     ),
                     "Failed to configure Falcon status frame period"
             );
+
+            DrivetrainConstants.supplyDriveMotor(motor);
 
             return new ControllerImplementation(motor, sensorVelocityCoefficient);
         }

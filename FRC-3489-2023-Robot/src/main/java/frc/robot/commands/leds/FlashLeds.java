@@ -34,7 +34,7 @@ public class FlashLeds extends CommandBase {
     @Override
     public void initialize() {
         timer.start();
-        leds.setSolidColor(color);
+        // leds.setSolidColor(color);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class FlashLeds extends CommandBase {
         else {
             if (timer.advanceIfElapsed(timeOff)) {
                 isOn = true;
-                leds.setSolidColor(color);
+                // leds.setSolidColor(color);
                 currentCycle++;
             }
         }
