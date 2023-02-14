@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
+import com.swervedrivespecialties.swervelib.DriveController;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -10,6 +12,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Cat5Math;
 import frc.robot.diagnostics.DrivetrainDiagnostics;
@@ -40,6 +44,8 @@ public class Drivetrain extends SubsystemBase {
     public static final double theoreticalMaxVelocityMetersPerSecond = TheoreticalMaxVelocityMetersPerSecond;
 
     public static double maxVelocityMetersPerSecond = DrivetrainDiagnostics.maxVelocityMetersPerSecond;
+
+    public PIDController driveController = new PIDController(0.3, 0, 0.05);
     
     /**
      * The maximum angular velocity of the robot in radians per second.
@@ -166,6 +172,17 @@ public class Drivetrain extends SubsystemBase {
         
     }
 
+    public void getChargingAngle() {
+            frontLeftModule.set(0, 45);
+            frontRightModule.set(0, 225);
+            backLeftModule.set(0, 135);
+            backRightModule.set(0, 315);
+    }
+
+    public CommandBase setChargingAngle() {
+        return Commands.run(() -> getChargingAngle(), this);
+    }
+
     private void driveChassisSpeeds() {
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond);
@@ -194,5 +211,12 @@ public class Drivetrain extends SubsystemBase {
         frontRightModule.set(speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, frontRightSteerAngleOffsetRadians));
         backLeftModule.set(speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backLeftSteerAngleOffsetRadians));
         backRightModule.set(speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backRightSteerAngleOffsetRadians));
+    }
+
+    public void setDriveAngle(double setPointRadians) {
+        driveController.enableContinuousInput(0, 2 * Math.PI);
+        ChassisSpeeds Speeds = new ChassisSpeeds(0.0, 0.0, driveController.calculate(chassisSpeeds.omegaRadiansPerSecond, setPointRadians));
+        drive(Speeds);
+        driveChassisSpeeds();
     }
 }

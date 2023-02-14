@@ -28,6 +28,8 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
     public static final int BackRightModuleSteerMotorDeviceId = 6;
     public static final int BackRightModuleSteerEncoderDeviceId = 56;
 
+    public static final int ChargingStationButton = 8;
+
     public DrivetrainConstants(Drivetrain subsystem) {
         super(subsystem);
     }

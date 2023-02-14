@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants.LedConstants;
@@ -47,6 +48,10 @@ public class Leds extends SubsystemBase {
         ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("LEDs");
         diagnosticLayout.withSize(2, 1);
         diagnosticLayout.add("LED", ledState);
+
+        ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("LEDs")
+            .withSize(2, 4);
+        mainLayout.addString("LED State", () -> ledState.toString());
     }
 
     public enum LedState {
@@ -106,43 +111,46 @@ public class Leds extends SubsystemBase {
     //     setSolidColor(LedColor.Off);
     // }
     
-    // @Override
-    // public void periodic() {     
-    //     tryFlashTeleopLeds();
-    // }
+    @Override
+    public void periodic() {     
+        tryFlashTeleopLeds();
+    }
 
-    // public void tryFlashTeleopLeds() {
-    //     if (DriverStation.isDisabled()) {
-    //         haveTeleopLedsFlashedThisEnable = false;
-    //         return;
-    //     }
+    public void tryFlashTeleopLeds() {
+        if (DriverStation.isDisabled()) {
+            haveTeleopLedsFlashedThisEnable = false;
+            return;
+        }
 
-    //     if (!DriverStation.isTeleop() || haveTeleopLedsFlashedThisEnable) {
-    //         return;
-    //     }
+        if (!DriverStation.isTeleop() || haveTeleopLedsFlashedThisEnable) {
+            return;
+        }
+        Commands.runOnce(() -> setLeds(LedState.TeleopBlink), this)
+            .withTimeout(1)
+            .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+            .schedule();
+            
+        // Command command = new FlashLeds(this, LedColor.White, 10, 0.1, 0.1)
+        //     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         
-    //     Command command = new FlashLeds(this, LedColor.White, 10, 0.1, 0.1)
-    //         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+        haveTeleopLedsFlashedThisEnable = true;
+    }
 
-    //     command.schedule();
-    //     haveTeleopLedsFlashedThisEnable = true;
-    // }
+    public Command getSolidColorForSecondsCommand(double color, double seconds, boolean isInterruptible) {
+        Runnable start = () -> {
+            setSolidColor(color);
+        };
+        Runnable end = () -> {
+            stopLeds();
+        };
 
-    // public Command getSolidColorForSecondsCommand(LedColor color, double seconds, boolean isInterruptible) {
-    //     Runnable start = () -> {
-    //         setSolidColor(color);
-    //     };
-    //     Runnable end = () -> {
-    //         stopLeds();
-    //     };
+        InterruptionBehavior interruptBehavior = isInterruptible ?
+            InterruptionBehavior.kCancelSelf : InterruptionBehavior.kCancelIncoming;
 
-    //     InterruptionBehavior interruptBehavior = isInterruptible ?
-    //         InterruptionBehavior.kCancelSelf : InterruptionBehavior.kCancelIncoming;
-
-    //     return Commands.startEnd(start, end, this)
-    //         .withTimeout(seconds)
-    //         .withInterruptBehavior(interruptBehavior);
-    // }
+        return Commands.startEnd(start, end, this)
+            .withTimeout(seconds)
+            .withInterruptBehavior(interruptBehavior);
+    }
 
     // public CommandBase LedDiognostic() {
     //     return getSolidColorForSecondsCommand(LedColor.White, 5, true)
