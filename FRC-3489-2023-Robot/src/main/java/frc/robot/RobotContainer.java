@@ -78,11 +78,15 @@ public class RobotContainer {
         // xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
         //     .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
 
-        // LED Bindings
+        //LED Bindings
         // man.button(LedConstants.ConeLEDButton)
         //     .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCone), leds));
         // man.button(LedConstants.CubeLEDButton)
         //     .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCube), leds));
+
+        //Drivetrain Bindings
+        xbox.button(DrivetrainConstants.ChargingStationButton)
+            .whileTrue(Commands.runOnce(() -> drivetrain.setChargingAngle(), drivetrain));
     }
 
     /**

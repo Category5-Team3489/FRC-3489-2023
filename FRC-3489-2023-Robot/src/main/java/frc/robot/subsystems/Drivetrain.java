@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
@@ -13,7 +14,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Cat5Math;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.diagnostics.DrivetrainDiagnostics;
@@ -21,9 +25,6 @@ import frc.robot.diagnostics.DrivetrainDiagnostics;
 import static frc.robot.constants.DrivetrainConstants.*;
 
 public class Drivetrain extends SubsystemBase {
-
-    public static double maxVelocityMetersPerSecond = DrivetrainDiagnostics.maxVelocityMetersPerSecond;
-
     public final SwerveModule frontLeftModule;
     public final SwerveModule frontRightModule;
     public final SwerveModule backLeftModule;
@@ -100,9 +101,20 @@ public class Drivetrain extends SubsystemBase {
         
     }
 
+    public void getChargingAngle() {
+            frontLeftModule.set(0, 45);
+            frontRightModule.set(0, 225);
+            backLeftModule.set(0, 135);
+            backRightModule.set(0, 315);
+    }
+
+    public CommandBase setChargingAngle() {
+        return Commands.run(() -> getChargingAngle(), this);
+    }
+
     private void driveChassisSpeeds() {
         SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, GetMaxVelocityMetersPerSecond.getAsDouble());
 
         if (chassisSpeeds.vxMetersPerSecond != 0 ||
             chassisSpeeds.vyMetersPerSecond != 0 ||
@@ -129,7 +141,7 @@ public class Drivetrain extends SubsystemBase {
         backLeftModule.set(speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backLeftSteerAngleOffsetRadians));
         backRightModule.set(speedMetersPerSecond / maxVelocityMetersPerSecond * MaxVoltage, Cat5Math.offsetAngle(angleRadians, backRightSteerAngleOffsetRadians));
     }
-
+    
     public SwerveModulePosition[] getSwerveModulePositions() {
         TalonFX frontLeftMotor = DrivetrainConstants.getDriveMotor(DriveMotorPosition.FrontLeft);
         TalonFX frontRightMotor = DrivetrainConstants.getDriveMotor(DriveMotorPosition.FrontRight);

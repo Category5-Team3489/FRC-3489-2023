@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.Preferences;
 import frc.robot.subsystems.Drivetrain;
 
 public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
+    public static final int ChargingStationButton = 8;
+    
     public static final double MaxVoltage = 12.0;
 
     public static final double WheelsLeftToRightMeters = 0.54;

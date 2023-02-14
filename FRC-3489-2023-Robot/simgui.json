@@ -1,7 +1,9 @@
 {
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Diagnostic/Gripper/Laser Diagnostic": "Command",
+      "/Shuffleboard/Diagnostic/Gripper/Test Intake": "Command"
     }
   }
 }
