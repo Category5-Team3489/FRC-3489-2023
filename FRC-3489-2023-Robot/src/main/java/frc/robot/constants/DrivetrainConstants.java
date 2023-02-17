@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shuffleboard.Cat5Shuffleboard;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Drivetrain.ModulePosition;
 import frc.robot.subsystems.Drivetrain.DrivetrainMode;
 
 public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
@@ -63,9 +64,9 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
         ShuffleboardLayout configOffsetsLayout = Cat5Shuffleboard.createConstantsLayout("Config Offsets");
 
         CommandBase enableConfigOffsetsCommand = Commands.startEnd(() -> {
-            subsystem.setMode.accept(DrivetrainMode.ConfigOffsets);
+            subsystem.setMode(DrivetrainMode.ConfigOffsets);
         }, () -> {
-            subsystem.setMode.accept(DrivetrainMode.ChassisSpeeds);
+            subsystem.setMode(DrivetrainMode.ChassisSpeeds);
         })
         .withName("Enable Config Offsets");
 
@@ -84,19 +85,7 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
         
         driveMotors[driveMotorIndex++] = motor;
     }
-    public static TalonFX getDriveMotor(DriveMotorPosition position) {
+    public static TalonFX getDriveMotor(ModulePosition position) {
         return driveMotors[position.index];
-    }
-    public enum DriveMotorPosition {
-        FrontLeft(0),
-        FrontRight(1),
-        BackLeft(2),
-        BackRight(3);
-
-        public final int index;
-
-        private DriveMotorPosition(int index) {
-            this.index = index;
-        }
     }
 }

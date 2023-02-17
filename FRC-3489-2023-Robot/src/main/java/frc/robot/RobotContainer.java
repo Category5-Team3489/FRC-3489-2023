@@ -10,9 +10,7 @@ import frc.robot.commands.Drive;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.diagnostics.DrivetrainDiagnostics;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
-import frc.robot.subsystems.PoseEstimator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,8 +28,8 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     public final Drivetrain drivetrain = new Drivetrain();
     public final NavX2 navx = new NavX2();
-    public final Limelight limelight = new Limelight();
-    public final PoseEstimator poseEstimator = new PoseEstimator(drivetrain, navx, limelight);
+    // public final Limelight limelight = new Limelight();
+    // public final PoseEstimator poseEstimator = new PoseEstimator(drivetrain, navx, limelight);
     // public final Gripper gripper = new Gripper();
     // public final Arm arm = new Arm();
     // public final DriverCamera driverCamera = new DriverCamera();

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -12,7 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Cat5Triggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriverCameraConstants;
 import frc.robot.shuffleboard.Cat5Shuffleboard;
 
@@ -34,7 +35,8 @@ public class DriverCamera extends SubsystemBase {
             setServoAngle(DriverCameraConstants.ServoPositions[DriverCameraConstants.ServoStartingPositionIndex]);
         };
 
-        Cat5Triggers.IsTeleopEnabled.onTrue(Commands.runOnce(resetServoOnTeleopEnabled, this));
+        new Trigger(() -> DriverStation.isTeleopEnabled())
+            .onTrue(Commands.runOnce(resetServoOnTeleopEnabled, this));
 
         servoPositionIndex = DriverCameraConstants.ServoStartingPositionIndex;
 

@@ -20,38 +20,19 @@ import frc.robot.constants.DrivetrainConstants;
 
 import static frc.robot.constants.DrivetrainConstants.*;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 public class Drivetrain extends SubsystemBase {
+    private DrivetrainMode mode = DrivetrainMode.ChassisSpeeds;
+
     public final SwerveModule frontLeftModule;
     public final SwerveModule frontRightModule;
     public final SwerveModule backLeftModule;
     public final SwerveModule backRightModule;
-
-    private DrivetrainMode mode = DrivetrainMode.ChassisSpeeds;
-    public final Supplier<DrivetrainMode> getMode = () -> mode;
-    public final Consumer<DrivetrainMode> setMode = (newMode) -> mode = newMode;
 
     // [0, 2pi) radians
     private double frontLeftSteerAngleOffsetRadians = 0;
     private double frontRightSteerAngleOffsetRadians = 0;
     private double backLeftSteerAngleOffsetRadians = 0;
     private double backRightSteerAngleOffsetRadians = 0;
-    public final Supplier<Double[]> getOffsets = () -> {
-        return new Double[] {
-            frontLeftSteerAngleOffsetRadians,
-            frontRightSteerAngleOffsetRadians,
-            backLeftSteerAngleOffsetRadians,
-            backRightSteerAngleOffsetRadians
-        };
-    };
-    public final Consumer<Double[]> setOffsets = (newOffsets) -> {
-        frontLeftSteerAngleOffsetRadians = newOffsets[0];
-        frontRightSteerAngleOffsetRadians = newOffsets[1];
-        backLeftSteerAngleOffsetRadians = newOffsets[2];
-        backRightSteerAngleOffsetRadians = newOffsets[3];
-    };
 
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
@@ -60,6 +41,9 @@ public class Drivetrain extends SubsystemBase {
     private double setChassisSpeedsFrontRightSteerAngleRadians = 0;
     private double setChassisSpeedsBackLeftSteerAngleRadians = 0;
     private double setChassisSpeedsBackRightSteerAngleRadians = 0;
+
+    // TODO work on shuffleboard stuff for drivetrain, show drivetrain mode enum here, just use list layout, dont overcomplicate
+    // private ShuffleboardLayout
 
     public Drivetrain() {
         register();
@@ -111,6 +95,77 @@ public class Drivetrain extends SubsystemBase {
         );
     }
 
+    //#region Public Interface
+    // Mode
+    public DrivetrainMode getMode() {
+        return mode;
+    }
+    public void setMode(DrivetrainMode newMode) {
+        mode = newMode;
+    }
+
+    // Offsets
+    public double[] getOffsets() {
+        return new double[] {
+            frontLeftSteerAngleOffsetRadians,
+            frontRightSteerAngleOffsetRadians,
+            backLeftSteerAngleOffsetRadians,
+            backRightSteerAngleOffsetRadians
+        };
+    }
+    public void setOffsets(double[] newOffsets) {
+        frontLeftSteerAngleOffsetRadians = newOffsets[0];
+        frontRightSteerAngleOffsetRadians = newOffsets[1];
+        backLeftSteerAngleOffsetRadians = newOffsets[2];
+        backRightSteerAngleOffsetRadians = newOffsets[3];
+    }
+    public double getOffset(ModulePosition position) {
+        return getOffsets()[position.index];
+    }
+    public void setOffset(ModulePosition position, double offsetRadians) {
+        double[] newOffsets = getOffsets();
+        newOffsets[position.index] = offsetRadians;
+        setOffsets(newOffsets);
+    }
+
+    public SwerveModulePosition[] getSwerveModulePositions() {
+        // Distance Meters
+        TalonFX frontLeftMotor = DrivetrainConstants.getDriveMotor(ModulePosition.FrontLeft);
+        TalonFX frontRightMotor = DrivetrainConstants.getDriveMotor(ModulePosition.FrontRight);
+        TalonFX backLeftMotor = DrivetrainConstants.getDriveMotor(ModulePosition.BackLeft);
+        TalonFX backRightMotor = DrivetrainConstants.getDriveMotor(ModulePosition.BackRight);
+
+        double frontLeftDistanceMeters = (frontLeftMotor.getSelectedSensorPosition() / 2048.0) * DrivetrainConstants.MetersPerRotation;
+        double frontRightDistanceMeters = (frontRightMotor.getSelectedSensorPosition() / 2048.0) * DrivetrainConstants.MetersPerRotation;
+        double backLeftDistanceMeters = (backLeftMotor.getSelectedSensorPosition() / 2048.0) * DrivetrainConstants.MetersPerRotation;
+        double backRightDistanceMeters = (backRightMotor.getSelectedSensorPosition() / 2048.0) * DrivetrainConstants.MetersPerRotation;
+
+        // Rotation
+        Rotation2d frontLeftRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(frontLeftModule.getSteerAngle(), -frontLeftSteerAngleOffsetRadians));
+        Rotation2d frontRightRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(frontRightModule.getSteerAngle(), -frontRightSteerAngleOffsetRadians));
+        Rotation2d backLeftRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(backLeftModule.getSteerAngle(), -backLeftSteerAngleOffsetRadians));
+        Rotation2d backRightRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(backRightModule.getSteerAngle(), -backRightSteerAngleOffsetRadians));
+
+        return new SwerveModulePosition[] {
+            new SwerveModulePosition(frontLeftDistanceMeters, frontLeftRotation),
+            new SwerveModulePosition(frontRightDistanceMeters, frontRightRotation),
+            new SwerveModulePosition(backLeftDistanceMeters, backLeftRotation),
+            new SwerveModulePosition(backRightDistanceMeters, backRightRotation)
+        };
+    }
+    
+    public void supplyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+        this.chassisSpeeds = chassisSpeeds;
+    }
+
+    public void setPercentAngle(double percent, double angleRadians) {
+        setFrontLeftPercentAngle(percent, angleRadians);
+        setFrontRightPercentAngle(percent, angleRadians);
+        setBackLeftPercentAngle(percent, angleRadians);
+        setBackRightPercentAngle(percent, angleRadians);
+    }
+    //#endregion
+
     @Override
     public void periodic() {
         switch (mode) {
@@ -128,12 +183,12 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-    public void supplyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-        this.chassisSpeeds = chassisSpeeds;
-    }
-
+    //#region Modes
     private void configOffsets() {
-
+        frontLeftModule.set(0, 0);
+        frontRightModule.set(0, 0);
+        backLeftModule.set(0, 0);
+        backRightModule.set(0, 0);
     }
 
     private void chassisSpeeds() {
@@ -167,40 +222,9 @@ public class Drivetrain extends SubsystemBase {
         setBackLeftPercentAngle(0, Math.toRadians(45 + 270));
         setBackRightPercentAngle(0, Math.toRadians(45 + 180));
     }
-    
-    public SwerveModulePosition[] getSwerveModulePositions() {
-        // Distance Meters
-        TalonFX frontLeftMotor = DrivetrainConstants.getDriveMotor(DriveMotorPosition.FrontLeft);
-        TalonFX frontRightMotor = DrivetrainConstants.getDriveMotor(DriveMotorPosition.FrontRight);
-        TalonFX backLeftMotor = DrivetrainConstants.getDriveMotor(DriveMotorPosition.BackLeft);
-        TalonFX backRightMotor = DrivetrainConstants.getDriveMotor(DriveMotorPosition.BackRight);
+    //#endregion
 
-        double frontLeftDistanceMeters = (frontLeftMotor.getSelectedSensorPosition() / 2048.0) * DrivetrainConstants.MetersPerRotation;
-        double frontRightDistanceMeters = (frontRightMotor.getSelectedSensorPosition() / 2048.0) * DrivetrainConstants.MetersPerRotation;
-        double backLeftDistanceMeters = (backLeftMotor.getSelectedSensorPosition() / 2048.0) * DrivetrainConstants.MetersPerRotation;
-        double backRightDistanceMeters = (backRightMotor.getSelectedSensorPosition() / 2048.0) * DrivetrainConstants.MetersPerRotation;
-
-        // Rotation
-        Rotation2d frontLeftRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(frontLeftModule.getSteerAngle(), -frontLeftSteerAngleOffsetRadians));
-        Rotation2d frontRightRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(frontRightModule.getSteerAngle(), -frontRightSteerAngleOffsetRadians));
-        Rotation2d backLeftRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(backLeftModule.getSteerAngle(), -backLeftSteerAngleOffsetRadians));
-        Rotation2d backRightRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(backRightModule.getSteerAngle(), -backRightSteerAngleOffsetRadians));
-
-        return new SwerveModulePosition[] {
-            new SwerveModulePosition(frontLeftDistanceMeters, frontLeftRotation),
-            new SwerveModulePosition(frontRightDistanceMeters, frontRightRotation),
-            new SwerveModulePosition(backLeftDistanceMeters, backLeftRotation),
-            new SwerveModulePosition(backRightDistanceMeters, backRightRotation)
-        };
-    }
-
-    public enum DrivetrainMode {
-        ConfigOffsets,
-        ChassisSpeeds,
-        Brake,
-        External
-    }
-
+    //#region Set Drivetrain Methods
     // Front Left
     private void setFrontLeftPercentAngle(double percent, double angleRadians) {
         setFrontLeftVoltageAngle(percent * MaxVoltage, angleRadians);
@@ -241,4 +265,26 @@ public class Drivetrain extends SubsystemBase {
     private void setBackRightVoltageAngle(double voltage, double angleRadians) {
         backRightModule.set(voltage, Cat5Math.offsetAngle(angleRadians, backRightSteerAngleOffsetRadians));
     }
+    //#endregion
+
+    //#region Enums
+    public enum DrivetrainMode {
+        ConfigOffsets,
+        ChassisSpeeds,
+        Brake,
+        External
+    }
+    public enum ModulePosition {
+        FrontLeft(0),
+        FrontRight(1),
+        BackLeft(2),
+        BackRight(3);
+
+        public final int index;
+
+        private ModulePosition(int index) {
+            this.index = index;
+        }
+    }
+    //#endregion
 }

@@ -19,7 +19,7 @@ public class Drive extends CommandBase {
     private final DoubleSupplier translationXSupplier;
     private final DoubleSupplier translationYSupplier;
     private final DoubleSupplier rotationSupplier;
-
+ 
     public Drive(
         Drivetrain drivetrain,
         NavX2 navx,
@@ -37,7 +37,7 @@ public class Drive extends CommandBase {
 
     @Override
     public void execute() {
-        drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
+        drivetrain.supplyChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
             translationXSupplier.getAsDouble(),
             translationYSupplier.getAsDouble(),
             rotationSupplier.getAsDouble(),
@@ -47,6 +47,6 @@ public class Drive extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.drive(new ChassisSpeeds(0, 0, 0));
+        drivetrain.supplyChassisSpeeds(new ChassisSpeeds(0, 0, 0));
     }
 }
