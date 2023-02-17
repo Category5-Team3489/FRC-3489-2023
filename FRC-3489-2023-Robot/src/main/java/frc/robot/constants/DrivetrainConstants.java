@@ -1,5 +1,6 @@
 package frc.robot.constants;
 
+import java.util.Map;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -8,17 +9,22 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.shuffleboard.Cat5Shuffleboard;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Drivetrain.DrivetrainMode;
 
 public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
-    public static final int ChargingStationButton = 8;
-    
     public static final double MaxVoltage = 12.0;
+
+    public static final double MetersPerRotation = SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
+    public static final double TheoreticalMaxVelocityMetersPerSecond = 6380.0 / 60.0 * MetersPerRotation;
 
     public static final double WheelsLeftToRightMeters = 0.54;
     public static final double WheelsFrontToBackMeters = 0.54;
-
-    public static final double MetersPerRotation = SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
 
     public static final SwerveDriveKinematics Kinematics = new SwerveDriveKinematics(
         new Translation2d(WheelsLeftToRightMeters / 2.0, WheelsFrontToBackMeters / 2.0),
@@ -27,7 +33,6 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
         new Translation2d(-WheelsLeftToRightMeters / 2.0, -WheelsFrontToBackMeters / 2.0)
     );
 
-    public static final double TheoreticalMaxVelocityMetersPerSecond = 6380.0 / 60.0 * MetersPerRotation;
     public static final int FrontLeftModuleDriveMotorDeviceId = 1;
     public static final int FrontLeftModuleSteerMotorDeviceId = 2;
     public static final int FrontLeftModuleSteerEncoderDeviceId = 12;
@@ -55,6 +60,19 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
     public DrivetrainConstants(Drivetrain subsystem) {
         super(subsystem);
 
+        ShuffleboardLayout configOffsetsLayout = Cat5Shuffleboard.createConstantsLayout("Config Offsets");
+
+        CommandBase enableConfigOffsetsCommand = Commands.startEnd(() -> {
+            subsystem.setMode.accept(DrivetrainMode.ConfigOffsets);
+        }, () -> {
+            subsystem.setMode.accept(DrivetrainMode.ChassisSpeeds);
+        })
+        .withName("Enable Config Offsets");
+
+        configOffsetsLayout.add("Enable Config Offsets", enableConfigOffsetsCommand)
+            .withWidget(BuiltInWidgets.kCommand)
+            .withProperties(Map.of("Label position", "HIDDEN"));
+
         maxVelocityMetersPerSecond = Preferences.getDouble(MaxVelocityMetersPerSecondPreferencesKey, TheoreticalMaxVelocityMetersPerSecond);
     }
 
@@ -66,11 +84,9 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
         
         driveMotors[driveMotorIndex++] = motor;
     }
-
     public static TalonFX getDriveMotor(DriveMotorPosition position) {
         return driveMotors[position.index];
     }
-
     public enum DriveMotorPosition {
         FrontLeft(0),
         FrontRight(1),

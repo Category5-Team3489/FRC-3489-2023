@@ -13,6 +13,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
 import frc.robot.subsystems.PoseEstimator;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -37,13 +38,13 @@ public class RobotContainer {
     // public final Leds leds = new Leds();
 
     // Constants
+    public final DrivetrainConstants drivetrainConstants = new DrivetrainConstants(drivetrain);
     // public final ArmConstants armConstants = new ArmConstants(arm);
     // Diagnostics
     public final DrivetrainDiagnostics drivetrainDiagnostics = new DrivetrainDiagnostics(drivetrain);
 
-    // Driver Controller
+    // Controllers
     public final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
-    // Manipulator Controller
     public final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -78,15 +79,15 @@ public class RobotContainer {
         // xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
         //     .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
 
-        //LED Bindings
+        // LED Bindings
         // man.button(LedConstants.ConeLEDButton)
         //     .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCone), leds));
         // man.button(LedConstants.CubeLEDButton)
         //     .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCube), leds));
 
-        //Drivetrain Bindings
-        xbox.button(DrivetrainConstants.ChargingStationButton)
-            .whileTrue(Commands.runOnce(() -> drivetrain.setChargingAngle(), drivetrain));
+        // Drivetrain Bindings
+        // xbox.button(DrivetrainConstants.ChargingStationButton)
+        //     .whileTrue(Commands.runOnce(() -> drivetrain.setChargingAngle(), drivetrain));
     }
 
     /**

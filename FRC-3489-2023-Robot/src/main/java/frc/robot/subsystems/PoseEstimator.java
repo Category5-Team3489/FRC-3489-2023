@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
-import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer.InterpolateFunction;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -39,7 +37,7 @@ public class PoseEstimator extends SubsystemBase {
 
         new Trigger(() -> Timer.getFPGATimestamp() >= PoseEstimatorConstants.TimeUntilReadySeconds)
             .and(() -> odometry == null)
-            .and(navx.IsCalibrated)
+            .and(navx.isCalibrated)
             .onTrue(Commands.runOnce(() -> {
                 odometry = new SwerveDriveOdometry(Kinematics, navx.getRotation(), drivetrain.getSwerveModulePositions(), limelight.getPose());
             }));
