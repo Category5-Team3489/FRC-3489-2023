@@ -53,7 +53,7 @@ public class Drivetrain extends SubsystemBase {
 
         ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Drivetrain")
             .withSize(2, 1);
-        mainLayout.addString("Intake State", () -> mode.toString());
+        mainLayout.addString("Drivetrain Mode", () -> mode.toString());
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 

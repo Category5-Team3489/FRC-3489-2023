@@ -18,7 +18,7 @@ public class DrivetrainDiagnostics extends Diagnostics<Drivetrain>{
         super(subsystem);
         
         ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("Drive Train Diagnostic")
-            .withSize(2, 2);
+            .withSize(2, 4);
         diagnosticLayout.add("Test Max Speeds", getTestMaxSpeedsCommand());
         diagnosticLayout.addDouble("Front Left Velocity", () -> frontLeftMaxVelocity);
         diagnosticLayout.addDouble("Front Right Velocity", () -> frontRightMaxVelocity);
