@@ -8,9 +8,11 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shuffleboard.Cat5Shuffleboard;
@@ -55,6 +57,11 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
     public static final DoubleSupplier GetMaxVelocityMetersPerSecond = () -> maxVelocityMetersPerSecond;
     public static final DoubleSupplier GetMaxAngularVelocityRadiansPerSecond = () -> maxVelocityMetersPerSecond / Math.hypot(WheelsLeftToRightMeters / 2.0, WheelsFrontToBackMeters / 2.0);
 
+    public static final String FrontLeftSteerAngleOffsetRadiansPreferencesKey = "Drivetrain/FrontLeftSteerAngleOffsetRadians";
+    public static final String FrontRightSteerAngleOffsetRadiansPreferencesKey = "Drivetrain/FrontRightSteerAngleOffsetRadians";
+    public static final String BackLeftSteerAngleOffsetRadiansPreferencesKey = "Drivetrain/BackLeftSteerAngleOffsetRadians";
+    public static final String BackRightSteerAngleOffsetRadiansPreferencesKey = "Drivetrain/BackRightSteerAngleOffsetRadians";
+    
     private static int driveMotorIndex = 0;
     private static final TalonFX[] driveMotors = new TalonFX[4]; // frontLeft, frontRight, backLeft, backRight
 
@@ -63,7 +70,14 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
 
         ShuffleboardLayout configOffsetsLayout = Cat5Shuffleboard.createConstantsLayout("Config Offsets");
 
-        CommandBase enableConfigOffsetsCommand = Commands.startEnd(() -> {
+        GenericEntry frontLeftEntry = configOffsetsLayout.add("Front Left", subsystem.getOffset(ModulePosition.FrontLeft)).getEntry();
+        GenericEntry frontRightEntry = configOffsetsLayout.add("Front Right", subsystem.getOffset(ModulePosition.FrontRight)).getEntry();
+        GenericEntry backLeftEntry = configOffsetsLayout.add("Back Left", subsystem.getOffset(ModulePosition.BackLeft)).getEntry();
+        GenericEntry backRightEntry = configOffsetsLayout.add("Back Right", subsystem.getOffset(ModulePosition.BackRight)).getEntry();
+
+        // TODO save entry offsets
+
+        CommandBase enableConfigOffsetsCommand = Commands.runEnd(() -> {
             subsystem.setMode(DrivetrainMode.ConfigOffsets);
         }, () -> {
             subsystem.setMode(DrivetrainMode.ChassisSpeeds);
@@ -71,6 +85,26 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
         .withName("Enable Config Offsets");
 
         configOffsetsLayout.add("Enable Config Offsets", enableConfigOffsetsCommand)
+            .withWidget(BuiltInWidgets.kCommand)
+            .withProperties(Map.of("Label position", "HIDDEN"));
+
+        CommandBase saveActualOffsetsCommand = Commands.runOnce(() -> {
+            double frontLeft = subsystem.frontLeftModule.getSteerAngle();
+            double frontRight = subsystem.frontRightModule.getSteerAngle();
+            double backLeft = subsystem.backLeftModule.getSteerAngle();
+            double backRight = subsystem.backRightModule.getSteerAngle();
+
+            subsystem.setOffsets(frontLeft, frontRight, backLeft, backRight);
+
+            Preferences.setDouble(DrivetrainConstants.FrontLeftSteerAngleOffsetRadiansPreferencesKey, frontLeft);
+            Preferences.setDouble(DrivetrainConstants.FrontRightSteerAngleOffsetRadiansPreferencesKey, frontRight);
+            Preferences.setDouble(DrivetrainConstants.BackLeftSteerAngleOffsetRadiansPreferencesKey, backLeft);
+            Preferences.setDouble(DrivetrainConstants.BackRightSteerAngleOffsetRadiansPreferencesKey, backRight);
+        })
+        .ignoringDisable(true)
+        .withName("Save Actual Offsets");
+
+        configOffsetsLayout.add("Save Actual Offsets", saveActualOffsetsCommand)
             .withWidget(BuiltInWidgets.kCommand)
             .withProperties(Map.of("Label position", "HIDDEN"));
 

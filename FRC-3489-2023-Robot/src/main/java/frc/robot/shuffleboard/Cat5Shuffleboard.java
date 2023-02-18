@@ -20,7 +20,7 @@ public class Cat5Shuffleboard {
         return Shuffleboard.getTab("Constants");
     }
     public static final ShuffleboardLayout createConstantsLayout(String title) {
-        return getDiagnosticTab()
+        return getConstantsTab()
             .getLayout(title, BuiltInLayouts.kList);
     }
 

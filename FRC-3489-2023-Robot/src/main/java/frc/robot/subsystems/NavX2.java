@@ -16,15 +16,17 @@ import frc.robot.shuffleboard.Cat5Shuffleboard;
 public class NavX2 extends SubsystemBase {
     private final AHRS navx = new AHRS(SPI.Port.kMXP);
 
-    private Rotation2d navxPosition;
+    private Rotation2d heading = new Rotation2d();
 
-    private final ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Navx")
+    private final ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("NavX2")
             .withSize(2, 1);
 
     public final Trigger isCalibrated = new Trigger(() -> !navx.isCalibrating());
-    
+
     public NavX2() {
         register();
+
+        mainLayout.addDouble("Heading", () -> heading.getDegrees());
     }
 
     public void zeroYaw() {
@@ -37,10 +39,8 @@ public class NavX2 extends SubsystemBase {
         //     return Rotation2d.fromDegrees(navx.getFusedHeading());
         // }
 
-        navxPosition = Rotation2d.fromDegrees(360.0 - navx.getYaw());
-        
-        mainLayout.addDouble("Navx Rotation", () -> navxPosition.getDegrees());
+        heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
 
-        return navxPosition;
+        return heading;
     }
 }

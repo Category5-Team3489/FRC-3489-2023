@@ -9,10 +9,23 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Constants/Config Offsets/Enable Config Offsets": "Command",
+      "/Shuffleboard/Constants/Config Offsets/Save Offsets": "Command",
       "/Shuffleboard/Diagnostic/Config Offsets/Enable Config Offsets": "Command",
       "/Shuffleboard/Diagnostic/Drive Train Diagnostic/Test Max Speeds": "Command",
+      "/Shuffleboard/Diagnostic/Drivetrain Diagnostic/Test Max Speeds": "Command",
       "/Shuffleboard/Diagnostic/Gripper/Laser Diagnostic": "Command",
       "/Shuffleboard/Diagnostic/Gripper/Test Intake": "Command"
+    }
+  },
+  "NetworkTables": {
+    "persistent": {
+      "Preferences": {
+        "Drivetrain": {
+          "open": true
+        },
+        "open": true
+      }
     }
   }
 }

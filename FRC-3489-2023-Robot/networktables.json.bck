@@ -1,10 +1,3 @@
 [
-  {
-    "name": "/Preferences/test",
-    "type": "string",
-    "value": "Hello, World!",
-    "properties": {
-      "persistent": true
-    }
-  }
+
 ]

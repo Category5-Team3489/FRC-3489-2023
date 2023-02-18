@@ -10,7 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -100,6 +100,11 @@ public class Drivetrain extends SubsystemBase {
             BackRightModuleSteerEncoderDeviceId,
             0
         );
+
+        frontLeftSteerAngleOffsetRadians = Preferences.getDouble(DrivetrainConstants.FrontLeftSteerAngleOffsetRadiansPreferencesKey, 0);
+        frontRightSteerAngleOffsetRadians = Preferences.getDouble(DrivetrainConstants.FrontRightSteerAngleOffsetRadiansPreferencesKey, 0);
+        backLeftSteerAngleOffsetRadians = Preferences.getDouble(DrivetrainConstants.BackLeftSteerAngleOffsetRadiansPreferencesKey, 0);
+        backRightSteerAngleOffsetRadians = Preferences.getDouble(DrivetrainConstants.BackRightSteerAngleOffsetRadiansPreferencesKey, 0);
     }
 
     //#region Public Interface
@@ -120,7 +125,7 @@ public class Drivetrain extends SubsystemBase {
             backRightSteerAngleOffsetRadians
         };
     }
-    public void setOffsets(double[] newOffsets) {
+    public void setOffsets(double... newOffsets) {
         frontLeftSteerAngleOffsetRadians = newOffsets[0];
         frontRightSteerAngleOffsetRadians = newOffsets[1];
         backLeftSteerAngleOffsetRadians = newOffsets[2];
