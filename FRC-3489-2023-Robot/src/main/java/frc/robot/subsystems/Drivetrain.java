@@ -10,13 +10,16 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Cat5Math;
 import frc.robot.constants.DrivetrainConstants;
+import frc.robot.shuffleboard.Cat5Shuffleboard;
 
 import static frc.robot.constants.DrivetrainConstants.*;
 
@@ -43,10 +46,14 @@ public class Drivetrain extends SubsystemBase {
     private double setChassisSpeedsBackRightSteerAngleRadians = 0;
 
     // TODO work on shuffleboard stuff for drivetrain, show drivetrain mode enum here, just use list layout, dont overcomplicate
-    // private ShuffleboardLayout
+
 
     public Drivetrain() {
         register();
+
+        ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Drivetrain")
+            .withSize(2, 1);
+        mainLayout.addString("Intake State", () -> mode.toString());
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
@@ -65,7 +72,7 @@ public class Drivetrain extends SubsystemBase {
             tab.getLayout("Front Right Module", BuiltInLayouts.kList)
                 .withSize(2, 4)
                 .withPosition(2, 0),
-                Mk4SwerveModuleHelper.GearRatio.L2,
+            Mk4SwerveModuleHelper.GearRatio.L2,
             FrontRightModuleDriveMotorDeviceId,
             FrontRightModuleSteerMotorDeviceId,
             FrontRightModuleSteerEncoderDeviceId,

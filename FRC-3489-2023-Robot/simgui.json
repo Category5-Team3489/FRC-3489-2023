@@ -1,7 +1,16 @@
 {
+  "HALProvider": {
+    "RoboRIO": {
+      "window": {
+        "visible": true
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Diagnostic/Config Offsets/Enable Config Offsets": "Command",
+      "/Shuffleboard/Diagnostic/Drive Train Diagnostic/Test Max Speeds": "Command",
       "/Shuffleboard/Diagnostic/Gripper/Laser Diagnostic": "Command",
       "/Shuffleboard/Diagnostic/Gripper/Test Intake": "Command"
     }
