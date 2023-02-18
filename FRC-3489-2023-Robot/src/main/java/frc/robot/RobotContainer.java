@@ -4,16 +4,19 @@
 
 package frc.robot;
 
-import frc.robot.Constants.NavX2Constants;
+import frc.robot.Constants.LedConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Drive;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.diagnostics.DrivetrainDiagnostics;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Leds;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
+import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Drivetrain.DrivetrainMode;
-import frc.robot.subsystems.Drivetrain.ModulePosition;
+import frc.robot.subsystems.Leds.LedState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -30,12 +33,12 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     public final Drivetrain drivetrain = new Drivetrain();
     public final NavX2 navx = new NavX2();
-    // public final Limelight limelight = new Limelight();
-    // public final PoseEstimator poseEstimator = new PoseEstimator(drivetrain, navx, limelight);
+    public final Limelight limelight = new Limelight();
+    public final PoseEstimator poseEstimator = new PoseEstimator(drivetrain, navx, limelight);
     // public final Gripper gripper = new Gripper();
     // public final Arm arm = new Arm();
     // public final DriverCamera driverCamera = new DriverCamera();
-    // public final Leds leds = new Leds();
+    public final Leds leds = new Leds();
 
     // Constants
     public final DrivetrainConstants drivetrainConstants = new DrivetrainConstants(drivetrain);
@@ -52,9 +55,11 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(new Drive(
             drivetrain,
             navx,
-            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(1)) * DrivetrainConstants.GetMaxVelocityMetersPerSecond.getAsDouble(),
-            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(0)) * DrivetrainConstants.GetMaxVelocityMetersPerSecond.getAsDouble(),
-            () -> -Cat5Math.modifyAxis(xbox.getRawAxis(2)) * DrivetrainConstants.GetMaxAngularVelocityRadiansPerSecond.getAsDouble()
+            () -> -Cat5Math.modifyAxis(xbox.getLeftY()) * DrivetrainConstants.GetMaxVelocityMetersPerSecond.getAsDouble(),
+            () -> -Cat5Math.modifyAxis(xbox.getLeftX()) * DrivetrainConstants.GetMaxVelocityMetersPerSecond.getAsDouble(),
+            () -> -Cat5Math.modifyAxis(xbox.getRightX()) * DrivetrainConstants.GetMaxAngularVelocityRadiansPerSecond.getAsDouble(),
+            () -> xbox.getLeftTriggerAxis(),
+            () -> xbox.getRightTriggerAxis()
         ));
 
         // Configure the bindings
@@ -72,29 +77,37 @@ public class RobotContainer {
      */
     private void configureBindings() {
         // NavX2 Bindings
-        xbox.button(NavX2Constants.ZeroYawXboxButton)
+        xbox.back()
             .onTrue(Commands.runOnce(() -> navx.zeroYaw(), navx));
 
         // Drivetrain Bindings
-        xbox.button(DrivetrainConstants.BrakeXboxButton)
+        xbox.rightStick()
             .whileTrue(Commands.runOnce(() -> drivetrain.setMode(DrivetrainMode.Brake)))
             .onFalse(Commands.runOnce(() -> drivetrain.setMode(DrivetrainMode.ChassisSpeeds)));
-        xbox.button(DrivetrainConstants.SetCorFrontLeftButton)
-            .onTrue(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.FrontLeft)))
-            .onFalse(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.None)));
-        xbox.button(DrivetrainConstants.SetCorFrontRightButton)
-            .onTrue(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.FrontRight)))
-            .onFalse(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.None)));
+        
+        // xbox.button(DrivetrainConstants.SetCorFrontLeftButton)
+        //     .onTrue(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.FrontLeft)))
+        //     .onFalse(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.None)));
+        // xbox.button(DrivetrainConstants.SetCorFrontRightButton)
+        //     .onTrue(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.FrontRight)))
+        //     .onFalse(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.None)));
 
         // Camera Bindings
         // xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
         //     .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
 
-        // LED Bindings
-        // man.button(LedConstants.ConeLEDButton)
-        //     .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCone), leds));
-        // man.button(LedConstants.CubeLEDButton)
-        //     .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCube), leds));
+        //LED Bindings
+        xbox.button(LedConstants.ConeLEDButton)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCone), leds));
+        xbox.button(LedConstants.CubeLEDButton)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCube), leds));
+        xbox.button(1)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.Red), leds));
+        xbox.button(2)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.DarkRed), leds));
+        xbox.button(3)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.Off), leds));
+        
 
         // Drivetrain Bindings
         // xbox.button(DrivetrainConstants.ChargingStationButton)
@@ -107,6 +120,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return Autos.testAuto(this);
+        return Autos.testTestAuto(this);
     }
 }

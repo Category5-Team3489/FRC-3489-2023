@@ -20,11 +20,7 @@ import frc.robot.subsystems.Drivetrain.DrivetrainMode;
 
 public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
     //#region General
-    public static final int BrakeXboxButton = 12;
-    public static final int SetCorFrontLeftButton = 5;
-    public static final int SetCorFrontRightButton = 6;
-
-    public static final double MaxVoltage = 12.0;
+    public static final double MaxVoltage = 12.0 * 0.5; // TODO THIS IS A BEN LIMIT
 
     public static final double MetersPerRotation = SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
     public static final double TheoreticalMaxVelocityMetersPerSecond = 6380.0 / 60.0 * MetersPerRotation;
@@ -105,10 +101,14 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
     public static final String BackRightOffsetRadiansPreferencesKey = "Drivetrain/BackRightOffsetRadians";
     
     private void initConfigOffsets() {
+        // Preferences.setDouble(DrivetrainConstants.BackLeftOffsetRadiansPreferencesKey, 1.4481737375632882 - Math.toRadians(38.2));
+
         frontLeftOffsetRadians = Preferences.getDouble(FrontLeftOffsetRadiansPreferencesKey, 0);
         frontRightOffsetRadians = Preferences.getDouble(FrontRightOffsetRadiansPreferencesKey, 0);
         backLeftOffsetRadians = Preferences.getDouble(BackLeftOffsetRadiansPreferencesKey, 0);
         backRightOffsetRadians = Preferences.getDouble(BackRightOffsetRadiansPreferencesKey, 0);
+
+        // System.out.println(backLeftOffsetRadians);
 
         ShuffleboardLayout offsetsLayout = Cat5Shuffleboard.createConstantsLayout("Offsets");
 

@@ -30,7 +30,7 @@ public class DrivetrainDiagnostics extends Diagnostics<Drivetrain>{
     private void testMaxSpeeds() {
         subsystem.setMode(DrivetrainMode.External);
 
-        subsystem.setPercentAngle(1, 0);
+        subsystem.setPercentAngle(0.25, 0);
 
         frontLeftMaxVelocity = subsystem.frontLeftModule.getDriveVelocity();
         frontRightMaxVelocity = subsystem.frontRightModule.getDriveVelocity();

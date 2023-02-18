@@ -31,8 +31,8 @@ public class Leds extends SubsystemBase {
 
     private boolean haveTeleopLedsFlashedThisEnable = false;
 
-    PWMSparkMax rightLeds = new PWMSparkMax(LedConstants.Port);
-    PWMSparkMax leftLeds = new PWMSparkMax(LedConstants.Port);
+    PWMSparkMax rightLeds = new PWMSparkMax(LedConstants.RightPort);
+    PWMSparkMax leftLeds = new PWMSparkMax(LedConstants.LeftPort);
 
     public LedState ledState = LedState.Off;
 
@@ -47,7 +47,7 @@ public class Leds extends SubsystemBase {
 
         ShuffleboardLayout diagnosticLayout = Cat5Shuffleboard.createDiagnosticLayout("LEDs");
         diagnosticLayout.withSize(2, 1);
-        diagnosticLayout.add("LED", ledState);
+        diagnosticLayout.addString("LED", () -> ledState.toString());
 
         ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("LEDs")
             .withSize(2, 4);
@@ -61,7 +61,9 @@ public class Leds extends SubsystemBase {
         NeedCube,
         Intake,
         PlaceCone,
-        PlaceCube
+        PlaceCube,
+        DarkRed,
+        Red,
     }
 
     public void setLeds(LedState ledState) {
@@ -86,6 +88,11 @@ public class Leds extends SubsystemBase {
         case PlaceCube: //Blue Violet 
             setSolidColor(0.89);
         break;
+        case DarkRed:
+            setSolidColor(59);
+        break;
+        case Red:
+            setSolidColor(61);
         }
     }
 

@@ -16,16 +16,32 @@ public final class Autos {
             Commands.runOnce(() -> c.drivetrain.setMode(DrivetrainMode.External)),
             Commands.print("[Auto] Step 1"),
             Commands.run(() -> c.drivetrain.setPercentAngle(0.25, Math.toRadians(0)))
-                .withTimeout(2),
+                .withTimeout(4),
             Commands.print("[Auto] Step 2"),
             Commands.run(() -> c.drivetrain.setPercentAngle(0.25, Math.toRadians(90)))
-                .withTimeout(2),
+                .withTimeout(4),
             Commands.print("[Auto] Step 3"),
             Commands.run(() -> c.drivetrain.setPercentAngle(0.25, Math.toRadians(180)))
-                .withTimeout(2),
+                .withTimeout(4),
             Commands.print("[Auto] Step 4"),
             Commands.run(() -> c.drivetrain.setPercentAngle(0.25, Math.toRadians(270)))
-                .withTimeout(2),
+                .withTimeout(4),
+            Commands.print("[Auto] End"),
+            Commands.runOnce(() -> c.drivetrain.setPercentAngle(0, Math.toRadians(0))),
+            Commands.runOnce(() -> c.drivetrain.setMode(DrivetrainMode.ChassisSpeeds))
+        );
+    }
+
+    public static CommandBase testTestAuto(RobotContainer c) {
+        return Commands.sequence(
+            Commands.print("[Auto] Begin"),
+            Commands.runOnce(() -> c.drivetrain.setMode(DrivetrainMode.External)),
+            Commands.print("[Auto] Step 1"),
+            Commands.run(() -> c.drivetrain.setPercentAngle(0.25, Math.toRadians(0)))
+                .withTimeout(4),
+            Commands.print("[Auto] Step 2"),
+            Commands.run(() -> c.drivetrain.setPercentAngle(-0.25, Math.toRadians(0)))
+                .withTimeout(4),
             Commands.print("[Auto] End"),
             Commands.runOnce(() -> c.drivetrain.setPercentAngle(0, Math.toRadians(0))),
             Commands.runOnce(() -> c.drivetrain.setMode(DrivetrainMode.ChassisSpeeds))

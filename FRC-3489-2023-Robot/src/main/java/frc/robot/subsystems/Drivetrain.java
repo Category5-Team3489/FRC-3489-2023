@@ -39,6 +39,7 @@ public class Drivetrain extends SubsystemBase {
         
         mainLayout.addString("Drivetrain Mode", () -> mode.toString());
         mainLayout.addString("Center of Rotation", () -> centerOfRotation.toString());
+        mainLayout.addDouble("COR Multiplier", () -> centerOfRotationMultiplier);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
@@ -145,27 +146,16 @@ public class Drivetrain extends SubsystemBase {
     }
 
     //#region Center of Rotation
-    private ModulePosition centerOfRotation = ModulePosition.None;
+    private CenterOfRotation centerOfRotation = CenterOfRotation.Center;
+    private double centerOfRotationMultiplier = 0;
 
-    public void setCenterOfRotation(ModulePosition centerOfRotation) {
+    public void setCenterOfRotation(CenterOfRotation centerOfRotation, double centerOfRotationMultiplier) {
         this.centerOfRotation = centerOfRotation;
+        this.centerOfRotationMultiplier = centerOfRotationMultiplier;
     }
 
     private Translation2d getCenterOfRotation() {
-        switch (centerOfRotation) {
-            case None:
-                return new Translation2d();
-            case FrontLeft:
-                return FrontLeftMeters;
-            case FrontRight:
-                return FrontRightMeters;
-            case BackLeft:
-                return BackLeftMeters;
-            case BackRight:
-                return BackRightMeters;
-            default:
-                return new Translation2d();
-        }
+        return centerOfRotation.times(centerOfRotationMultiplier);
     }
     //#endregion
 
@@ -267,7 +257,6 @@ public class Drivetrain extends SubsystemBase {
         External
     }
     public enum ModulePosition {
-        None(-1),
         FrontLeft(0),
         FrontRight(1),
         BackLeft(2),
@@ -277,6 +266,21 @@ public class Drivetrain extends SubsystemBase {
 
         private ModulePosition(int index) {
             this.index = index;
+        }
+    }
+    public enum CenterOfRotation {
+        Center(new Translation2d()),
+        FrontLeft(DrivetrainConstants.FrontLeftMeters),
+        FrontRight(DrivetrainConstants.FrontRightMeters);
+
+        public final Translation2d offset;
+
+        private CenterOfRotation(Translation2d offset) {
+            this.offset = offset;
+        }
+
+        public Translation2d times(double multiplier) {
+            return offset.times(multiplier);
         }
     }
     //#endregion

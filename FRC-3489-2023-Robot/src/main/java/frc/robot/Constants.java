@@ -26,12 +26,9 @@ public final class Constants {
         public static final int Module = 35;
     }
 
-    public static class NavX2Constants {
-        public static final int ZeroYawXboxButton = 9;
-    }
-
     public static class LedConstants {
-        public static final int Port = 0;
+        public static final int RightPort = 0;
+        public static final int LeftPort = 1;
         public static final int Length = 162;
 
         public static final int CubeLEDButton = 7;
