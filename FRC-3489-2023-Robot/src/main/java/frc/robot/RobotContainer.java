@@ -6,12 +6,14 @@ package frc.robot;
 
 import frc.robot.Constants.NavX2Constants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.Autos;
 import frc.robot.commands.Drive;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.diagnostics.DrivetrainDiagnostics;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.NavX2;
-
+import frc.robot.subsystems.Drivetrain.DrivetrainMode;
+import frc.robot.subsystems.Drivetrain.ModulePosition;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -73,6 +75,17 @@ public class RobotContainer {
         xbox.button(NavX2Constants.ZeroYawXboxButton)
             .onTrue(Commands.runOnce(() -> navx.zeroYaw(), navx));
 
+        // Drivetrain Bindings
+        xbox.button(DrivetrainConstants.BrakeXboxButton)
+            .whileTrue(Commands.runOnce(() -> drivetrain.setMode(DrivetrainMode.Brake)))
+            .onFalse(Commands.runOnce(() -> drivetrain.setMode(DrivetrainMode.ChassisSpeeds)));
+        xbox.button(DrivetrainConstants.SetCorFrontLeftButton)
+            .onTrue(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.FrontLeft)))
+            .onFalse(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.None)));
+        xbox.button(DrivetrainConstants.SetCorFrontRightButton)
+            .onTrue(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.FrontRight)))
+            .onFalse(Commands.runOnce(() -> drivetrain.setCenterOfRotation(ModulePosition.None)));
+
         // Camera Bindings
         // xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
         //     .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
@@ -94,6 +107,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return null; // Autos.exampleAuto(exampleSubsystem);
+        return Autos.testAuto(this);
     }
 }

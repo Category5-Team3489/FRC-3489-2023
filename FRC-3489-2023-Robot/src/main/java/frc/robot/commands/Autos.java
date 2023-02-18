@@ -6,9 +6,29 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.Drivetrain.DrivetrainMode;
 
 public final class Autos {
-    public static CommandBase exampleAuto() {
-        return Commands.sequence();
+    public static CommandBase testAuto(RobotContainer c) {
+        return Commands.sequence(
+            Commands.print("[Auto] Begin"),
+            Commands.runOnce(() -> c.drivetrain.setMode(DrivetrainMode.External)),
+            Commands.print("[Auto] Step 1"),
+            Commands.run(() -> c.drivetrain.setPercentAngle(0.25, Math.toRadians(0)))
+                .withTimeout(2),
+            Commands.print("[Auto] Step 2"),
+            Commands.run(() -> c.drivetrain.setPercentAngle(0.25, Math.toRadians(90)))
+                .withTimeout(2),
+            Commands.print("[Auto] Step 3"),
+            Commands.run(() -> c.drivetrain.setPercentAngle(0.25, Math.toRadians(180)))
+                .withTimeout(2),
+            Commands.print("[Auto] Step 4"),
+            Commands.run(() -> c.drivetrain.setPercentAngle(0.25, Math.toRadians(270)))
+                .withTimeout(2),
+            Commands.print("[Auto] End"),
+            Commands.runOnce(() -> c.drivetrain.setPercentAngle(0, Math.toRadians(0))),
+            Commands.runOnce(() -> c.drivetrain.setMode(DrivetrainMode.ChassisSpeeds))
+        );
     }
 }

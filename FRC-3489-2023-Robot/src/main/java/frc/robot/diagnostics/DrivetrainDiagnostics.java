@@ -12,7 +12,6 @@ public class DrivetrainDiagnostics extends Diagnostics<Drivetrain>{
     private double frontRightMaxVelocity;
     private double backLeftMaxVelocity;
     private double backRightMaxVelocity;
-    private double averageMaxVelocity;
     
     public DrivetrainDiagnostics(Drivetrain subsystem) {
         super(subsystem);
@@ -24,7 +23,6 @@ public class DrivetrainDiagnostics extends Diagnostics<Drivetrain>{
         diagnosticLayout.addDouble("Front Right Velocity", () -> frontRightMaxVelocity);
         diagnosticLayout.addDouble("Back Left Velocity", () -> backLeftMaxVelocity);
         diagnosticLayout.addDouble("Back Right Velocity", () -> backRightMaxVelocity);
-        diagnosticLayout.addDouble("Average Velocity", () -> averageMaxVelocity);
 
         // double maxVelocityMetersPerSecond = Preferences.getDouble(PreferencesKeys.DrivetrainMaxVelocityMetersPerSecond, subsystem.theoreticalMaxVelocityMetersPerSecond);
     }
@@ -37,9 +35,7 @@ public class DrivetrainDiagnostics extends Diagnostics<Drivetrain>{
         frontLeftMaxVelocity = subsystem.frontLeftModule.getDriveVelocity();
         frontRightMaxVelocity = subsystem.frontRightModule.getDriveVelocity();
         backLeftMaxVelocity = subsystem.backLeftModule.getDriveVelocity();
-        backRightMaxVelocity = subsystem.backLeftModule.getDriveVelocity();
-
-        averageMaxVelocity = (frontLeftMaxVelocity + frontRightMaxVelocity + backLeftMaxVelocity + backRightMaxVelocity) / 4.0;
+        backRightMaxVelocity = subsystem.backRightModule.getDriveVelocity();
 
         // System.out.println("Front Left: " + frontLeftMaxVelocity);
         // System.out.println("Front Right: " + frontRightMaxVelocity);

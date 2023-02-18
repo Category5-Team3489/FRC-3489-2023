@@ -6,11 +6,11 @@ import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -31,29 +31,14 @@ public class Drivetrain extends SubsystemBase {
     public final SwerveModule backLeftModule;
     public final SwerveModule backRightModule;
 
-    // [0, 2pi) radians
-    private double frontLeftSteerAngleOffsetRadians = 0;
-    private double frontRightSteerAngleOffsetRadians = 0;
-    private double backLeftSteerAngleOffsetRadians = 0;
-    private double backRightSteerAngleOffsetRadians = 0;
-
-    private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-
-    // [0, 2pi) radians
-    private double setChassisSpeedsFrontLeftSteerAngleRadians = 0;
-    private double setChassisSpeedsFrontRightSteerAngleRadians = 0;
-    private double setChassisSpeedsBackLeftSteerAngleRadians = 0;
-    private double setChassisSpeedsBackRightSteerAngleRadians = 0;
-
-    // TODO work on shuffleboard stuff for drivetrain, show drivetrain mode enum here, just use list layout, dont overcomplicate
-
-
     public Drivetrain() {
         register();
 
         ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Drivetrain")
-            .withSize(2, 1);
+            .withSize(2, 2);
+        
         mainLayout.addString("Drivetrain Mode", () -> mode.toString());
+        mainLayout.addString("Center of Rotation", () -> centerOfRotation.toString());
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
@@ -62,9 +47,9 @@ public class Drivetrain extends SubsystemBase {
                 .withSize(2, 4)
                 .withPosition(0, 0),
             Mk4SwerveModuleHelper.GearRatio.L2,
-            FrontLeftModuleDriveMotorDeviceId,
-            FrontLeftModuleSteerMotorDeviceId,
-            FrontLeftModuleSteerEncoderDeviceId,
+            FrontLeftDriveDeviceId,
+            FrontLeftSteerDeviceId,
+            FrontLeftEncoderDeviceId,
             0
         );
 
@@ -73,9 +58,9 @@ public class Drivetrain extends SubsystemBase {
                 .withSize(2, 4)
                 .withPosition(2, 0),
             Mk4SwerveModuleHelper.GearRatio.L2,
-            FrontRightModuleDriveMotorDeviceId,
-            FrontRightModuleSteerMotorDeviceId,
-            FrontRightModuleSteerEncoderDeviceId,
+            FrontRightDriveDeviceId,
+            FrontRightSteerDeviceId,
+            FrontRightEncoderDeviceId,
             0
         );
 
@@ -84,9 +69,9 @@ public class Drivetrain extends SubsystemBase {
                 .withSize(2, 4)
                 .withPosition(4, 0),
             Mk4SwerveModuleHelper.GearRatio.L2,
-            BackLeftModuleDriveMotorDeviceId,
-            BackLeftModuleSteerMotorDeviceId,
-            BackLeftModuleSteerEncoderDeviceId,
+            BackLeftDriveDeviceId,
+            BackLeftSteerDeviceId,
+            BackLeftEncoderDeviceId,
             0
         );
 
@@ -95,16 +80,11 @@ public class Drivetrain extends SubsystemBase {
                 .withSize(2, 4)
                 .withPosition(6, 0),
             Mk4SwerveModuleHelper.GearRatio.L2,
-            BackRightModuleDriveMotorDeviceId,
-            BackRightModuleSteerMotorDeviceId,
-            BackRightModuleSteerEncoderDeviceId,
+            BackRightDriveDeviceId,
+            BackRightSteerDeviceId,
+            BackRightEncoderDeviceId,
             0
         );
-
-        frontLeftSteerAngleOffsetRadians = Preferences.getDouble(DrivetrainConstants.FrontLeftSteerAngleOffsetRadiansPreferencesKey, 0);
-        frontRightSteerAngleOffsetRadians = Preferences.getDouble(DrivetrainConstants.FrontRightSteerAngleOffsetRadiansPreferencesKey, 0);
-        backLeftSteerAngleOffsetRadians = Preferences.getDouble(DrivetrainConstants.BackLeftSteerAngleOffsetRadiansPreferencesKey, 0);
-        backRightSteerAngleOffsetRadians = Preferences.getDouble(DrivetrainConstants.BackRightSteerAngleOffsetRadiansPreferencesKey, 0);
     }
 
     //#region Public Interface
@@ -114,30 +94,6 @@ public class Drivetrain extends SubsystemBase {
     }
     public void setMode(DrivetrainMode newMode) {
         mode = newMode;
-    }
-
-    // Offsets
-    public double[] getOffsets() {
-        return new double[] {
-            frontLeftSteerAngleOffsetRadians,
-            frontRightSteerAngleOffsetRadians,
-            backLeftSteerAngleOffsetRadians,
-            backRightSteerAngleOffsetRadians
-        };
-    }
-    public void setOffsets(double... newOffsets) {
-        frontLeftSteerAngleOffsetRadians = newOffsets[0];
-        frontRightSteerAngleOffsetRadians = newOffsets[1];
-        backLeftSteerAngleOffsetRadians = newOffsets[2];
-        backRightSteerAngleOffsetRadians = newOffsets[3];
-    }
-    public double getOffset(ModulePosition position) {
-        return getOffsets()[position.index];
-    }
-    public void setOffset(ModulePosition position, double offsetRadians) {
-        double[] newOffsets = getOffsets();
-        newOffsets[position.index] = offsetRadians;
-        setOffsets(newOffsets);
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
@@ -153,10 +109,10 @@ public class Drivetrain extends SubsystemBase {
         double backRightDistanceMeters = (backRightMotor.getSelectedSensorPosition() / 2048.0) * DrivetrainConstants.MetersPerRotation;
 
         // Rotation
-        Rotation2d frontLeftRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(frontLeftModule.getSteerAngle(), -frontLeftSteerAngleOffsetRadians));
-        Rotation2d frontRightRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(frontRightModule.getSteerAngle(), -frontRightSteerAngleOffsetRadians));
-        Rotation2d backLeftRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(backLeftModule.getSteerAngle(), -backLeftSteerAngleOffsetRadians));
-        Rotation2d backRightRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(backRightModule.getSteerAngle(), -backRightSteerAngleOffsetRadians));
+        Rotation2d frontLeftRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(frontLeftModule.getSteerAngle(), -DrivetrainConstants.GetFrontLeftOffsetRadians.getAsDouble()));
+        Rotation2d frontRightRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(frontRightModule.getSteerAngle(), -DrivetrainConstants.GetFrontRightOffsetRadians.getAsDouble()));
+        Rotation2d backLeftRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(backLeftModule.getSteerAngle(), -DrivetrainConstants.GetBackLeftOffsetRadians.getAsDouble()));
+        Rotation2d backRightRotation = Rotation2d.fromRadians(Cat5Math.offsetAngle(backRightModule.getSteerAngle(), -DrivetrainConstants.GetBackRightOffsetRadians.getAsDouble()));
 
         return new SwerveModulePosition[] {
             new SwerveModulePosition(frontLeftDistanceMeters, frontLeftRotation),
@@ -165,25 +121,18 @@ public class Drivetrain extends SubsystemBase {
             new SwerveModulePosition(backRightDistanceMeters, backRightRotation)
         };
     }
-    
-    public void supplyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-        this.chassisSpeeds = chassisSpeeds;
-    }
 
-    public void setPercentAngle(double percent, double angleRadians) {
-        setFrontLeftPercentAngle(percent, angleRadians);
-        setFrontRightPercentAngle(percent, angleRadians);
-        setBackLeftPercentAngle(percent, angleRadians);
-        setBackRightPercentAngle(percent, angleRadians);
+    public void setPercentAngle(double percent, double radians) {
+        setFrontLeftPercentAngle(percent, radians);
+        setFrontRightPercentAngle(percent, radians);
+        setBackLeftPercentAngle(percent, radians);
+        setBackRightPercentAngle(percent, radians);
     }
     //#endregion
 
     @Override
     public void periodic() {
         switch (mode) {
-            case ConfigOffsets:
-                configOffsets();
-                break;
             case ChassisSpeeds:
                 chassisSpeeds();
                 break;
@@ -195,16 +144,46 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-    //#region Modes
-    private void configOffsets() {
-        frontLeftModule.set(0, 0);
-        frontRightModule.set(0, 0);
-        backLeftModule.set(0, 0);
-        backRightModule.set(0, 0);
+    //#region Center of Rotation
+    private ModulePosition centerOfRotation = ModulePosition.None;
+
+    public void setCenterOfRotation(ModulePosition centerOfRotation) {
+        this.centerOfRotation = centerOfRotation;
+    }
+
+    private Translation2d getCenterOfRotation() {
+        switch (centerOfRotation) {
+            case None:
+                return new Translation2d();
+            case FrontLeft:
+                return FrontLeftMeters;
+            case FrontRight:
+                return FrontRightMeters;
+            case BackLeft:
+                return BackLeftMeters;
+            case BackRight:
+                return BackRightMeters;
+            default:
+                return new Translation2d();
+        }
+    }
+    //#endregion
+
+    //#region Chassis Speeds
+    private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+
+    // [0, 2pi) radians
+    private double setChassisSpeedsFrontLeftSteerAngleRadians = 0;
+    private double setChassisSpeedsFrontRightSteerAngleRadians = 0;
+    private double setChassisSpeedsBackLeftSteerAngleRadians = 0;
+    private double setChassisSpeedsBackRightSteerAngleRadians = 0;
+
+    public void supplyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+        this.chassisSpeeds = chassisSpeeds;
     }
 
     private void chassisSpeeds() {
-        SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds, getCenterOfRotation());
         SwerveDriveKinematics.desaturateWheelSpeeds(states, GetMaxVelocityMetersPerSecond.getAsDouble());
 
         if (chassisSpeeds.vxMetersPerSecond != 0 ||
@@ -227,66 +206,68 @@ public class Drivetrain extends SubsystemBase {
             setBackRightPercentAngle(0, setChassisSpeedsBackRightSteerAngleRadians);
         }
     }
-
-    private void brake() {
-        setFrontLeftPercentAngle(0, Math.toRadians(45));
-        setFrontRightPercentAngle(0, Math.toRadians(45 + 90));
-        setBackLeftPercentAngle(0, Math.toRadians(45 + 270));
-        setBackRightPercentAngle(0, Math.toRadians(45 + 180));
-    }
     //#endregion
 
-    //#region Set Drivetrain Methods
+    //#region Brake
+    private void brake() {
+        setFrontLeftPercentAngle(0, Math.toRadians(45 + 90));
+        setFrontRightPercentAngle(0, Math.toRadians(45));
+        setBackLeftPercentAngle(0, Math.toRadians(45));
+        setBackRightPercentAngle(0, Math.toRadians(45 + 90));
+    }
+    //#endregion Brake
+
+    //#region Set
     // Front Left
-    private void setFrontLeftPercentAngle(double percent, double angleRadians) {
-        setFrontLeftVoltageAngle(percent * MaxVoltage, angleRadians);
+    private void setFrontLeftPercentAngle(double percent, double radians) {
+        setFrontLeftVoltageAngle(percent * MaxVoltage, radians);
     }
-    private void setFrontLeftSpeedAngle(double speedMetersPerSecond, double angleRadians) {
-        setFrontLeftVoltageAngle((speedMetersPerSecond / GetMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, angleRadians);
+    private void setFrontLeftSpeedAngle(double speedMetersPerSecond, double radians) {
+        setFrontLeftVoltageAngle((speedMetersPerSecond / GetMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
     }
-    private void setFrontLeftVoltageAngle(double voltage, double angleRadians) {
-        frontLeftModule.set(voltage, Cat5Math.offsetAngle(angleRadians, frontLeftSteerAngleOffsetRadians));
+    private void setFrontLeftVoltageAngle(double voltage, double radians) {
+        frontLeftModule.set(voltage, Cat5Math.offsetAngle(radians, DrivetrainConstants.GetFrontLeftOffsetRadians.getAsDouble()));
     }
     // Front Right
-    private void setFrontRightPercentAngle(double percent, double angleRadians) {
-        setFrontRightVoltageAngle(percent * MaxVoltage, angleRadians);
+    private void setFrontRightPercentAngle(double percent, double radians) {
+        setFrontRightVoltageAngle(percent * MaxVoltage, radians);
     }
-    private void setFrontRightSpeedAngle(double speedMetersPerSecond, double angleRadians) {
-        setFrontRightVoltageAngle((speedMetersPerSecond / GetMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, angleRadians);
+    private void setFrontRightSpeedAngle(double speedMetersPerSecond, double radians) {
+        setFrontRightVoltageAngle((speedMetersPerSecond / GetMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
     }
-    private void setFrontRightVoltageAngle(double voltage, double angleRadians) {
-        frontRightModule.set(voltage, Cat5Math.offsetAngle(angleRadians, frontRightSteerAngleOffsetRadians));
+    private void setFrontRightVoltageAngle(double voltage, double radians) {
+        frontRightModule.set(voltage, Cat5Math.offsetAngle(radians, DrivetrainConstants.GetFrontRightOffsetRadians.getAsDouble()));
     }
     // Back Left
-    private void setBackLeftPercentAngle(double percent, double angleRadians) {
-        setBackLeftVoltageAngle(percent * MaxVoltage, angleRadians);
+    private void setBackLeftPercentAngle(double percent, double radians) {
+        setBackLeftVoltageAngle(percent * MaxVoltage, radians);
     }
-    private void setBackLeftSpeedAngle(double speedMetersPerSecond, double angleRadians) {
-        setBackLeftVoltageAngle((speedMetersPerSecond / GetMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, angleRadians);
+    private void setBackLeftSpeedAngle(double speedMetersPerSecond, double radians) {
+        setBackLeftVoltageAngle((speedMetersPerSecond / GetMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
     }
-    private void setBackLeftVoltageAngle(double voltage, double angleRadians) {
-        backLeftModule.set(voltage, Cat5Math.offsetAngle(angleRadians, backLeftSteerAngleOffsetRadians));
+    private void setBackLeftVoltageAngle(double voltage, double radians) {
+        backLeftModule.set(voltage, Cat5Math.offsetAngle(radians, DrivetrainConstants.GetBackLeftOffsetRadians.getAsDouble()));
     }
     // Back Right
-    private void setBackRightPercentAngle(double percent, double angleRadians) {
-        setBackRightVoltageAngle(percent * MaxVoltage, angleRadians);
+    private void setBackRightPercentAngle(double percent, double radians) {
+        setBackRightVoltageAngle(percent * MaxVoltage, radians);
     }
-    private void setBackRightSpeedAngle(double speedMetersPerSecond, double angleRadians) {
-        setBackRightVoltageAngle((speedMetersPerSecond / GetMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, angleRadians);
+    private void setBackRightSpeedAngle(double speedMetersPerSecond, double radians) {
+        setBackRightVoltageAngle((speedMetersPerSecond / GetMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
     }
-    private void setBackRightVoltageAngle(double voltage, double angleRadians) {
-        backRightModule.set(voltage, Cat5Math.offsetAngle(angleRadians, backRightSteerAngleOffsetRadians));
+    private void setBackRightVoltageAngle(double voltage, double radians) {
+        backRightModule.set(voltage, Cat5Math.offsetAngle(radians, DrivetrainConstants.GetBackRightOffsetRadians.getAsDouble()));
     }
     //#endregion
 
     //#region Enums
     public enum DrivetrainMode {
-        ConfigOffsets,
         ChassisSpeeds,
         Brake,
         External
     }
     public enum ModulePosition {
+        None(-1),
         FrontLeft(0),
         FrontRight(1),
         BackLeft(2),
