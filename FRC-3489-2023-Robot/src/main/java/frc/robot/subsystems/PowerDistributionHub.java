@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PowerDistributionHubConstants;
 
 public class PowerDistributionHub extends SubsystemBase {
-    private final PowerDistribution pdh = new PowerDistribution(PowerDistributionHubConstants.Module, ModuleType.kRev);
+    public final PowerDistribution pdh = new PowerDistribution(PowerDistributionHubConstants.Module, ModuleType.kRev);
 
     public double getTemperature() {
         return pdh.getTemperature();

@@ -10,11 +10,12 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.Drive;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.diagnostics.DrivetrainDiagnostics;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
-import frc.robot.subsystems.PoseEstimator;
+//import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Drivetrain.DrivetrainMode;
 import frc.robot.subsystems.Leds.LedState;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,9 +35,9 @@ public class RobotContainer {
     public final Drivetrain drivetrain = new Drivetrain();
     public final NavX2 navx = new NavX2();
     public final Limelight limelight = new Limelight();
-    public final PoseEstimator poseEstimator = new PoseEstimator(drivetrain, navx, limelight);
+    //public final PoseEstimator poseEstimator = new PoseEstimator(drivetrain, navx, limelight);
     // public final Gripper gripper = new Gripper();
-    // public final Arm arm = new Arm();
+    public final Arm arm = new Arm();
     // public final DriverCamera driverCamera = new DriverCamera();
     public final Leds leds = new Leds();
 
@@ -96,17 +97,27 @@ public class RobotContainer {
         // xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
         //     .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
 
-        //LED Bindings
-        xbox.button(LedConstants.ConeLEDButton)
-            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCone), leds));
-        xbox.button(LedConstants.CubeLEDButton)
-            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCube), leds));
+        //Arm Testing
         xbox.button(1)
-            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.Red), leds));
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(true), arm));
         xbox.button(2)
-            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.DarkRed), leds));
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(false), arm));
+        man.axisGreaterThan(0, 0)
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(true), arm));
+        man.axisLessThan(0, 0)
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(false), arm));
+
+        //LED Bindings
+        xbox.button(1)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCone), leds));
+        xbox.button(2)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.NeedCube), leds));
         xbox.button(3)
-            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.Off), leds));
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.Red), leds));
+        xbox.button(4)
+            .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.DarkRed), leds));
+        // xbox.button(3)
+        //     .onTrue(Commands.runOnce(() -> leds.setLeds(LedState.Off), leds));
         
 
         // Drivetrain Bindings
