@@ -14,6 +14,7 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer.InterpolateFunction;
 import edu.wpi.first.networktables.BooleanEntry;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
@@ -39,6 +40,10 @@ public class Arm extends SubsystemBase {
     private final RelativeEncoder encoder;
 
     private boolean isHomed = false;
+    
+    private final ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Arm")
+        .withSize(2, 4);
+        
 
     /*
      * Configurable
@@ -54,6 +59,8 @@ public class Arm extends SubsystemBase {
 
     public Arm() {
         register();
+
+        mainLayout.addDouble("Motor Speed", () -> motor.get());
 
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
@@ -74,6 +81,15 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         
+    }
+    
+    public void manualArm(boolean joystickPosition) {
+        if (joystickPosition) {
+            motor.set(ArmConstants.ManualArmUpSpeed);
+        }
+        else if (!joystickPosition) {
+            motor.set(ArmConstants.ManualArmDownSpeed);
+        }
     }
 
     private void home() {

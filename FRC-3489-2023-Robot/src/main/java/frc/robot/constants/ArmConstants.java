@@ -6,6 +6,9 @@ public class ArmConstants extends ConstantsBase<Arm> {
     public static final int MotorDeviceId = 1;
     public static final int LimitSwitchChannel = 1;
 
+    public static final double ManualArmUpSpeed = 0.3;
+    public static final double ManualArmDownSpeed = -0.3;
+
     public static final double V4BarGearRatio = 50.0 / 1.0;
     public static final double RadiansPerRevolution = 1.0 / (V4BarGearRatio * 2.0 * Math.PI);
     public static final double LimitSwitchAngleRadians = Math.toRadians(-80);
