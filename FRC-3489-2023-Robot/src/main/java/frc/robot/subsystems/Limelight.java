@@ -1,11 +1,18 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Limelight extends SubsystemBase {
-    // private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+    private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
     // private final NetworkTableEntry botpose = limelight.getEntry("botpose");
+
+    private final DoubleArraySubscriber onPoseUpdated = limelight.getDoubleArrayTopic("botpose").subscribe(null);
 
     public Limelight() {
         register();
@@ -20,6 +27,9 @@ public class Limelight extends SubsystemBase {
         // pose estimator doesn't ask limelight if ready, it just goes
         // show some stuff in shuffleboard for that
         // tell pose estimator from here to make new pose
+
+        var pose = onPoseUpdated.getAtomic();
+        // pose.timestamp
     }
 
     public Pose2d getPose() {
