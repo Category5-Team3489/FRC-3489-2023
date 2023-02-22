@@ -83,11 +83,11 @@ public class Arm extends SubsystemBase {
         
     }
     
-    public void manualArm(boolean joystickPosition) {
-        if (joystickPosition) {
+    public void manualArm(double joystickPosition) {
+        if (joystickPosition > 0) {
             motor.set(ArmConstants.ManualArmUpSpeed);
         }
-        else if (!joystickPosition) {
+        else if (joystickPosition < 0) {
             motor.set(ArmConstants.ManualArmDownSpeed);
         }
     }

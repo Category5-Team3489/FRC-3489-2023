@@ -132,6 +132,21 @@ public class DrivetrainConstants extends ConstantsBase<Drivetrain> {
             .withWidget(BuiltInWidgets.kCommand)
             .withProperties(Map.of("Label position", "HIDDEN"));
 
+        //Zero with offsets
+        CommandBase zeroOffsetCommand = Commands.runOnce(() -> {
+            subsystem.setMode(DrivetrainMode.External);
+
+            subsystem.frontLeftModule.set(0, frontLeftOffsetRadians);
+            subsystem.frontRightModule.set(0, frontRightOffsetRadians);
+            subsystem.backLeftModule.set(0, backLeftOffsetRadians);
+            subsystem.backRightModule.set(0, backRightOffsetRadians);
+        })
+        .withName("Zero with Offsets");
+
+        offsetsLayout.add("Zero with Offsets", zeroOffsetCommand)
+            .withWidget(BuiltInWidgets.kCommand)
+            .withProperties(Map.of("Label position", "HIDDEN"));
+
         // Chassis Speeds
         CommandBase chassisSpeedsCommand = Commands.runOnce(() -> {
             subsystem.setMode(DrivetrainMode.ChassisSpeeds);

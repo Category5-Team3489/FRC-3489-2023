@@ -52,4 +52,6 @@ public class DrivetrainDiagnostics extends Diagnostics<Drivetrain>{
         )
             .withName("Test Max Speeds");
     }
+
+    
 }

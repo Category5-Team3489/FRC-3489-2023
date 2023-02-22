@@ -10,14 +10,17 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.Drive;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.diagnostics.DrivetrainDiagnostics;
+import frc.robot.diagnostics.MotorCurrentDiagnostics;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
+import frc.robot.subsystems.PowerDistributionHub;
 //import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Drivetrain.DrivetrainMode;
 import frc.robot.subsystems.Leds.LedState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -40,12 +43,14 @@ public class RobotContainer {
     public final Arm arm = new Arm();
     // public final DriverCamera driverCamera = new DriverCamera();
     public final Leds leds = new Leds();
+    public final PowerDistributionHub powerDistributionHub = new PowerDistributionHub();
 
     // Constants
     public final DrivetrainConstants drivetrainConstants = new DrivetrainConstants(drivetrain);
     // public final ArmConstants armConstants = new ArmConstants(arm);
     // Diagnostics
     public final DrivetrainDiagnostics drivetrainDiagnostics = new DrivetrainDiagnostics(drivetrain);
+    public final MotorCurrentDiagnostics motorCurrentDiagnostics = new MotorCurrentDiagnostics(powerDistributionHub);
 
     // Controllers
     public final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
@@ -99,13 +104,13 @@ public class RobotContainer {
 
         //Arm Testing
         xbox.button(1)
-            .whileTrue(Commands.runOnce(() -> arm.manualArm(true), arm));
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(0.2), arm));
         xbox.button(2)
-            .whileTrue(Commands.runOnce(() -> arm.manualArm(false), arm));
-        man.axisGreaterThan(0, 0)
-            .whileTrue(Commands.runOnce(() -> arm.manualArm(true), arm));
-        man.axisLessThan(0, 0)
-            .whileTrue(Commands.runOnce(() -> arm.manualArm(false), arm));
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(-0.2), arm));
+        man.axisGreaterThan(1, 0)
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(man.getY()), arm));
+        man.axisLessThan(1, 0)
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(man.getY()), arm));
 
         //LED Bindings
         xbox.button(1)
