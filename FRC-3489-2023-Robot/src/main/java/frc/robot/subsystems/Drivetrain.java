@@ -5,12 +5,14 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -24,6 +26,8 @@ import frc.robot.shuffleboard.Cat5Shuffleboard;
 import static frc.robot.constants.DrivetrainConstants.*;
 
 public class Drivetrain extends SubsystemBase {
+    private final NavX2 navx;
+
     private DrivetrainMode mode = DrivetrainMode.ChassisSpeeds;
 
     public final SwerveModule frontLeftModule;
@@ -31,8 +35,10 @@ public class Drivetrain extends SubsystemBase {
     public final SwerveModule backLeftModule;
     public final SwerveModule backRightModule;
 
-    public Drivetrain() {
+    public Drivetrain(NavX2 navx) {
         register();
+
+        this.navx = navx;
 
         ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Drivetrain")
             .withSize(2, 2);
@@ -94,6 +100,10 @@ public class Drivetrain extends SubsystemBase {
         return mode;
     }
     public void setMode(DrivetrainMode newMode) {
+        if (mode != newMode) {
+            resetDesiredHeading();
+        }
+
         mode = newMode;
     }
 
@@ -145,6 +155,28 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    //#region Desired Heading
+    private Rotation2d desiredHeading = new Rotation2d();
+    // TODO only follow or use a desired heading when controlling robot with translation control only in teleop
+    // TODO disable heading pid when doing translation only control
+    /// only actively control heading during autonomous?
+    // "Uncommanded drivetrain motion is bad"
+    // maintain heading button?
+    // compensation factor? multiplied by magnitude of x and y vector
+    // maintain position button? way later
+    // 
+
+    public void resetDesiredHeading() {
+        desiredHeading = navx.getRotation();
+    }
+
+    public double getHeadingAdjustment() {
+        Rotation2d error = navx.getRotation().minus(desiredHeading);
+
+        return error.getDegrees() * 1 + navx.getRate() * 1;
+    }
+    //#endregion
+
     //#region Center of Rotation
     private CenterOfRotation centerOfRotation = CenterOfRotation.Center;
     private double centerOfRotationMultiplier = 0;
@@ -173,6 +205,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     private void chassisSpeeds() {
+        if (DriverStation.isEnabled()) {
+            desiredHeading = desiredHeading.plus(new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * (1.0 / 50.0)));
+        }
+
         SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds, getCenterOfRotation());
         SwerveDriveKinematics.desaturateWheelSpeeds(states, GetMaxVelocityMetersPerSecond.getAsDouble());
 

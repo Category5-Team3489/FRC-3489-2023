@@ -19,7 +19,7 @@ public class NavX2 extends SubsystemBase {
     private Rotation2d heading = new Rotation2d();
 
     private final ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("NavX2")
-            .withSize(2, 1);
+        .withSize(2, 1);
 
     public final Trigger isCalibrated = new Trigger(() -> !navx.isCalibrating());
 
@@ -42,5 +42,9 @@ public class NavX2 extends SubsystemBase {
         heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
 
         return heading;
+    }
+
+    public double getRate() {
+        return navx.getRate();
     }
 }

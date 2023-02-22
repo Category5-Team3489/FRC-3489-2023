@@ -37,6 +37,7 @@ public class Robot extends TimedRobot {
   private final GenericEntry e = tab.add("E", "").getEntry();
   private final GenericEntry f = tab.add("F", "").getEntry();
   private final GenericEntry gg = tab.add("G", 0.0).getEntry();
+  private final GenericEntry p = tab.add("p", 0.0).getEntry();
 
   private final Color kBlueTarget = new Color(0.356689453125, 0.215087890625, 0.428466796875);
   private final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
@@ -68,6 +69,7 @@ public class Robot extends TimedRobot {
     r.setDouble(detectedColor.red);
     g.setDouble(detectedColor.green);
     b.setDouble(detectedColor.blue);
+    p.setDouble(m_colorSensor.getProximity());
 
     Translation3d current = new Translation3d(detectedColor.red, detectedColor.green, detectedColor.blue);
     double coneDist = current.getDistance(cone);
