@@ -4,17 +4,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public enum Cat5ShuffleboardTab {
-    Main("Main"),
-    Config("Config"),
-    Tests("Tests");
-
-    private final String name;
-    
-    private Cat5ShuffleboardTab(String name) {
-        this.name = name;
-    }
+    Main,
+    Drivetrain;
 
     public ShuffleboardTab get() {
-        return Shuffleboard.getTab(name);
+        return Shuffleboard.getTab(toString());
     }
 }

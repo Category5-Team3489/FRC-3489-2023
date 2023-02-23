@@ -1,18 +1,15 @@
 package frc.robot.subsystems;
 
-import java.util.function.Consumer;
-
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Cat5Subsystem;
 import frc.robot.Cat5Utils;
 import frc.robot.commands.Brake;
-import frc.robot.commands.TeleopDrive;
+import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.tests.drivetrain.PercentSpeedTest;
@@ -34,6 +31,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
     // Configs
     public final OffsetsConfig offsetConfig = new OffsetsConfig();
+    public final MaxVelocityConfig maxVelocityConfig = new MaxVelocityConfig();
 
     // Tests
     public final PercentSpeedTest percentTest = new PercentSpeedTest();
@@ -102,19 +100,57 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
     @Override
     protected void initShuffleboard() {
-        ShuffleboardLayout main = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
+        var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 6);
-        
-        main.add("Subsystem Info", this);
+
+        layout.add("Subsystem Info", this);
 
         // FIXME Debug stuff
-        main.add(new Brake());
+        layout.add(new Brake());
     }
 
-    @Override
-    public void periodic() {
-
+    //#region Set
+    // Front Left
+    public void setFrontLeftPercentAngle(double percent, double radians) {
+        setFrontLeftVoltageAngle(percent * MaxVoltage, radians);
     }
+    public void setFrontLeftSpeedAngle(double speedMetersPerSecond, double radians) {
+        setFrontLeftVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
+    }
+    public void setFrontLeftVoltageAngle(double voltage, double radians) {
+        frontLeftModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getFrontLeftOffsetRadians.getAsDouble()));
+    }
+    // Front Right
+    public void setFrontRightPercentAngle(double percent, double radians) {
+        setFrontRightVoltageAngle(percent * MaxVoltage, radians);
+    }
+    public void setFrontRightSpeedAngle(double speedMetersPerSecond, double radians) {
+        setFrontRightVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
+    }
+    public void setFrontRightVoltageAngle(double voltage, double radians) {
+        frontRightModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getFrontRightOffsetRadians.getAsDouble()));
+    }
+    // Back Left
+    public void setBackLeftPercentAngle(double percent, double radians) {
+        setBackLeftVoltageAngle(percent * MaxVoltage, radians);
+    }
+    public void setBackLeftSpeedAngle(double speedMetersPerSecond, double radians) {
+        setBackLeftVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
+    }
+    public void setBackLeftVoltageAngle(double voltage, double radians) {
+        backLeftModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getBackLeftOffsetRadians.getAsDouble()));
+    }
+    // Back Right
+    public void setBackRightPercentAngle(double percent, double radians) {
+        setBackRightVoltageAngle(percent * MaxVoltage, radians);
+    }
+    public void setBackRightSpeedAngle(double speedMetersPerSecond, double radians) {
+        setBackRightVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
+    }
+    public void setBackRightVoltageAngle(double voltage, double radians) {
+        backRightModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getBackRightOffsetRadians.getAsDouble()));
+    }
+    //#endregion
 
     public enum ModulePosition {
         FrontLeft(0),

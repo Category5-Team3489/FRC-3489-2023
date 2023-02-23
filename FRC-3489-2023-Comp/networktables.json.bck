@@ -2,7 +2,7 @@
   {
     "name": "/Preferences/Drivetrain/MaxVelocityMetersPerSecond",
     "type": "double",
-    "value": 4.968230454756031,
+    "value": 22.0,
     "properties": {
       "persistent": true
     }
