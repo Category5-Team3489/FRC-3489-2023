@@ -41,7 +41,7 @@ public final class Constants {
     }
 
     public static class GripperConstants {
-        public static final int LeftMotor = 11;
+        public static final int LeftMotor = 9;
         public static final int RightMotor = 10;
         public static final int SensorChannel = 12;
 

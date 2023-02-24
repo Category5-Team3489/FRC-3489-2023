@@ -5,12 +5,13 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.function.BooleanConsumer;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.RobotContainer;
 import frc.robot.Constants.GripperConstants;
 import frc.robot.shuffleboard.Cat5Shuffleboard;
 
@@ -64,10 +65,11 @@ public class Gripper extends SubsystemBase {
                 stopIntake();
             break;
             case Grab:
-                Commands.run(() -> grab(), this)
-                    .until(() -> sensor.get())
-                    .andThen(() -> setState(IntakeState.Off))
-                    .schedule();
+                //Commands.run(() -> grab(), this)
+                    //.until(() -> getLaserSenor())
+                    //.andThen(() -> setState(IntakeState.Off))
+                    //.schedule();
+                grab();
             break;
             case Place:
                     Commands.run(() -> place(), this)

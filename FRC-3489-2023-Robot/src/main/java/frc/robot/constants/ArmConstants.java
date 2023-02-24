@@ -3,7 +3,7 @@ package frc.robot.constants;
 import frc.robot.subsystems.Arm;
 
 public class ArmConstants extends ConstantsBase<Arm> {
-    public static final int MotorDeviceId = 1;
+    public static final int MotorDeviceId = 11;
     public static final int LimitSwitchChannel = 1;
 
     public static final double ManualArmUpSpeed = 0.3;

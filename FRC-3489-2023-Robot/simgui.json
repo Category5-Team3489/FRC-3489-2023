@@ -11,17 +11,42 @@
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Constants/Config Offsets/Enable Config Offsets": "Command",
       "/Shuffleboard/Constants/Config Offsets/Save Offsets": "Command",
+      "/Shuffleboard/Constants/Offsets/Chassis Speeds": "Command",
+      "/Shuffleboard/Constants/Offsets/Save": "Command",
+      "/Shuffleboard/Constants/Offsets/Zero": "Command",
+      "/Shuffleboard/Constants/Offsets/Zero with Offsets": "Command",
       "/Shuffleboard/Diagnostic/Config Offsets/Enable Config Offsets": "Command",
       "/Shuffleboard/Diagnostic/Drive Train Diagnostic/Test Max Speeds": "Command",
       "/Shuffleboard/Diagnostic/Drivetrain Diagnostic/Test Max Speeds": "Command",
       "/Shuffleboard/Diagnostic/Gripper/Laser Diagnostic": "Command",
-      "/Shuffleboard/Diagnostic/Gripper/Test Intake": "Command"
+      "/Shuffleboard/Diagnostic/Gripper/Test Intake": "Command",
+      "/Shuffleboard/Diagnostic/Motor Voltage/Get Motor Current": "Command"
     }
   },
   "NetworkTables": {
     "persistent": {
       "Preferences": {
         "Drivetrain": {
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "transitory": {
+      "Shuffleboard": {
+        "Diagnostic": {
+          "Gripper": {
+            "Laser Diagnostic": {
+              "open": true
+            },
+            "Test Intake": {
+              "open": true
+            },
+            "open": true
+          },
+          "LEDs": {
+            "open": true
+          },
           "open": true
         },
         "open": true

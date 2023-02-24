@@ -13,12 +13,14 @@ import frc.robot.diagnostics.DrivetrainDiagnostics;
 import frc.robot.diagnostics.MotorCurrentDiagnostics;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
 import frc.robot.subsystems.PowerDistributionHub;
 //import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.Drivetrain.DrivetrainMode;
+import frc.robot.subsystems.Gripper.IntakeState;
 import frc.robot.subsystems.Leds.LedState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,11 +37,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    public final Drivetrain drivetrain = new Drivetrain();
     public final NavX2 navx = new NavX2();
-    public final Limelight limelight = new Limelight();
+    public final Drivetrain drivetrain = new Drivetrain(navx);
+    //public final Limelight limelight = new Limelight();
     //public final PoseEstimator poseEstimator = new PoseEstimator(drivetrain, navx, limelight);
-    // public final Gripper gripper = new Gripper();
+     public final Gripper gripper = new Gripper();
     public final Arm arm = new Arm();
     // public final DriverCamera driverCamera = new DriverCamera();
     public final Leds leds = new Leds();
@@ -107,10 +109,16 @@ public class RobotContainer {
             .whileTrue(Commands.runOnce(() -> arm.manualArm(0.2), arm));
         xbox.button(2)
             .whileTrue(Commands.runOnce(() -> arm.manualArm(-0.2), arm));
-        man.axisGreaterThan(1, 0)
-            .whileTrue(Commands.runOnce(() -> arm.manualArm(man.getY()), arm));
-        man.axisLessThan(1, 0)
-            .whileTrue(Commands.runOnce(() -> arm.manualArm(man.getY()), arm));
+        //  man.axisGreaterThan(1, 0)
+        //      .whileTrue(Commands.runOnce(() -> arm.manualArm(man.getY()), arm));
+        // man.axisLessThan(1, 0)
+        //     .whileTrue(Commands.runOnce(() -> arm.manualArm(man.getY()), arm));
+
+        //Gripper Testing
+        man.button(2)
+            .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.Grab), gripper));
+        man.button(1)
+            .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.Off)));
 
         //LED Bindings
         xbox.button(1)
