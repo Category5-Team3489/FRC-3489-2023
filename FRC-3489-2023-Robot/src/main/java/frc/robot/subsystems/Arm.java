@@ -86,7 +86,10 @@ public class Arm extends SubsystemBase {
     }
     
     public void manualArm(double joystickPosition) {
-        if (Math.abs(joystickPosition) > 0.2 && joystickPosition > 0) {
+        if (limitSwitch.get()){
+            motor.stopMotor();
+        }
+        else if (Math.abs(joystickPosition) > 0.2 && joystickPosition > 0) {
             motor.set(ArmConstants.ManualArmUpSpeed);
         }
         else if (Math.abs(joystickPosition) > 0.2 && joystickPosition < 0) {

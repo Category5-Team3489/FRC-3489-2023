@@ -45,6 +45,18 @@ public final class Constants {
         public static final double MinOutputPercent = -0.4; // FIXME
         public static final double MaxOutputPercent = 0.4; // FIXME
     }
+    public static class GripperConstants {
+        public static final int LeftMotor = 9;
+        public static final int RightMotor = 10;
+        public static final int SensorChannel = 0;
+
+        public static final double IntakeSpeed = 0.5;
+        public static final double SlowPlaceSpeed = 0.3;
+
+        public static final int IntakeButton = 2;
+        public static final int PlacePieceButton = 5;
+        public static final int SlowPlaceButton = 6;
+    }
 
     public static class DrivetrainConstants {
         public static final double MaxVoltage = 12.0 * 0.5; // TODO THIS IS A BEN LIMIT
