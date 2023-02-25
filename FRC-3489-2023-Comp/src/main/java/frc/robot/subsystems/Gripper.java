@@ -23,8 +23,6 @@ public class Gripper extends Cat5Subsystem<Gripper>{
 
     private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(GripperConstants.RightMotor);
     private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(GripperConstants.LeftMotor);
-
-    ColorSensor colorSensor = new ColorSensor();
     
     public IntakeState intakeState = IntakeState.Off;
 
@@ -50,26 +48,28 @@ public class Gripper extends Cat5Subsystem<Gripper>{
     public void setState(IntakeState intakeState) {
         this.intakeState = intakeState;
 
+        State state = ColorSensor.get().getState();
+
         switch(intakeState) {
             case Off:
                 stopIntake();
                 break;
             case Intake:
-                if (colorSensor.getState() == State.Nothing) { //Nothing in intake
+                if (state == State.Nothing) { //Nothing in intake
                     intake();
                 }
-                else if (colorSensor.getState() == State.Cone || colorSensor.getState() == State.Cube) { // Cone or Cube in intake
+                else if (state == State.Cone || state == State.Cube) { // Cone or Cube in intake
                     stopIntake();
                 }
                 break;
             case OutTake:
-                if (colorSensor.getState() == State.Nothing) { //Nothing
+                if (state == State.Nothing) { //Nothing
                     outTake();
                 }
-                else if (colorSensor.getState() == State.Cone) { //Cone
+                else if (state == State.Cone) { //Cone
                     placeCone();
                 }
-                else if (colorSensor.getState() == State.Cube) { //Cube
+                else if (state == State.Cube) { //Cube
                     placeCube();
                 }
                 break;

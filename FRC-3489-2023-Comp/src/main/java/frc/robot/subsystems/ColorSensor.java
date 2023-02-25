@@ -4,6 +4,7 @@ import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Cat5Subsystem;
@@ -21,16 +22,19 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     //#endregion
 
     // Devices
-    private final I2C.Port i2cPort = I2C.Port.kOnboard;
+    private final I2C.Port i2cPort = I2C.Port.kMXP;
     private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
 
     // State
     private State state = State.Nothing;
     private Color color = Color.kBlack;
-    private int proximity = 2047; // 0 to 2047
+    private int proximity = 0; // 0 to 2047
 
     public ColorSensor() {
         super((i) -> instance = i);
+
+        // TODO DSAHHHHHHHH
+        // https://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues.html#onboard-i2c-causing-system-lockups
     }
 
     @Override
@@ -41,7 +45,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         layout.addDouble("Red", () -> color.red);
         layout.addDouble("Green", () -> color.green);
         layout.addDouble("Blue", () -> color.blue);
-        layout.addInteger("Proximity", () -> colorSensor.getProximity());
+        layout.addInteger("Proximity", () -> proximity);
         layout.addString("State", () -> state.toString());
     }
 
@@ -50,7 +54,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         color = colorSensor.getColor();
         proximity = colorSensor.getProximity();
 
-        if (proximity > DetectionProximity) {
+        if (proximity < DetectionProximity) {
             state = State.Nothing;
         }
         else {
@@ -64,6 +68,8 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
                 state = State.Cube; 
             }
         }
+
+        // System.out.println(state.toString());
     }
 
     public State getState() {

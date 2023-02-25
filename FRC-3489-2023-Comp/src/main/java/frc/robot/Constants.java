@@ -15,9 +15,9 @@ public final class Constants {
     }
 
     public static class ColorSensorConstants {
-        public static final Translation3d ConeColor = new Translation3d(0.552001953125, 0.373046875, 0.075439453125);
-        public static final Translation3d CubeColor = new Translation3d(0.356689453125, 0.215087890625, 0.428466796875);
-        public static final int DetectionProximity = 100;
+        public static final Translation3d ConeColor = new Translation3d(0.358, 0.556, 0.086);
+        public static final Translation3d CubeColor = new Translation3d(0.242, 0.388, 0.365);
+        public static final int DetectionProximity = 512;
     }
 
     public static class ArmConstants {
@@ -53,7 +53,7 @@ public final class Constants {
         // public static final double FeedforwardGainPercentPerRevolutionOfError = FeedforwardGainVoltsPerRadianOfError * ((1.0 / 12.0) / (2.0 * Math.PI));
         // public static final double IntegrationZoneRevolutionsOfError = IntegrationZoneRadiansOfError * (1.0 / (2.0 * Math.PI));
         public static final double MinOutputPercent = -0.5;
-        public static final double MaxOutputPercent = 0.75;
+        public static final double MaxOutputPercent = 0.85; // was 0.75
     }
     public static class GripperConstants {
         public static final int LeftMotor = 9;

@@ -20,6 +20,7 @@ import frc.robot.commands.arm.GotoHome;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.PursuePose;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Limelight;
@@ -52,14 +53,16 @@ public class RobotContainer {
 
         // Drivetrain.get();
         Arm.get();
+        ColorSensor.get();
         var gripper = Gripper.get();
 
+
         man.button(2)
-            .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.Intake), gripper));
+            .whileTrue(Commands.run(() -> gripper.setState(IntakeState.Intake), gripper));
         man.button(1)
-            .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.Off)));
+            .whileTrue(Commands.run(() -> gripper.setState(IntakeState.Off), gripper));
         man.button(3)
-            .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.OutTake), gripper));
+            .whileTrue(Commands.run(() -> gripper.setState(IntakeState.OutTake), gripper));
         
         configureBindings();
     }

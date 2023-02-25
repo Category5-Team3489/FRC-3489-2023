@@ -73,8 +73,8 @@ public class Arm extends Cat5Subsystem<Arm> {
         motor.setIdleMode(IdleMode.kBrake); // FIXME was brake
         motor.enableVoltageCompensation(12);
         motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
-        // motor.setOpenLoopRampRate(0); // TODO COULD BE VERY USEFUL!!!!!!!!, WOULD STOP JERKY MOTIONS IN A SIMPLE AND CONTROLLABLE WAY
-        // motor.setClosedLoopRampRate(0); // TODO COULD BE VERY USEFUL!!!!!!!!, WOULD STOP JERKY MOTIONS IN A SIMPLE AND CONTROLLABLE WAY
+        // motor.setOpenLoopRampRate(0.5); // TODO COULD BE VERY USEFUL!!!!!!!!, WOULD STOP JERKY MOTIONS IN A SIMPLE AND CONTROLLABLE WAY
+        // motor.setClosedLoopRampRate(5); // TODO COULD BE VERY USEFUL!!!!!!!!, WOULD STOP JERKY MOTIONS IN A SIMPLE AND CONTROLLABLE WAY
         pidController.setP(ProportionalGainPercentPerRevolutionOfError);
         pidController.setD(DerivativeGainPercentPerRevolutionPerMillisecondOfError);
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
