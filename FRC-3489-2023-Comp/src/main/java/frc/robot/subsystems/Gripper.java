@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Cat5Subsystem;
 import frc.robot.Constants.GripperConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
+import frc.robot.subsystems.ColorSensor.State;
+import frc.robot.subsystems.ColorSensor.State;
 
 public class Gripper extends Cat5Subsystem<Gripper>{
 
@@ -21,10 +23,10 @@ public class Gripper extends Cat5Subsystem<Gripper>{
 
     private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(GripperConstants.RightMotor);
     private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(GripperConstants.LeftMotor);
-    
-    public IntakeState intakeState = IntakeState.Off;
 
     ColorSensor colorSensor = new ColorSensor();
+    
+    public IntakeState intakeState = IntakeState.Off;
 
     public Gripper() {
         super((i) -> instance = i);
@@ -53,21 +55,21 @@ public class Gripper extends Cat5Subsystem<Gripper>{
                 stopIntake();
                 break;
             case Intake:
-                if (colorSensor.getColor() == Color.Nothing) { //Nothing in intake
+                if (colorSensor.getState() == State.Nothing) { //Nothing in intake
                     intake();
                 }
-                else if (colorSensor.getColor() == Color.Cone || colorSensor.getColor() == Color.Cube) { // Cone or Cube in intake
+                else if (colorSensor.getState() == State.Cone || colorSensor.getState() == State.Cube) { // Cone or Cube in intake
                     stopIntake();
                 }
                 break;
             case OutTake:
-                if (colorSensor.getColor() == Color.Nothing) { //Nothing
+                if (colorSensor.getState() == State.Nothing) { //Nothing
                     outTake();
                 }
-                else if (colorSensor.getColor() == Color.Cone) { //Cone
+                else if (colorSensor.getState() == State.Cone) { //Cone
                     placeCone();
                 }
-                else if (colorSensor.getColor() == Color.Cube) { //Cube
+                else if (colorSensor.getState() == State.Cube) { //Cube
                     placeCube();
                 }
                 break;
@@ -94,8 +96,8 @@ public class Gripper extends Cat5Subsystem<Gripper>{
     }
 
     public void placeCone() {
-        rightMotor.set(-GripperConstants.CubeOutTakeSpeed);
-        leftMotor.set(GripperConstants.CubeOutTakeSpeed);
+        rightMotor.set(-GripperConstants.ConeOutTakeSpeed);
+        leftMotor.set(GripperConstants.ConeOutTakeSpeed);
     }
 
     public void stopIntake() {
