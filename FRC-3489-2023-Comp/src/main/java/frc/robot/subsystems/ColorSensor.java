@@ -42,6 +42,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         layout.addDouble("Green", () -> color.green);
         layout.addDouble("Blue", () -> color.blue);
         layout.addInteger("Proximity", () -> colorSensor.getProximity());
+        layout.addString("State", () -> state.toString());
     }
 
     @Override
