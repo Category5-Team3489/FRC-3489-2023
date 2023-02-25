@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Cat5Subsystem;
-import frc.robot.configs.arm.ArmConfig;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.ArmConstants.*;
@@ -36,9 +36,6 @@ public class Arm extends Cat5Subsystem<Arm> {
     }
     //#endregion
 
-    // Configs
-    public final ArmConfig armConfig = new ArmConfig();
-
     private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless);
     private final DigitalInput limitSwitch = new DigitalInput(LimitSwitchChannel);
     private final SparkMaxPIDController pidController;
@@ -46,7 +43,7 @@ public class Arm extends Cat5Subsystem<Arm> {
 
     private boolean isHomed = false;
 
-    private DoubleSupplier targetAngle;
+    private DoubleSupplier targetAngleDegrees;
     private BooleanSupplier isTrackingTarget;
 
     private Arm() {
@@ -56,6 +53,9 @@ public class Arm extends Cat5Subsystem<Arm> {
         // https://docs.revrobotics.com/sparkmax/operating-modes/closed-loop-control
         // Zero degrees is horizontal + is up, - down
         // TODO Could add timer with time that arm has been stalled for using velocity and motor being set to something, get amps, maybe abs(degrees)/watt past 10 sec, if that is low then that is bad
+        // https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces
+        // encoder.setPositionConversionFactor() // TODO THIS IS USEFUL
+        // encoder.setVelocityConversionFactor() // TODO THIS IS USEFUL
 
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
@@ -86,30 +86,45 @@ public class Arm extends Cat5Subsystem<Arm> {
         layout.add("Subsystem Info", this);
 
         layout.addBoolean("Is Homed", () -> isHomed);
-        layout.addDouble("Arm Angle", () -> getAngleDegrees());
+        layout.addDouble("Arm Angle (°)", () -> getAngleDegrees());
 
-        layout.addDouble("Motor Applied Output", () -> motor.getAppliedOutput()); // FIXME THIS LIKELY POLLS THE MOTOR OVER THE CAN BUS AT 50HZ
-        layout.addDouble("Motor Temperature", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32); // FIXME THIS LIKELY POLLS THE MOTOR OVER THE CAN BUS AT 50HZ
+        layout.addDouble("Motor Applied Output (%)", () -> motor.getAppliedOutput());
+        layout.addDouble("Motor Temperature (°F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
+
+        layout.add("Force Home", Commands.runOnce(() -> {
+            isHomed = false;
+        })
+            .withName("Force Home")
+        );
+
+        var isManualControlEnabledEntry = layout.add("Enable Manual Control", false)
+            .withWidget(BuiltInWidgets.kToggleSwitch)
+            .getEntry();
+        new Trigger(() -> isManualControlEnabledEntry.getBoolean(false))
+            .whileTrue(Commands.runOnce(() -> {
+                // TODO Manual Control stuff here
+            }));
 
         var isTrackingTargetEntry = layout.add("Is Tracking Target", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .getEntry();
         isTrackingTarget = () -> isTrackingTargetEntry.getBoolean(false);
-        var targetAngleEntry = layout.add("Target Angle", LimitSwitchAngleDegrees)
+
+        var targetAngleDegreesEntry = layout.add("Target Angle (°)", LimitSwitchAngleDegrees)
             .withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(Map.of("min", LimitSwitchAngleDegrees, "max", MaxAngleDegrees))
             .getEntry();
-        targetAngle = () -> targetAngleEntry.getDouble(LimitSwitchAngleDegrees);
+        targetAngleDegrees = () -> targetAngleDegreesEntry.getDouble(LimitSwitchAngleDegrees);
     }
 
     public void gotoHome() {
-        motor.setVoltage(HomingVolts);
+        motor.setVoltage(HomingPercent * 12.0);
     }
     public void gotoAngleDegrees(double angleDegrees) {
         double referenceRotations = angleDegrees * MotorRevolutionsPerDegree;
         double direction = encoder.getVelocity() > 0 ? 1 : -1;
-        double arbFeedforward = getResistGravityVolts() + getResistStaticFrictionVolts(direction);
-        pidController.setReference(referenceRotations, ControlType.kPosition, 0, arbFeedforward, ArbFFUnits.kVoltage);
+        double arbFeedforward = getResistGravityPercent() + getResistStaticFrictionPercent(direction);
+        pidController.setReference(referenceRotations, ControlType.kPosition, 0, arbFeedforward * 12.0, ArbFFUnits.kVoltage);
     }
     public void brake() {
         motor.setVoltage(0);
@@ -124,16 +139,16 @@ public class Arm extends Cat5Subsystem<Arm> {
         return rotations * DegreesPerMotorRevolution;
     }
 
-    public double getResistGravityVolts() {
+    public double getResistGravityPercent() {
         if (!isHomed) {
             return 0;
         }
 
         double angleRadians = Math.toRadians(getAngleDegrees());
-        return Math.cos(angleRadians) * MaxResistGravityVolts;
+        return Math.cos(angleRadians) * MaxResistGravityPercent;
     }
-    public double getResistStaticFrictionVolts(double direction) {
-        return direction * ResistStaticFrictionVolts;
+    public double getResistStaticFrictionPercent(double direction) {
+        return direction * ResistStaticFrictionPercent;
     }
 
     public boolean isHomed() {
@@ -144,6 +159,6 @@ public class Arm extends Cat5Subsystem<Arm> {
         return isTrackingTarget.getAsBoolean();
     }
     public double getTargetAngleDegrees() {
-        return targetAngle.getAsDouble();
+        return targetAngleDegrees.getAsDouble();
     }
 }
