@@ -55,7 +55,7 @@ public final class Constants {
 
         public static final double IntakeSpeed = 0.5;
         public static final double OutakeSpeed = 1;
-        public static final double SlowPlaceSpeed = 0.3;
+        public static final double CubeOutTakeSpeed = 0.3;
 
         public static final int IntakeButton = 2;
         public static final int PlacePieceButton = 5;

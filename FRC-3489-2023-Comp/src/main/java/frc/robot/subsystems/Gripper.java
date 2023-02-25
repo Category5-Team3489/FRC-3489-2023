@@ -21,11 +21,10 @@ public class Gripper extends Cat5Subsystem<Gripper>{
 
     private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(GripperConstants.RightMotor);
     private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(GripperConstants.LeftMotor);
-    // private final DigitalInput sensor = new DigitalInput(GripperConstants.SensorChannel);
     
     public IntakeState intakeState = IntakeState.Off;
 
-    // ColorSensor colorSensor = new ColorSensor();
+    ColorSensor colorSensor = new ColorSensor();
 
     public Gripper() {
         super((i) -> instance = i);
@@ -43,63 +42,35 @@ public class Gripper extends Cat5Subsystem<Gripper>{
     public enum IntakeState {
         Off,
         Intake,
-        OutTake,
-        PlaceCube,
-        PlaceCone
+        OutTake
     }
+
     public void setState(IntakeState intakeState) {
         this.intakeState = intakeState;
-
-        Timer timer = new Timer();
-        timer.start();
 
         switch(intakeState) {
             case Off:
                 stopIntake();
-            break;
+                break;
             case Intake:
-                // Commands.run(() -> intake(), this)
-                //     .until(() -> getLaserSenor())
-                //     .andThen(() -> setState(IntakeState.Off))
-                //     .schedule();
-                intake();
-            break;
+                if (colorSensor.getColor() == Color.Nothing) { //Nothing in intake
+                    intake();
+                }
+                else if (colorSensor.getColor() == Color.Cone || colorSensor.getColor() == Color.Cube) { // Cone or Cube in intake
+                    stopIntake();
+                }
+                break;
             case OutTake:
-                    // Commands.run(() -> outTake(), this)
-                    // .withTimeout(2)
-                    // .andThen(() -> setState(IntakeState.Off))
-                    // .schedule();
+                if (colorSensor.getColor() == Color.Nothing) { //Nothing
                     outTake();
-                
-            break;
-            case PlaceCube:
-                Commands.run(() -> {
-                    // if (!sensor.get()) {
-                    //     if (timer.hasElapsed(2)) {
-                    //         setState(IntakeState.Off);
-                    //     }
-                    // }
-                    // else {
-                    //     placeCube();
-                    // }
-                }, this)
-                    .schedule();
-                
-            break;
-            case PlaceCone:
-                Commands.run(() -> {
-                    // if (!sensor.get()) {
-                    //     //timer.start();
-                    //     if (timer.hasElapsed(2)) {
-                    //         setState(IntakeState.Off);
-                    //     }
-                    // }
-                    // else {
-                    //     placeCone();
-                    // }
-                }, this)
-                    .schedule();
-            break;
+                }
+                else if (colorSensor.getColor() == Color.Cone) { //Cone
+                    placeCone();
+                }
+                else if (colorSensor.getColor() == Color.Cube) { //Cube
+                    placeCube();
+                }
+                break;
         }
     }
 
@@ -118,13 +89,13 @@ public class Gripper extends Cat5Subsystem<Gripper>{
     }
 
     public void placeCube() {
-        rightMotor.set(-GripperConstants.SlowPlaceSpeed);
-        leftMotor.set(GripperConstants.SlowPlaceSpeed);
+        rightMotor.set(-GripperConstants.CubeOutTakeSpeed);
+        leftMotor.set(GripperConstants.CubeOutTakeSpeed);
     }
 
     public void placeCone() {
-        rightMotor.set(-GripperConstants.SlowPlaceSpeed);
-        leftMotor.set(GripperConstants.SlowPlaceSpeed);
+        rightMotor.set(-GripperConstants.CubeOutTakeSpeed);
+        leftMotor.set(GripperConstants.CubeOutTakeSpeed);
     }
 
     public void stopIntake() {
