@@ -13,6 +13,41 @@ public final class Constants {
         public static final double XboxStickDeadband = 0.05;
     }
 
+    public static class ArmConstants {
+        public static final int MotorDeviceId = 11;
+        public static final int LimitSwitchChannel = 1;
+    
+        public static final double MotorRevolutionsPerRevolution = 100.0 / 1.0; // FIXME DOUBLE CHECK THIS CONSTANT
+        public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution * 360.0;
+        public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
+        public static final double LimitSwitchAngleDegrees = -80.0; // FIXME
+        public static final double MaxAngleDegrees = 90.0; // FIXME
+    
+        public static final int StallSmartCurrentLimitAmps = 40;
+
+        public static final double MaxResistGravityVolts = 0.05 * 12.0; // FIXME
+        public static final double ResistStaticFrictionVolts = 0.05 * 12.0; // FIXME
+        public static final double HomingVolts = -0.15 * 12.0; // FIXME
+    
+        // TODO IMPORTANT CONVERT EVERY ARM CONSTANT TO DEGREES, NOWHERE REQUIRES RADIANS, NO NEED TO MAKE IT MORE CONFUSING
+        // TODO GET RID OF VOLTS ALSO, USE PERCENT
+        private static final double ProportionalGainVoltsPerRadianOfError = (0.2 * 12.0) / Math.toRadians(90); // FIXME
+        // private static final double IntegralGainVoltsPerRadianSecondOfError = (0.0 * 12.0) / (Math.toRadians(90) * 1.0);
+        private static final double DerivativeGainVoltsPerRadianPerSecondOfError = (0.0 * 12.0) / (Math.toRadians(90) / 1.0); // FIXME
+        // private static final double FeedforwardGainVoltsPerRadianOfError = (0 * 12.0) / Math.toRadians(90);
+        // private static final double IntegrationZoneRadiansOfError = Math.toRadians(45);
+        private static final double MinOutputVolts = -0.4 * 12.0; // FIXME
+        private static final double MaxOutputVolts = 0.4 * 12.0; // FIXME
+    
+        public static final double ProportionalGainPercentPerRevolutionOfError = ProportionalGainVoltsPerRadianOfError * ((1.0 / 12.0) / (2.0 * Math.PI));
+        // public static final double IntegralGainPercentPerRevolutionMillisecondOfError = IntegralGainVoltsPerRadianSecondOfError * ((1.0 / 12.0)) / ((1.0 / (2.0 * Math.PI)) * (1.0 / 1000.0));
+        public static final double DerivativeGainPercentPerRevolutionPerMillisecondOfError = DerivativeGainVoltsPerRadianPerSecondOfError * ((1.0 / 12.0)) / ((1.0 / (2.0 * Math.PI)) / (1.0 / 1000.0));
+        // public static final double FeedforwardGainPercentPerRevolutionOfError = FeedforwardGainVoltsPerRadianOfError * ((1.0 / 12.0) / (2.0 * Math.PI));
+        // public static final double IntegrationZoneRevolutionsOfError = IntegrationZoneRadiansOfError * (1.0 / (2.0 * Math.PI));
+        public static final double MinOutputPercent = MinOutputVolts * (1.0 / 12.0);
+        public static final double MaxOutputPercent = MaxOutputVolts * (1.0 / 12.0);
+    }
+
     public static class DrivetrainConstants {
         public static final double MaxVoltage = 12.0 * 0.5; // TODO THIS IS A BEN LIMIT
 

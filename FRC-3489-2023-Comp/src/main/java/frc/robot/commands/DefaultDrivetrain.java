@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
-public class TeleopDrive extends CommandBase {
-    public TeleopDrive() {
+public class DefaultDrivetrain extends CommandBase {
+    public DefaultDrivetrain() {
         addRequirements(Drivetrain.get());
     }
 

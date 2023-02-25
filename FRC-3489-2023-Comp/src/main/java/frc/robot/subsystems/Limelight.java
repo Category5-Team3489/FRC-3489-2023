@@ -3,9 +3,6 @@ package frc.robot.subsystems;
 import frc.robot.Cat5Subsystem;
 
 public class Limelight extends Cat5Subsystem<Limelight> {
-    // https://www.andymark.com/products/limelight-2-plus
-    // Field of View: 59.6 x 49.7 degrees
-
     //#region Singleton
     private static Limelight instance;
 
@@ -20,6 +17,9 @@ public class Limelight extends Cat5Subsystem<Limelight> {
 
     public Limelight() {
         super(null);
+
+        // https://www.andymark.com/products/limelight-2-plus
+        // Field of View: 59.6 x 49.7 degrees
 
         // botpose	Robot transform in field-space. Translation (X,Y,Z) Rotation(Roll,Pitch,Yaw), total latency (cl+tl)
 

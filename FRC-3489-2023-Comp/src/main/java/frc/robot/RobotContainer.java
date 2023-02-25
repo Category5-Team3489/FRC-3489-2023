@@ -13,9 +13,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.TeleopDrive;
+import frc.robot.commands.DefaultDrivetrain;
+import frc.robot.commands.arm.GotoTarget;
+import frc.robot.commands.arm.GotoHome;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.PursuePose;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
@@ -46,8 +49,12 @@ public class RobotContainer {
 
     public RobotContainer() {
         var drivetrain = Drivetrain.get();
+        var arm = Arm.get();
 
-        drivetrain.setDefaultCommand(new TeleopDrive());
+        drivetrain.setDefaultCommand(new DefaultDrivetrain());
+        arm.setDefaultCommand(new GotoHome());
+        new Trigger(() -> arm.isHomed())
+            .whileTrue(new GotoTarget());
 
         configureBindings();
     }

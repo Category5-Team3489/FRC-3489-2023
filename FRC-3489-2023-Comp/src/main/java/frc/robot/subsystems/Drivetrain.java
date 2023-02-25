@@ -46,7 +46,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
     // State
 
-    protected Drivetrain() {
+    private Drivetrain() {
         super(null);
 
         //#region Init Modules
@@ -152,6 +152,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     }
     //#endregion
 
+    //#region Enums
     public enum ModulePosition {
         FrontLeft(0),
         FrontRight(1),
@@ -164,4 +165,5 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             this.index = index;
         }
     }
+    //#endregion
 }
