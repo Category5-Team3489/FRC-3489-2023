@@ -100,8 +100,10 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
     @Override
     protected void initShuffleboard() {
+        System.out.println("DASJDSHIHADSHDASHADS");
+
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-            .withSize(2, 6);
+            .withSize(2, 3);
 
         layout.add("Subsystem Info", this);
 

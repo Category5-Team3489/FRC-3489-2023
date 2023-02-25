@@ -81,7 +81,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     @Override
     protected void initShuffleboard() {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-        .withSize(2, 6);
+        .withSize(2, 3);
 
         layout.add("Subsystem Info", this);
 
@@ -90,6 +90,8 @@ public class Arm extends Cat5Subsystem<Arm> {
 
         layout.addDouble("Motor Applied Output (%)", () -> motor.getAppliedOutput());
         layout.addDouble("Motor Temperature (°F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
+
+        layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 
         layout.add("Force Home", Commands.runOnce(() -> {
             isHomed = false;

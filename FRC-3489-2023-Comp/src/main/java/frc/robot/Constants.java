@@ -15,18 +15,18 @@ public final class Constants {
 
     public static class ArmConstants {
         public static final int MotorDeviceId = 11;
-        public static final int LimitSwitchChannel = 1;
+        public static final int LimitSwitchChannel = 0;
     
-        public static final double MotorRevolutionsPerRevolution = 100.0 / 1.0; // FIXME DOUBLE CHECK THIS CONSTANT
-        public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution * 360.0;
+        public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (44.0 / 12.0); // FIXME DOUBLE CHECK THIS CONSTANT
+        public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
-        public static final double LimitSwitchAngleDegrees = -80.0; // FIXME
-        public static final double MaxAngleDegrees = 90.0; // FIXME
+        public static final double LimitSwitchAngleDegrees = -120.0; // FIXME
+        public static final double MaxAngleDegrees = 0.0; // FIXME
     
-        public static final int StallSmartCurrentLimitAmps = 40;
+        public static final int StallSmartCurrentLimitAmps = 30;
 
-        public static final double MaxResistGravityPercent = 0.05; // FIXME
-        public static final double ResistStaticFrictionPercent = 0.05; // FIXME
+        public static final double MaxResistGravityPercent = 0.025; // FIXME
+        public static final double ResistStaticFrictionPercent = 0; // FIXME
         public static final double HomingPercent = -0.15; // FIXME
     
         // TODO IMPORTANT CONVERT EVERY ARM CONSTANT TO DEGREES, NOWHERE REQUIRES RADIANS, NO NEED TO MAKE IT MORE CONFUSING

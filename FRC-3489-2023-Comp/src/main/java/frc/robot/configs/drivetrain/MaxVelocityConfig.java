@@ -24,10 +24,10 @@ public class MaxVelocityConfig extends Cat5Config {
         var layout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
             .withSize(2, 3);
 
-        layout.addDouble("Max Velocity", getMaxVelocityMetersPerSecond);
-        layout.addDouble("Max Angular Velocity", getMaxAngularVelocityRadiansPerSecond);
+        layout.addDouble("Max Velocity (m per s)", getMaxVelocityMetersPerSecond);
+        layout.addDouble("Max Angular Velocity (rad per s)", getMaxAngularVelocityRadiansPerSecond);
 
-        var setMaxVelocityEntry = layout.add("Set Max Velocity", maxVelocityMetersPerSecond).getEntry();
+        var setMaxVelocityEntry = layout.add("Set Max Velocity (m per s)", maxVelocityMetersPerSecond).getEntry();
         layout.add(Commands.runOnce(() -> {
             maxVelocityMetersPerSecond = setMaxVelocityEntry.getDouble(maxVelocityMetersPerSecond);
             Preferences.setDouble(MaxVelocityMetersPerSecondPreferencesKey, maxVelocityMetersPerSecond);

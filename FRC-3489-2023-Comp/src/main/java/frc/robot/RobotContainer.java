@@ -48,14 +48,14 @@ public class RobotContainer {
     public final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
 
     public RobotContainer() {
-        var drivetrain = Drivetrain.get();
+        // var drivetrain = Drivetrain.get();
         var arm = Arm.get();
 
-        drivetrain.setDefaultCommand(new DefaultDrivetrain());
+        // drivetrain.setDefaultCommand(new DefaultDrivetrain());
         arm.setDefaultCommand(new GotoHome());
         new Trigger(() -> arm.isHomed())
             .whileTrue(new GotoTarget());
-
+        
         configureBindings();
     }
 
