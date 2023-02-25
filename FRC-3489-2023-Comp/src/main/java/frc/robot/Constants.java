@@ -3,6 +3,7 @@ package frc.robot;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 public final class Constants {
@@ -11,6 +12,12 @@ public final class Constants {
         public static final int ManPort = 1;
         
         public static final double XboxStickDeadband = 0.05;
+    }
+
+    public static class ColorSensorConstants {
+        public static final Translation3d ConeColor = new Translation3d(0.552001953125, 0.373046875, 0.075439453125);
+        public static final Translation3d CubeColor = new Translation3d(0.356689453125, 0.215087890625, 0.428466796875);
+        public static final int DetectionProximity = 100;
     }
 
     public static class ArmConstants {
