@@ -4,19 +4,15 @@ import frc.robot.Cat5Subsystem;
 
 public class Limelight extends Cat5Subsystem<Limelight> {
     //#region Singleton
-    private static Limelight instance;
+    private static Limelight instance = new Limelight();
 
     public static Limelight get() {
-        if (instance == null) {
-            instance = new Limelight();
-        }
-
         return instance;
     }
     //#endregion
 
-    public Limelight() {
-        super(null);
+    private Limelight() {
+        super((i) -> instance = i);
 
         // https://www.andymark.com/products/limelight-2-plus
         // Field of View: 59.6 x 49.7 degrees

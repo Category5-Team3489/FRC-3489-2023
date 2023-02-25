@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Cat5Subsystem;
 import frc.robot.Cat5Utils;
 import frc.robot.commands.Brake;
+import frc.robot.commands.DefaultDrivetrain;
 import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -18,13 +19,9 @@ import static frc.robot.Constants.DrivetrainConstants.*;
 
 public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     //#region Singleton
-    private static Drivetrain instance;
+    private static Drivetrain instance = new Drivetrain();
 
     public static Drivetrain get() {
-        if (instance == null) {
-            instance = new Drivetrain();
-        }
-
         return instance;
     }
     //#endregion
@@ -47,7 +44,9 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     // State
 
     private Drivetrain() {
-        super(null);
+        super((i) -> instance = i);
+
+        setDefaultCommand(new DefaultDrivetrain());
 
         //#region Init Modules
         ShuffleboardTab tab = Shuffleboard.getTab("SDS Debug");
@@ -100,8 +99,6 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
     @Override
     protected void initShuffleboard() {
-        System.out.println("DASJDSHIHADSHDASHADS");
-
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 

@@ -5,6 +5,6 @@ import frc.robot.subsystems.Drivetrain;
 
 public class Brake extends CommandBase {
     public Brake() {
-        addRequirements(Drivetrain.get());
+        addRequirements();
     }
 }

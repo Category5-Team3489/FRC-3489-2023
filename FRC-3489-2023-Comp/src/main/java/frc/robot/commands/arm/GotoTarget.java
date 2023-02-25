@@ -4,12 +4,16 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 
 public class GotoTarget extends CommandBase {
+    public GotoTarget() {
+        addRequirements(Arm.get());
+    }
+
     @Override
     public void execute() {
         boolean isTrackingTarget = Arm.get().isTrackingTarget();
         if (isTrackingTarget) {
-            double targetAngle = Arm.get().getTargetAngleDegrees();
-            Arm.get().gotoAngleDegrees(targetAngle);
+            double targetAngleDegrees = Arm.get().getTargetAngleDegrees();
+            Arm.get().gotoAngleDegrees(targetAngleDegrees);
         }
         else {
             Arm.get().brake();

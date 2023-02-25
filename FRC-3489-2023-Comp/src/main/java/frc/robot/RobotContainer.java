@@ -10,6 +10,7 @@ import java.util.List;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -20,23 +21,21 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.PursuePose;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Gripper.IntakeState;
 
 public class RobotContainer {
     //#region Singleton
-    private static RobotContainer instance;
+    private static RobotContainer instance = new RobotContainer();
 
     public static RobotContainer get() {
-        if (instance == null) {
-            instance = new RobotContainer();
-        }
-
         return instance;
     }
     //#endregion
 
     //#region Cat 5 Subsystems
-    private static List<Cat5Subsystem<?>> cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
+    private static List<Cat5Subsystem<?>> cat5Subsystems;
 
     public static void registerCat5Subsystem(Cat5Subsystem<?> cat5Subsystem) {
         cat5Subsystems.add(cat5Subsystem);
@@ -48,13 +47,19 @@ public class RobotContainer {
     public final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
 
     public RobotContainer() {
-        // var drivetrain = Drivetrain.get();
-        var arm = Arm.get();
+        instance = this;
+        cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
 
-        // drivetrain.setDefaultCommand(new DefaultDrivetrain());
-        arm.setDefaultCommand(new GotoHome());
-        new Trigger(() -> arm.isHomed())
-            .whileTrue(new GotoTarget());
+        // Drivetrain.get();
+        Arm.get();
+        var gripper = Gripper.get();
+
+        man.button(2)
+            .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.Intake), gripper));
+        man.button(1)
+            .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.Off)));
+        man.button(3)
+            .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.OutTake), gripper));
         
         configureBindings();
     }

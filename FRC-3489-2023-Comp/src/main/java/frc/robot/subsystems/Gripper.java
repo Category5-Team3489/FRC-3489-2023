@@ -13,26 +13,22 @@ import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 public class Gripper extends Cat5Subsystem<Gripper>{
 
-    private static Gripper instance;
+    private static Gripper instance = new Gripper();
 
     public static Gripper get() {
-        if (instance == null) {
-            instance = new Gripper();
-        }
-
         return instance;
     }
 
     private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(GripperConstants.RightMotor);
     private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(GripperConstants.LeftMotor);
-    private final DigitalInput sensor = new DigitalInput(GripperConstants.SensorChannel);
+    // private final DigitalInput sensor = new DigitalInput(GripperConstants.SensorChannel);
     
     public IntakeState intakeState = IntakeState.Off;
 
-    ColorSensor colorSensor = new ColorSensor();
+    // ColorSensor colorSensor = new ColorSensor();
 
     public Gripper() {
-        super(null);
+        super((i) -> instance = i);
         
     }
     @Override
@@ -40,8 +36,8 @@ public class Gripper extends Cat5Subsystem<Gripper>{
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 
-        layout.add("Subsystem Info", this);
-        layout.add("Intake State", intakeState);
+        // layout.add("Subsystem Info", this);
+        layout.addString("Intake State", () -> intakeState.toString());
     }
 
     public enum IntakeState {
@@ -69,37 +65,38 @@ public class Gripper extends Cat5Subsystem<Gripper>{
                 intake();
             break;
             case OutTake:
-                    Commands.run(() -> outTake(), this)
-                    .withTimeout(2)
-                    .andThen(() -> setState(IntakeState.Off))
-                    .schedule();
+                    // Commands.run(() -> outTake(), this)
+                    // .withTimeout(2)
+                    // .andThen(() -> setState(IntakeState.Off))
+                    // .schedule();
+                    outTake();
                 
             break;
             case PlaceCube:
                 Commands.run(() -> {
-                    if (!sensor.get()) {
-                        if (timer.hasElapsed(2)) {
-                            setState(IntakeState.Off);
-                        }
-                    }
-                    else {
-                        placeCube();
-                    }
+                    // if (!sensor.get()) {
+                    //     if (timer.hasElapsed(2)) {
+                    //         setState(IntakeState.Off);
+                    //     }
+                    // }
+                    // else {
+                    //     placeCube();
+                    // }
                 }, this)
                     .schedule();
                 
             break;
             case PlaceCone:
                 Commands.run(() -> {
-                    if (!sensor.get()) {
-                        //timer.start();
-                        if (timer.hasElapsed(2)) {
-                            setState(IntakeState.Off);
-                        }
-                    }
-                    else {
-                        placeCone();
-                    }
+                    // if (!sensor.get()) {
+                    //     //timer.start();
+                    //     if (timer.hasElapsed(2)) {
+                    //         setState(IntakeState.Off);
+                    //     }
+                    // }
+                    // else {
+                    //     placeCone();
+                    // }
                 }, this)
                     .schedule();
             break;
@@ -116,8 +113,8 @@ public class Gripper extends Cat5Subsystem<Gripper>{
     }
 
     public void outTake() {
-        rightMotor.set(-GripperConstants.IntakeSpeed);
-        leftMotor.set(GripperConstants.IntakeSpeed);
+        rightMotor.set(-GripperConstants.OutakeSpeed);
+        leftMotor.set(GripperConstants.OutakeSpeed);
     }
 
     public void placeCube() {

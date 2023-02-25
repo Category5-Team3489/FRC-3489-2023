@@ -8,13 +8,17 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Cat5Subsystem;
+import frc.robot.Cat5Utils;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.commands.arm.GotoHome;
+import frc.robot.commands.arm.GotoTarget;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.ArmConstants.*;
@@ -25,29 +29,32 @@ import java.util.function.DoubleSupplier;
 
 public class Arm extends Cat5Subsystem<Arm> {
     //#region Singleton
-    private static Arm instance;
+    private static Arm instance = new Arm();
 
     public static Arm get() {
-        if (instance == null) {
-            instance = new Arm();
-        }
-
         return instance;
     }
     //#endregion
 
+    // Devices
     private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless);
     private final DigitalInput limitSwitch = new DigitalInput(LimitSwitchChannel);
     private final SparkMaxPIDController pidController;
     private final RelativeEncoder encoder;
 
-    private boolean isHomed = false;
-
+    // Suppliers
+    private BooleanSupplier isManualControlEnabled;
     private DoubleSupplier targetAngleDegrees;
     private BooleanSupplier isTrackingTarget;
 
+    // Commands
+    private final GotoTarget gotoTarget = new GotoTarget();
+
+    // State
+    private boolean isHomed = false;
+
     private Arm() {
-        super(null);
+        super((i) -> instance = i);
 
         // Remember: NEO position units are rotations
         // https://docs.revrobotics.com/sparkmax/operating-modes/closed-loop-control
@@ -57,11 +64,13 @@ public class Arm extends Cat5Subsystem<Arm> {
         // encoder.setPositionConversionFactor() // TODO THIS IS USEFUL
         // encoder.setVelocityConversionFactor() // TODO THIS IS USEFUL
 
+        setDefaultCommand(new GotoHome());
+
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
 
         motor.restoreFactoryDefaults();
-        motor.setIdleMode(IdleMode.kBrake);
+        motor.setIdleMode(IdleMode.kBrake); // FIXME was brake
         motor.enableVoltageCompensation(12);
         motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
         // motor.setOpenLoopRampRate(0); // TODO COULD BE VERY USEFUL!!!!!!!!, WOULD STOP JERKY MOTIONS IN A SIMPLE AND CONTROLLABLE WAY
@@ -70,12 +79,36 @@ public class Arm extends Cat5Subsystem<Arm> {
         pidController.setD(DerivativeGainPercentPerRevolutionPerMillisecondOfError);
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
+    }
 
-        new Trigger(() -> limitSwitch.get())
-            .whileTrue(Commands.runOnce(() -> {
-                isHomed = true;
-                setAngleDegrees(LimitSwitchAngleDegrees);
-            }));
+    @Override
+    public void periodic() {
+        if (limitSwitch.get()) {
+            isHomed = true;
+            setAngleDegrees(LimitSwitchAngleDegrees);
+        }
+
+        if (isManualControlEnabled.getAsBoolean()) {
+            gotoTarget.cancel();
+
+            double y = -RobotContainer.get().man.getY();
+            y = Cat5Utils.linearAxis(y, 0.1);
+            if (y >= 0) {
+                y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxUpPercent, y);
+            }
+            else {
+                y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxDownPercent, -y);
+            }
+            motor.setVoltage(y * 12.0);
+        }
+        else {
+            if (isHomed) {
+                gotoTarget.schedule();
+            }
+            else {
+                gotoTarget.cancel();
+            }
+        }
     }
 
     @Override
@@ -102,10 +135,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         var isManualControlEnabledEntry = layout.add("Enable Manual Control", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .getEntry();
-        new Trigger(() -> isManualControlEnabledEntry.getBoolean(false))
-            .whileTrue(Commands.runOnce(() -> {
-                // TODO Manual Control stuff here
-            }));
+        isManualControlEnabled = () -> isManualControlEnabledEntry.getBoolean(false);
 
         var isTrackingTargetEntry = layout.add("Is Tracking Target", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
@@ -120,6 +150,10 @@ public class Arm extends Cat5Subsystem<Arm> {
     }
 
     public void gotoHome() {
+        if (isHomed) {
+            return;
+        }
+        
         motor.setVoltage(HomingPercent * 12.0);
     }
     public void gotoAngleDegrees(double angleDegrees) {
@@ -151,10 +185,6 @@ public class Arm extends Cat5Subsystem<Arm> {
     }
     public double getResistStaticFrictionPercent(double direction) {
         return direction * ResistStaticFrictionPercent;
-    }
-
-    public boolean isHomed() {
-        return isHomed;
     }
 
     public boolean isTrackingTarget() {

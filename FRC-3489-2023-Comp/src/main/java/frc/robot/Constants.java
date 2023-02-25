@@ -16,19 +16,22 @@ public final class Constants {
     public static class ArmConstants {
         public static final int MotorDeviceId = 11;
         public static final int LimitSwitchChannel = 0;
+
+        public static final double ManualControlMaxDownPercent = -0.3;
+        public static final double ManualControlMaxUpPercent = 0.3;
     
         public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (44.0 / 12.0); // FIXME DOUBLE CHECK THIS CONSTANT
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
         public static final double LimitSwitchAngleDegrees = -120.0; // FIXME
-        public static final double MaxAngleDegrees = 0.0; // FIXME
+        public static final double MaxAngleDegrees = 45.0; // FIXME
     
         public static final int StallSmartCurrentLimitAmps = 30;
 
         public static final double MaxResistGravityPercent = 0.025; // FIXME
         public static final double ResistStaticFrictionPercent = 0; // FIXME
-        public static final double HomingPercent = -0.15; // FIXME
-    
+        public static final double HomingPercent = -0.40; // was -0.15
+        
         // TODO IMPORTANT CONVERT EVERY ARM CONSTANT TO DEGREES, NOWHERE REQUIRES RADIANS, NO NEED TO MAKE IT MORE CONFUSING
         // TODO GET RID OF VOLTS ALSO, USE PERCENT
         private static final double ProportionalGainVoltsPerRadianOfError = (0.2 * 12.0) / Math.toRadians(90); // FIXME
@@ -37,13 +40,13 @@ public final class Constants {
         // private static final double FeedforwardGainVoltsPerRadianOfError = (0 * 12.0) / Math.toRadians(90);
         // private static final double IntegrationZoneRadiansOfError = Math.toRadians(45);
     
-        public static final double ProportionalGainPercentPerRevolutionOfError = ProportionalGainVoltsPerRadianOfError * ((1.0 / 12.0) / (2.0 * Math.PI));
+        public static final double ProportionalGainPercentPerRevolutionOfError = 0.025;
         // public static final double IntegralGainPercentPerRevolutionMillisecondOfError = IntegralGainVoltsPerRadianSecondOfError * ((1.0 / 12.0)) / ((1.0 / (2.0 * Math.PI)) * (1.0 / 1000.0));
-        public static final double DerivativeGainPercentPerRevolutionPerMillisecondOfError = DerivativeGainVoltsPerRadianPerSecondOfError * ((1.0 / 12.0)) / ((1.0 / (2.0 * Math.PI)) / (1.0 / 1000.0));
+        public static final double DerivativeGainPercentPerRevolutionPerMillisecondOfError = 0;
         // public static final double FeedforwardGainPercentPerRevolutionOfError = FeedforwardGainVoltsPerRadianOfError * ((1.0 / 12.0) / (2.0 * Math.PI));
         // public static final double IntegrationZoneRevolutionsOfError = IntegrationZoneRadiansOfError * (1.0 / (2.0 * Math.PI));
-        public static final double MinOutputPercent = -0.4; // FIXME
-        public static final double MaxOutputPercent = 0.4; // FIXME
+        public static final double MinOutputPercent = -0.5;
+        public static final double MaxOutputPercent = 0.75;
     }
     public static class GripperConstants {
         public static final int LeftMotor = 9;
@@ -51,6 +54,7 @@ public final class Constants {
         public static final int SensorChannel = 0;
 
         public static final double IntakeSpeed = 0.5;
+        public static final double OutakeSpeed = 1;
         public static final double SlowPlaceSpeed = 0.3;
 
         public static final int IntakeButton = 2;

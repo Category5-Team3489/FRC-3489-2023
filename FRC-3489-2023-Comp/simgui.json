@@ -9,6 +9,7 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/Shuffleboard/Drivetrain/MaxVelocityConfig/Save": "Command",
       "/Shuffleboard/Drivetrain/OffsetsConfig/Configure": "Command",

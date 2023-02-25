@@ -144,5 +144,4 @@ public class ColorSensor extends Cat5Subsystem<Gripper>{
     
         System.out.println(detectedColor.toHexString());
     }
-    
 }
