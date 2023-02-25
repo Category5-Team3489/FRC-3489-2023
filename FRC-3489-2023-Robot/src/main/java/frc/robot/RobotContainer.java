@@ -104,21 +104,34 @@ public class RobotContainer {
         // xbox.button(DriverCameraConstants.IndexServoPositionXboxButton)
         //     .onTrue(Commands.runOnce(() -> driverCamera.indexServoPosition(), driverCamera));
 
-        //Arm Testing
+        //Arm Testing:
+        //Manual Arm xbox
         xbox.button(1)
             .whileTrue(Commands.runOnce(() -> arm.manualArm(0.2), arm));
         xbox.button(2)
             .whileTrue(Commands.runOnce(() -> arm.manualArm(-0.2), arm));
-        //  man.axisGreaterThan(1, 0)
-        //      .whileTrue(Commands.runOnce(() -> arm.manualArm(man.getY()), arm));
-        // man.axisLessThan(1, 0)
-        //     .whileTrue(Commands.runOnce(() -> arm.manualArm(man.getY()), arm));
+        //Manual Arm Joystick
+        man.axisGreaterThan(1, 0)
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(-man.getY()), arm));
+        man.axisLessThan(1, 0)
+            .whileTrue(Commands.runOnce(() -> arm.manualArm(-man.getY()), arm));
+        //Set Position
+        man.button(11)
+            .onTrue(Commands.runOnce(() -> arm.testHome(true), arm));
+        man.button(9)
+            .onTrue(Commands.runOnce(() -> arm.testMid(), arm));
+        man.button(7)
+            .onTrue(Commands.runOnce(() -> arm.testHigh(), arm));
+        man.button(4)
+            .onTrue(Commands.runOnce(() -> arm.stopArm(), arm));
 
         //Gripper Testing
         man.button(2)
             .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.Grab), gripper));
         man.button(1)
             .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.Off)));
+        man.button(3)
+            .onTrue(Commands.runOnce(() -> gripper.setState(IntakeState.Place), gripper));
 
         //LED Bindings
         xbox.button(1)

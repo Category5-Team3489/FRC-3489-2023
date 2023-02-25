@@ -40,6 +40,7 @@ public class Arm extends SubsystemBase {
     private final RelativeEncoder encoder;
 
     private boolean isHomed = false;
+    private double armAngle = 0;
     
     private final ShuffleboardLayout mainLayout = Cat5Shuffleboard.createMainLayout("Arm")
         .withSize(2, 4);
@@ -61,6 +62,7 @@ public class Arm extends SubsystemBase {
         register();
 
         mainLayout.addDouble("Motor Speed", () -> motor.get());
+        mainLayout.addDouble("Arm Position", () -> armAngle);
 
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
@@ -84,12 +86,37 @@ public class Arm extends SubsystemBase {
     }
     
     public void manualArm(double joystickPosition) {
-        if (joystickPosition > 0) {
+        if (Math.abs(joystickPosition) > 0.2 && joystickPosition > 0) {
             motor.set(ArmConstants.ManualArmUpSpeed);
         }
-        else if (joystickPosition < 0) {
+        else if (Math.abs(joystickPosition) > 0.2 && joystickPosition < 0) {
             motor.set(ArmConstants.ManualArmDownSpeed);
         }
+    }
+
+    //Button 11 to start, 4 to stop
+    public void testHome(boolean testHome) {
+        if (testHome) {
+            motor.setVoltage(ArmConstants.HomingVolts);
+        }
+        else {
+            motor.stopMotor();
+            encoder.setPosition(0);
+        }
+    }
+
+    public void testMid() { //9
+        setAngleRadians(ArmConstants.TestMidAngle);
+        armAngle = ArmConstants.TestMidAngle;
+    }
+
+    public void testHigh() { //7
+        setAngleRadians(ArmConstants.TestHighAngle);
+        armAngle = ArmConstants.TestHighAngle;
+    }
+
+    public void stopArm() { //4
+        motor.stopMotor();
     }
 
     private void home() {
@@ -124,6 +151,8 @@ public class Arm extends SubsystemBase {
     private double getResistStaticFrictionVolts(double sign) {
         return sign * ArmConstants.ResistStaticFrictionVolts;
     }
+
+    
 
 
 
