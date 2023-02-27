@@ -6,7 +6,6 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.Cat5Subsystem;
 import frc.robot.Cat5Utils;
 import frc.robot.commands.Brake;
 import frc.robot.commands.DefaultDrivetrain;
@@ -98,7 +97,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     }
 
     @Override
-    protected void initShuffleboard() {
+    public void initShuffleboard() {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 

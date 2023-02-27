@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Cat5Subsystem;
 import frc.robot.Constants.GripperConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.ColorSensor.State;
@@ -26,17 +25,18 @@ public class Gripper extends Cat5Subsystem<Gripper>{
     
     public IntakeState intakeState = IntakeState.Off;
 
-    public Gripper() {
+    private Gripper() {
         super((i) -> instance = i);
         
     }
     @Override
-    protected void initShuffleboard() {
+    public void initShuffleboard() {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 
         // layout.add("Subsystem Info", this);
         layout.addString("Intake State", () -> intakeState.toString());
+        layout.add("Test", Commands.run(() -> setState(IntakeState.Intake)));
     }
 
     public enum IntakeState {

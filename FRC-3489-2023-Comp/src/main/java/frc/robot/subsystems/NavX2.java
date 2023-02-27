@@ -5,7 +5,6 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import frc.robot.Cat5Subsystem;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 public class NavX2 extends Cat5Subsystem<NavX2> {
@@ -28,7 +27,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     }
 
     @Override
-    protected void initShuffleboard() {
+    public void initShuffleboard() {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 

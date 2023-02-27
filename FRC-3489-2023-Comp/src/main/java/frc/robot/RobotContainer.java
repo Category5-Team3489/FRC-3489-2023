@@ -7,23 +7,16 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.DefaultDrivetrain;
-import frc.robot.commands.arm.GotoTarget;
-import frc.robot.commands.arm.GotoHome;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.PursuePose;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
-import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Gripper.IntakeState;
 
 public class RobotContainer {
@@ -39,7 +32,13 @@ public class RobotContainer {
     private static List<Cat5Subsystem<?>> cat5Subsystems;
 
     public static void registerCat5Subsystem(Cat5Subsystem<?> cat5Subsystem) {
+        for (Cat5Subsystem<?> subsystem : cat5Subsystems) {
+            if (subsystem.getClass().getSimpleName() == cat5Subsystem.getClass().getSimpleName()) {
+                throw new RuntimeException("Attempted to register subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\" twice");
+            }
+        }
         cat5Subsystems.add(cat5Subsystem);
+        System.out.println("Registered subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\"");
     }
     //#endregion
 
@@ -47,11 +46,12 @@ public class RobotContainer {
     public final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
     public final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
 
-    public RobotContainer() {
+    private RobotContainer() {
         instance = this;
         cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
 
-        // Drivetrain.get();
+        // Initialize subsystems
+        Drivetrain.get();
         Arm.get();
         ColorSensor.get();
         var gripper = Gripper.get();

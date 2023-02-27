@@ -6,7 +6,7 @@ import frc.robot.subsystems.Drivetrain;
 
 public class DefaultDrivetrain extends CommandBase {
     public DefaultDrivetrain() {
-        addRequirements();
+        addRequirements(Drivetrain.get());
     }
 
     @Override

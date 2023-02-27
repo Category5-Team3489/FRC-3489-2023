@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.Cat5Subsystem;
-
 public class Limelight extends Cat5Subsystem<Limelight> {
     //#region Singleton
     private static Limelight instance = new Limelight();
@@ -24,7 +22,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     }
 
     @Override
-    protected void initShuffleboard() {
+    public void initShuffleboard() {
 
     }
 }

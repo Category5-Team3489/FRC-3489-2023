@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Cat5Subsystem;
 import frc.robot.Cat5Utils;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
@@ -112,7 +111,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     }
 
     @Override
-    protected void initShuffleboard() {
+    public void initShuffleboard() {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
         .withSize(2, 3);
 

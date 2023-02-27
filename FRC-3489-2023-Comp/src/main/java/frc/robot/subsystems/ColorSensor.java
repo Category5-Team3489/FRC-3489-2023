@@ -4,10 +4,8 @@ import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.Cat5Subsystem;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.ColorSensorConstants.*;
@@ -30,7 +28,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     private Color color = Color.kBlack;
     private int proximity = 0; // 0 to 2047
 
-    public ColorSensor() {
+    private ColorSensor() {
         super((i) -> instance = i);
 
         // TODO DSAHHHHHHHH
@@ -38,7 +36,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     }
 
     @Override
-    protected void initShuffleboard() {
+    public void initShuffleboard() {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 
@@ -68,6 +66,8 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
                 state = State.Cube; 
             }
         }
+
+        state = State.Cube;
 
         // System.out.println(state.toString());
     }
