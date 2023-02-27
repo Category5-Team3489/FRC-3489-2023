@@ -6,5 +6,21 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/ColorSensor/DetectionProximity",
+    "type": "double",
+    "value": 5312.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ColorSensor/ConeColor",
+    "type": "string",
+    "value": "#202040",
+    "properties": {
+      "persistent": true
+    }
   }
 ]

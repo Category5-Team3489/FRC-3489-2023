@@ -84,7 +84,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     public void periodic() {
         if (limitSwitch.get()) {
             isHomed = true;
-            setAngleDegrees(LimitSwitchAngleDegrees);
+            setAngleDegrees(MinAngleDegrees);
         }
 
         if (isManualControlEnabled.getAsBoolean()) {
@@ -141,11 +141,11 @@ public class Arm extends Cat5Subsystem<Arm> {
             .getEntry();
         isTrackingTarget = () -> isTrackingTargetEntry.getBoolean(false);
 
-        var targetAngleDegreesEntry = layout.add("Target Angle (°)", LimitSwitchAngleDegrees)
+        var targetAngleDegreesEntry = layout.add("Target Angle (°)", MinAngleDegrees)
             .withWidget(BuiltInWidgets.kNumberSlider)
-            .withProperties(Map.of("min", LimitSwitchAngleDegrees, "max", MaxAngleDegrees))
+            .withProperties(Map.of("min", MinAngleDegrees, "max", MaxAngleDegrees))
             .getEntry();
-        targetAngleDegrees = () -> targetAngleDegreesEntry.getDouble(LimitSwitchAngleDegrees);
+        targetAngleDegrees = () -> targetAngleDegreesEntry.getDouble(MinAngleDegrees);
     }
 
     public void gotoHome() {
@@ -180,7 +180,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         }
 
         double angleRadians = Math.toRadians(getAngleDegrees());
-        return Math.cos(angleRadians) * MaxResistGravityPercent;
+        return Math.cos(angleRadians) * HorizontalResistGravityPercent;
     }
     public double getResistStaticFrictionPercent(double direction) {
         return direction * ResistStaticFrictionPercent;

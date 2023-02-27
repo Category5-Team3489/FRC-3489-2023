@@ -2,7 +2,23 @@
   {
     "name": "/Preferences/Drivetrain/MaxVelocityMetersPerSecond",
     "type": "double",
-    "value": 22.0,
+    "value": 4.968230454756031,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ColorSensor/DetectionProximity",
+    "type": "double",
+    "value": 5.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ColorSensor/ConeColor",
+    "type": "string",
+    "value": "#202040",
     "properties": {
       "persistent": true
     }

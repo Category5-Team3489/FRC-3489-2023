@@ -2,74 +2,87 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.GamePiece;
 import frc.robot.Constants.GripperConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
-import frc.robot.subsystems.ColorSensor.State;
-import frc.robot.subsystems.ColorSensor.State;
 
-public class Gripper extends Cat5Subsystem<Gripper>{
-
+public class Gripper extends Cat5Subsystem<Gripper> {
+    //#region Singleton
     private static Gripper instance = new Gripper();
 
     public static Gripper get() {
         return instance;
     }
+    //#endregion
 
-    private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(GripperConstants.RightMotor);
-    private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(GripperConstants.LeftMotor);
+    // Devices
+    private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(GripperConstants.LeftMotorDeviceId);
+    private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(GripperConstants.RightMotorDeviceId);
+
+    // Commands
+    private final CommandBase stopCommand = getStopCommand();
+    private final CommandBase intakeCommand = getIntakeCommand();
+    private final CommandBase outtakeConeCommand = getOuttakeConeCommand();
+    private final CommandBase outtakeCubeCommand = getOuttakeCubeCommand();
     
-    public IntakeState intakeState = IntakeState.Off;
+    // State
+    private GamePiece heldGamePiece = GamePiece.Unknown; // set unknown when intaking and unknown, set unknown when outaking
 
     private Gripper() {
         super((i) -> instance = i);
-        
+
+        setDefaultCommand(stopCommand);
     }
+
     @Override
     public void initShuffleboard() {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 
-        // layout.add("Subsystem Info", this);
-        layout.addString("Intake State", () -> intakeState.toString());
-        layout.add("Test", Commands.run(() -> setState(IntakeState.Intake)));
+        layout.add("Subsystem Info", this);
+
+        var subsystemLayout = getLayout(Cat5ShuffleboardTab.Gripper, BuiltInLayouts.kList)
+            .withSize(2, 3);
+
+        subsystemLayout.add(stopCommand);
+        subsystemLayout.add(intakeCommand);
+        subsystemLayout.add(outtakeConeCommand);
+        subsystemLayout.add(outtakeCubeCommand);
     }
 
-    public enum IntakeState {
-        Off,
-        Intake,
-        OutTake
+    @Override
+    public void periodic() {
+        GamePiece detectedGamePiece
     }
 
     public void setState(IntakeState intakeState) {
         this.intakeState = intakeState;
 
-        State state = ColorSensor.get().getState();
+        ColorSensorState state = ColorSensor.get().getDetectedGamePiece();
 
         switch(intakeState) {
             case Off:
                 stopIntake();
                 break;
             case Intake:
-                if (state == State.Nothing) { //Nothing in intake
+                if (state == ColorSensorState.Nothing) { //Nothing in intake
                     intake();
                 }
-                else if (state == State.Cone || state == State.Cube) { // Cone or Cube in intake
+                else if (state == ColorSensorState.Cone || state == ColorSensorState.Cube) { // Cone or Cube in intake
                     stopIntake();
                 }
                 break;
             case OutTake:
-                if (state == State.Nothing) { //Nothing
+                if (state == ColorSensorState.Nothing) { //Nothing
                     outTake();
                 }
-                else if (state == State.Cone) { //Cone
+                else if (state == ColorSensorState.Cone) { //Cone
                     placeCone();
                 }
-                else if (state == State.Cube) { //Cube
+                else if (state == ColorSensorState.Cube) { //Cube
                     placeCube();
                 }
                 break;
@@ -81,27 +94,73 @@ public class Gripper extends Cat5Subsystem<Gripper>{
     }
 
     public void intake() {
-        rightMotor.set(GripperConstants.IntakeSpeed);
-        leftMotor.set(-GripperConstants.IntakeSpeed);
+        rightMotor.set(GripperConstants.IntakePercent);
+        leftMotor.set(-GripperConstants.IntakePercent);
     }
 
     public void outTake() {
-        rightMotor.set(-GripperConstants.OutakeSpeed);
-        leftMotor.set(GripperConstants.OutakeSpeed);
+        rightMotor.set(-GripperConstants.OutakePercent);
+        leftMotor.set(GripperConstants.OutakePercent);
     }
 
     public void placeCube() {
-        rightMotor.set(-GripperConstants.CubeOutTakeSpeed);
-        leftMotor.set(GripperConstants.CubeOutTakeSpeed);
+        rightMotor.set(-GripperConstants.OuttakeCubePercent);
+        leftMotor.set(GripperConstants.OuttakeCubePercent);
     }
 
     public void placeCone() {
-        rightMotor.set(-GripperConstants.ConeOutTakeSpeed);
-        leftMotor.set(GripperConstants.ConeOutTakeSpeed);
+        rightMotor.set(-GripperConstants.OuttakeConePercent);
+        leftMotor.set(GripperConstants.OuttakeConePercent);
     }
 
     public void stopIntake() {
         rightMotor.set(0);
         leftMotor.set(0);
     }
+
+    // Percent: negative pulls in, positive pushes out
+    private void setMotors(double percent) {
+        if (percent != 0) {
+            leftMotor.set(percent);
+            rightMotor.set(-percent);
+        }
+        else {
+            leftMotor.stopMotor();
+            rightMotor.stopMotor();
+        }
+    }
+
+    //#region Commands
+    private CommandBase getStopCommand() {
+        return Commands.run(() -> {
+            setMotors(0);
+        }, this)
+            .withName("Stop");
+    }
+    private CommandBase getIntakeCommand() {
+        return Commands.run(() -> {
+            GamePiece detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
+            if (detectedGamePiece == GamePiece.Unknown) {
+                setMotors(GripperConstants.IntakePercent);
+            }
+            else {
+                heldGamePiece = detectedGamePiece;
+                stopCommand.schedule();
+            }
+        }, this)
+            .withName("Intake");
+    }
+    private CommandBase getOuttakeConeCommand() {
+        return Commands.run(() -> {
+            setMotors(GripperConstants.OuttakeConePercent);
+        }, this)
+            .withName("Outtake Cone");
+    }
+    private CommandBase getOuttakeCubeCommand() {
+        return Commands.run(() -> {
+            setMotors(GripperConstants.OuttakeCubePercent);
+        }, this)
+            .withName("Outtake Cube");
+    }
+    //#endregion
 }

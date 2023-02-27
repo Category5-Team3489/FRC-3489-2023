@@ -6,7 +6,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 public enum Cat5ShuffleboardTab {
     Main,
     Drivetrain,
-    Arm;
+    Arm,
+    ColorSensor,
+    Gripper;
 
     public ShuffleboardTab get() {
         return Shuffleboard.getTab(toString());

@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.util.Color;
 
 public class Cat5Utils {
     public static double linearAxis(double value, double deadband) {
@@ -22,6 +23,14 @@ public class Cat5Utils {
         } else {
             return 0.0;
         }
+    }
+    
+    public static Color hex2Rgb(String colorStr) {
+        return new Color(
+            Integer.valueOf(colorStr.substring(1, 3), 16),
+            Integer.valueOf(colorStr.substring(3, 5), 16),
+            Integer.valueOf(colorStr.substring(5, 7), 16)
+        );
     }
 
     public static double wrapAngle(double angleRadians) {

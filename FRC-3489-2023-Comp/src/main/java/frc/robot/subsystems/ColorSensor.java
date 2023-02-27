@@ -6,9 +6,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.GamePiece;
+import frc.robot.configs.colorsensor.ColorAndProximityConfig;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
-
-import static frc.robot.Constants.ColorSensorConstants.*;
 
 public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     //#region Singleton
@@ -19,19 +19,20 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     }
     //#endregion
 
+    // Configs
+    public final ColorAndProximityConfig colorAndProximityConfig = new ColorAndProximityConfig();
+
     // Devices
-    private final I2C.Port i2cPort = I2C.Port.kMXP;
-    private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
+    private final ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kMXP);
 
     // State
-    private State state = State.Nothing;
-    private Color color = Color.kBlack;
+    private Color color = new Color(0, 0, 0);
     private int proximity = 0; // 0 to 2047
+    private GamePiece detectedGamePiece = GamePiece.Unknown;
 
     private ColorSensor() {
         super((i) -> instance = i);
 
-        // TODO DSAHHHHHHHH
         // https://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues.html#onboard-i2c-causing-system-lockups
     }
 
@@ -44,7 +45,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         layout.addDouble("Green", () -> color.green);
         layout.addDouble("Blue", () -> color.blue);
         layout.addInteger("Proximity", () -> proximity);
-        layout.addString("State", () -> state.toString());
+        layout.addString("Detected Game Piece", () -> detectedGamePiece.toString());
     }
 
     @Override
@@ -52,33 +53,29 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         color = colorSensor.getColor();
         proximity = colorSensor.getProximity();
 
-        if (proximity < DetectionProximity) {
-            state = State.Nothing;
+        if (proximity < colorAndProximityConfig.getDetectionProximity.get()) {
+            detectedGamePiece = GamePiece.Unknown;
         }
         else {
             Translation3d current = new Translation3d(color.red, color.green, color.blue);
-            double cone = current.getDistance(ConeColor);
-            double cube = current.getDistance(CubeColor);
+            Color coneColor = colorAndProximityConfig.getConeColor.get();
+            Color cubeColor = colorAndProximityConfig.getCubeColor.get();
+            double cone = current.getDistance(new Translation3d(coneColor.red, coneColor.green, coneColor.blue));
+            double cube = current.getDistance(new Translation3d(cubeColor.red, cubeColor.green, cubeColor.blue));
             if (cone <= cube) {
-                state = State.Cone;
+                detectedGamePiece = GamePiece.Cone;
             }
             else {
-                state = State.Cube; 
+                detectedGamePiece = GamePiece.Cube; 
             }
         }
-
-        state = State.Cube;
-
-        // System.out.println(state.toString());
     }
 
-    public State getState() {
-        return state;
+    public Color getColor() {
+        return color;
     }
 
-    public enum State {
-        Cone,
-        Cube,
-        Nothing
+    public GamePiece getDetectedGamePiece() {
+        return detectedGamePiece;
     }
 }
