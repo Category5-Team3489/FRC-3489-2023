@@ -18,7 +18,6 @@ import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.NavX2;
-import frc.robot.subsystems.Gripper.IntakeState;
 
 public class RobotContainer {
     //#region Singleton
@@ -41,10 +40,6 @@ public class RobotContainer {
         cat5Subsystems.add(cat5Subsystem);
         System.out.println("Registered subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\"");
     }
-
-    public void initShuffleboard() {
-        cat5Subsystems.forEach(Cat5Subsystem::initShuffleboard);
-    }
     //#endregion
 
     // Controllers
@@ -60,21 +55,13 @@ public class RobotContainer {
         // If subsystem isn't working, call Subsystem.get() here
         // Check type if layout.add, or tab.add fails
         // If command doesnt run when disabled, set ignore disabled true
-        // .add or .addString only, wont override text if typed over otherwise
 
         // Initialize subsystems
         Drivetrain.get();
         NavX2.get();
         Arm.get();
         ColorSensor.get();
-        var gripper = Gripper.get();
-
-        man.button(2)
-            .whileTrue(Commands.run(() -> gripper.setState(IntakeState.Intake), gripper));
-        man.button(1)
-            .whileTrue(Commands.run(() -> gripper.setState(IntakeState.Off), gripper));
-        man.button(3)
-            .whileTrue(Commands.run(() -> gripper.setState(IntakeState.OutTake), gripper));
+        Gripper.get();
         
         configureBindings();
     }

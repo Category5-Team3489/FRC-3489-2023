@@ -26,7 +26,9 @@ public class ColorAndProximityConfig extends Cat5Config {
     public final Supplier<Integer> getDetectionProximity = () -> detectionProximity;
 
     public ColorAndProximityConfig() {
-        load();
+        coneColor = Cat5Utils.hex2Rgb(Preferences.getString(ConeColorPreferencesKey, "#000000"));
+        cubeColor = Cat5Utils.hex2Rgb(Preferences.getString(CubeColorPreferencesKey, "#000000"));
+        detectionProximity = Preferences.getInt(DetectionProximityPreferencesKey, 512);
 
         var layout = getLayout(Cat5ShuffleboardTab.ColorSensor, BuiltInLayouts.kList);
 
@@ -58,11 +60,5 @@ public class ColorAndProximityConfig extends Cat5Config {
             .withName("Save Detection Proximity")
             .ignoringDisable(true)
         );
-    }
-
-    private void load() {
-        coneColor = Cat5Utils.hex2Rgb(Preferences.getString(ConeColorPreferencesKey, "#000000"));
-        cubeColor = Cat5Utils.hex2Rgb(Preferences.getString(CubeColorPreferencesKey, "#000000"));
-        detectionProximity = Preferences.getInt(DetectionProximityPreferencesKey, 512);
     }
 }

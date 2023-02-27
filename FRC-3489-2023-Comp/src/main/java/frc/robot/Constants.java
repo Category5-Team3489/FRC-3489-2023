@@ -12,6 +12,11 @@ public final class Constants {
     }
 
     public static class ArmConstants {
+        public static final int HomeManButton = 12;
+        public static final int LowManButton = 11;
+        public static final int MidManButton = 8;
+        public static final int HighManButton = 7;
+
         public static final int MotorDeviceId = 11;
         public static final int LimitSwitchChannel = 0;
     
@@ -19,14 +24,26 @@ public final class Constants {
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
-        public static final double MinAngleDegrees = -120.0;
+        public static final double MinAngleDegrees = -120.0; // FIXME FIND A BETTER VALUE!!!
         public static final double MaxAngleDegrees = 45.0;
+
+        public static final double LowConeAngleDegrees = -90.0;
+        public static final double LowCubeAngleDegrees = -90.0;
+        public static final double LowUnknownAngleDegrees = (LowConeAngleDegrees + LowCubeAngleDegrees) / 2.0;
+
+        public static final double MidConeAngleDegrees = 11.0;
+        public static final double MidCubeAngleDegrees = 11.0;
+        public static final double MidUnknownAngleDegrees = (MidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
+
+        public static final double HighConeAngleDegrees = 31.0;
+        public static final double HighCubeAngleDegrees = 31.0;
+        public static final double HighUnknownAngleDegrees = (HighConeAngleDegrees + HighCubeAngleDegrees) / 2.0;
     
         public static final int StallSmartCurrentLimitAmps = 30;
 
+        public static final double HomingPercent = -0.40; // -0.15
         public static final double HorizontalResistGravityPercent = 0.025;
         public static final double ResistStaticFrictionPercent = 0;
-        public static final double HomingPercent = -0.40; // -0.15
 
         public static final double ManualControlMaxDownPercent = -0.3;
         public static final double ManualControlMaxUpPercent = 0.3;
@@ -37,18 +54,25 @@ public final class Constants {
         // public static final double FeedforwardGainPercentPerRevolutionOfError = 0;
         // public static final double IntegrationZoneRevolutionsOfError = 0;
         public static final double MinOutputPercent = -0.5;
-        public static final double MaxOutputPercent = 0.85; // 0.75
+        public static final double MaxOutputPercent = 0.75; // 0.85 twists motor mount
     }
 
     public static class GripperConstants {
+        public static final int StopManButton = 1;
+        public static final int IntakeManButton = 2;
+        public static final int OuttakeManButton = 3;
+
         public static final int LeftMotorDeviceId = 9;
         public static final int RightMotorDeviceId = 10;
 
         public static final double IntakePercent = -0.5;
         public static final double OuttakeConePercent = 1;
         public static final double OuttakeCubePercent = 0.3;
+        public static final double OuttakeUnknownPercent = (OuttakeConePercent + OuttakeCubePercent) / 2.0;
 
-        public static final int 
+        public static final double OuttakeConeSeconds = 0.5;
+        public static final double OuttakeCubeSeconds = 0.5;
+        public static final double OuttakeUnknownSeconds = (OuttakeConeSeconds + OuttakeCubeSeconds) / 2.0;
     }
 
     public static class DrivetrainConstants {

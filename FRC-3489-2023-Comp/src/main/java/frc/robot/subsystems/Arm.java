@@ -8,16 +8,18 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Cat5Utils;
+import frc.robot.GamePiece;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.commands.arm.GotoHome;
-import frc.robot.commands.arm.GotoTarget;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.ArmConstants.*;
@@ -42,86 +44,117 @@ public class Arm extends Cat5Subsystem<Arm> {
     private final RelativeEncoder encoder;
 
     // Suppliers
-    private BooleanSupplier isManualControlEnabled;
-    private DoubleSupplier targetAngleDegrees;
-    private BooleanSupplier isTrackingTarget;
+    private final BooleanSupplier isManualControlEnabled;
+    private final BooleanSupplier debugIsTrackingTarget;
+    private final DoubleSupplier debugTargetAngleDegrees;
 
     // Commands
-    private final GotoTarget gotoTarget = new GotoTarget();
+    private final CommandBase gotoHomeCommand = getGotoHomeCommand();
+    private final CommandBase gotoTargetCommand = getGotoTargetCommand();
+    private final CommandBase manualControlCommand = getManualControlCommand();
 
     // State
     private boolean isHomed = false;
+    private double targetAngleDegrees = ArmConstants.MinAngleDegrees;
 
     private Arm() {
         super((i) -> instance = i);
 
         // Remember: NEO position units are rotations
-        // https://docs.revrobotics.com/sparkmax/operating-modes/closed-loop-control
         // Zero degrees is horizontal + is up, - down
-        // TODO Could add timer with time that arm has been stalled for using velocity and motor being set to something, get amps, maybe abs(degrees)/watt past 10 sec, if that is low then that is bad
+        // https://docs.revrobotics.com/sparkmax/operating-modes/closed-loop-control
         // https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces
-        // encoder.setPositionConversionFactor() // TODO THIS IS USEFUL
-        // encoder.setVelocityConversionFactor() // TODO THIS IS USEFUL
+        // TODO Figure out how to get resist constant force spring feedforward
+        // TODO Figure out how to set IdleMode for constant force spring to work properly
+        // TODO ^^^ Remember, motor.getIdleMode and motor.setIdleMode should be called infrequently
+        // TODO ^^^ Cache those in here somewhere, so current value is always known
 
-        setDefaultCommand(new GotoHome());
-
+        //#region Devices
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
 
         motor.restoreFactoryDefaults();
-        motor.setIdleMode(IdleMode.kBrake); // FIXME was brake
-        motor.enableVoltageCompensation(12);
+        motor.setIdleMode(IdleMode.kBrake);
+        motor.enableVoltageCompensation(12.0);
         motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
-        // motor.setOpenLoopRampRate(0.5); // TODO COULD BE VERY USEFUL!!!!!!!!, WOULD STOP JERKY MOTIONS IN A SIMPLE AND CONTROLLABLE WAY
-        // motor.setClosedLoopRampRate(5); // TODO COULD BE VERY USEFUL!!!!!!!!, WOULD STOP JERKY MOTIONS IN A SIMPLE AND CONTROLLABLE WAY
         pidController.setP(ProportionalGainPercentPerRevolutionOfError);
         pidController.setD(DerivativeGainPercentPerRevolutionPerMillisecondOfError);
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
-    }
+        //#endregion
 
-    @Override
-    public void periodic() {
-        if (limitSwitch.get()) {
-            isHomed = true;
-            setAngleDegrees(MinAngleDegrees);
-        }
+        setDefaultCommand(gotoHomeCommand);
 
-        if (isManualControlEnabled.getAsBoolean()) {
-            gotoTarget.cancel();
+        //#region Bindings
+        new Trigger(() -> DriverStation.isEnabled())
+            .onTrue(Commands.runOnce(() -> {
+                setTargetAngleDegrees(ArmConstants.MinAngleDegrees);
+            }));
 
-            double y = -RobotContainer.get().man.getY();
-            y = Cat5Utils.linearAxis(y, 0.1);
-            if (y >= 0) {
-                y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxUpPercent, y);
-            }
-            else {
-                y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxDownPercent, -y);
-            }
-            motor.setVoltage(y * 12.0);
-        }
-        else {
-            if (isHomed) {
-                gotoTarget.schedule();
-            }
-            else {
-                gotoTarget.cancel();
-            }
-        }
-    }
+        RobotContainer.get().man.button(ArmConstants.HomeManButton)
+            .onTrue(Commands.runOnce(() -> {
+                setTargetAngleDegrees(MinAngleDegrees);
+            }));
+        
+        RobotContainer.get().man.button(ArmConstants.LowManButton)
+            .onTrue(Commands.runOnce(() -> {
+                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+                switch (heldGamePiece) {
+                    case Cone:
+                        setTargetAngleDegrees(LowConeAngleDegrees);
+                        break;
+                    case Cube:
+                        setTargetAngleDegrees(LowCubeAngleDegrees);
+                        break;
+                    case Unknown:
+                        setTargetAngleDegrees(LowUnknownAngleDegrees);
+                        break;
+                }
+            }));
 
-    @Override
-    public void initShuffleboard() {
+        RobotContainer.get().man.button(ArmConstants.MidManButton)
+            .onTrue(Commands.runOnce(() -> {
+                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+                switch (heldGamePiece) {
+                    case Cone:
+                        setTargetAngleDegrees(MidConeAngleDegrees);
+                        break;
+                    case Cube:
+                        setTargetAngleDegrees(MidCubeAngleDegrees);
+                        break;
+                    case Unknown:
+                        setTargetAngleDegrees(MidUnknownAngleDegrees);
+                        break;
+                }
+            }));
+
+        RobotContainer.get().man.button(ArmConstants.HighManButton)
+            .onTrue(Commands.runOnce(() -> {
+                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+                switch (heldGamePiece) {
+                    case Cone:
+                        setTargetAngleDegrees(HighConeAngleDegrees);
+                        break;
+                    case Cube:
+                        setTargetAngleDegrees(HighCubeAngleDegrees);
+                        break;
+                    case Unknown:
+                        setTargetAngleDegrees(HighUnknownAngleDegrees);
+                        break;
+                }
+            }));
+        //#endregion
+
+        //#region Shuffleboard
+        // Main
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
         .withSize(2, 3);
 
         layout.add("Subsystem Info", this);
 
         layout.addBoolean("Is Homed", () -> isHomed);
-        layout.addDouble("Arm Angle (°)", () -> getAngleDegrees());
-
-        layout.addDouble("Motor Applied Output (%)", () -> motor.getAppliedOutput());
-        layout.addDouble("Motor Temperature (°F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
+        layout.addDouble("Encoder Arm Angle (°)", () -> getEncoderAngleDegrees());
+        layout.addDouble("Target Arm Angle (°)", () -> targetAngleDegrees);
 
         layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 
@@ -136,60 +169,117 @@ public class Arm extends Cat5Subsystem<Arm> {
             .getEntry();
         isManualControlEnabled = () -> isManualControlEnabledEntry.getBoolean(false);
 
-        var isTrackingTargetEntry = layout.add("Is Tracking Target", false)
+        // Subsystem
+        var subsystemLayout = getLayout(Cat5ShuffleboardTab.Arm, BuiltInLayouts.kList)
+            .withSize(2, 3);
+
+        subsystemLayout.addDouble("Motor Applied Output (%)", () -> motor.getAppliedOutput());
+        subsystemLayout.addDouble("Motor Temperature (°F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
+
+        var debugIsTrackingTargetEntry = subsystemLayout.add("Debug Track Target", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .getEntry();
-        isTrackingTarget = () -> isTrackingTargetEntry.getBoolean(false);
+        debugIsTrackingTarget = () -> debugIsTrackingTargetEntry.getBoolean(false);
 
-        var targetAngleDegreesEntry = layout.add("Target Angle (°)", MinAngleDegrees)
+        var debugTargetAngleDegreesEntry = subsystemLayout.add("Debug Target Angle (°)", MinAngleDegrees)
             .withWidget(BuiltInWidgets.kNumberSlider)
-            .withProperties(Map.of("min", MinAngleDegrees, "max", MaxAngleDegrees))
+            .withProperties(Map.of("min", MinAngleDegrees, "max", MaxAngleDegrees, "block increment", 1.0))
             .getEntry();
-        targetAngleDegrees = () -> targetAngleDegreesEntry.getDouble(MinAngleDegrees);
+        debugTargetAngleDegrees = () -> debugTargetAngleDegreesEntry.getDouble(MinAngleDegrees);
+        //#endregion
     }
 
-    public void gotoHome() {
-        if (isHomed) {
-            return;
+    @Override
+    public void periodic() {
+        if (limitSwitch.get()) {
+            isHomed = true;
+            setEncoderAngleDegrees(MinAngleDegrees);
         }
-        
-        motor.setVoltage(HomingPercent * 12.0);
-    }
-    public void gotoAngleDegrees(double angleDegrees) {
-        double referenceRotations = angleDegrees * MotorRevolutionsPerDegree;
-        double direction = encoder.getVelocity() > 0 ? 1 : -1;
-        double arbFeedforward = getResistGravityPercent() + getResistStaticFrictionPercent(direction);
-        pidController.setReference(referenceRotations, ControlType.kPosition, 0, arbFeedforward * 12.0, ArbFFUnits.kVoltage);
-    }
-    public void brake() {
-        motor.setVoltage(0);
+
+        if (isManualControlEnabled.getAsBoolean()) {
+            manualControlCommand.schedule();
+        }
+        else {
+            if (isHomed) {
+                if (debugIsTrackingTarget.getAsBoolean()) {
+                    setTargetAngleDegrees(debugTargetAngleDegrees.getAsDouble());
+                }
+
+                gotoTargetCommand.schedule();
+            }
+            else {
+                gotoHomeCommand.schedule();
+            }
+        }
     }
 
-    private void setAngleDegrees(double angleDegrees) {
-        double rotations = angleDegrees * MotorRevolutionsPerDegree;
-        encoder.setPosition(rotations);
+    //#region Control
+    private void setTargetAngleDegrees(double angleDegrees) {
+        angleDegrees = MathUtil.clamp(angleDegrees, MinAngleDegrees, MaxAngleDegrees);
+        targetAngleDegrees = angleDegrees;
     }
-    private double getAngleDegrees() {
+    //#endregion Control
+
+    //#region Encoder
+    private double getEncoderAngleDegrees() {
         double rotations = encoder.getPosition();
         return rotations * DegreesPerMotorRevolution;
     }
+    private void setEncoderAngleDegrees(double angleDegrees) {
+        double rotations = angleDegrees * MotorRevolutionsPerDegree;
+        encoder.setPosition(rotations);
+    }
+    //#endregion
 
-    public double getResistGravityPercent() {
+    //#region Feedforward
+    private double getResistGravityPercent() {
         if (!isHomed) {
             return 0;
         }
 
-        double angleRadians = Math.toRadians(getAngleDegrees());
+        double angleRadians = Math.toRadians(getEncoderAngleDegrees());
         return Math.cos(angleRadians) * HorizontalResistGravityPercent;
     }
-    public double getResistStaticFrictionPercent(double direction) {
+    private double getResistStaticFrictionPercent(double direction) {
         return direction * ResistStaticFrictionPercent;
     }
+    //#endregion
 
-    public boolean isTrackingTarget() {
-        return isTrackingTarget.getAsBoolean();
+    //#region Commands
+    private CommandBase getGotoHomeCommand() {
+        return Commands.run(() -> {
+            if (isHomed) {
+                return;
+            }
+            
+            motor.setVoltage(HomingPercent * 12.0);
+        }, this)
+            .withName("Goto Home");
     }
-    public double getTargetAngleDegrees() {
-        return targetAngleDegrees.getAsDouble();
+    private CommandBase getGotoTargetCommand() {
+        return Commands.run(() -> {
+            double targetRevolutions = targetAngleDegrees * MotorRevolutionsPerDegree;
+            double direction = encoder.getVelocity() > 0 ? 1 : -1;
+            double arbFeedforward = getResistGravityPercent() + getResistStaticFrictionPercent(direction);
+            pidController.setReference(targetRevolutions, ControlType.kPosition, 0, arbFeedforward * 12.0, ArbFFUnits.kVoltage);
+        }, this)
+            .withName("Goto Target");
     }
+    private CommandBase getManualControlCommand() {
+        return Commands.run(() -> {
+            double y = -RobotContainer.get().man.getY();
+            y = Cat5Utils.linearAxis(y, 0.1);
+
+            if (y < 0) {
+                y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxDownPercent, -y);
+            }
+            else {
+                y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxUpPercent, y);   
+            }
+
+            motor.setVoltage(y * 12.0);
+        }, this)
+            .withName("Manual Control");
+    }
+    //#endregion
 }

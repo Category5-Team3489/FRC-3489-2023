@@ -40,14 +40,12 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     private final SwerveModule backLeftModule;
     private final SwerveModule backRightModule;
 
-    // State
-
     private Drivetrain() {
         super((i) -> instance = i);
 
         setDefaultCommand(new DefaultDrivetrain());
 
-        //#region Init Modules
+        //#region Devices
         ShuffleboardTab tab = Shuffleboard.getTab("SDS Debug");
 
         frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
@@ -94,17 +92,15 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             0
         );
         //#endregion Init Modules
-    }
 
-    @Override
-    public void initShuffleboard() {
+        //#region Shufflboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 
         layout.add("Subsystem Info", this);
 
-        // FIXME Debug stuff
         layout.add(new Brake());
+        //#endregion
     }
 
     //#region Set

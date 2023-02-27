@@ -12,7 +12,10 @@ public class DefaultDrivetrain extends CommandBase {
     @Override
     public void execute() {
         if (DriverStation.isAutonomous()) {
-            // set drive motors to zero speed
+            Drivetrain.get().setFrontLeftPercentAngle(0, 0);
+            Drivetrain.get().setFrontRightPercentAngle(0, 0);
+            Drivetrain.get().setBackLeftPercentAngle(0, 0);
+            Drivetrain.get().setBackRightPercentAngle(0, 0);
             return;
         }
     }

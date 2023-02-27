@@ -35,25 +35,15 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
 
         RobotContainer.get().xbox.start()
             .onTrue(zeroYawCommand);
-    }
 
-    @Override
-    public void initShuffleboard() {
+        //#region Shuffleboard
+        // Main
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 
-        layout.addString("Heading", () -> Double.toString(heading.getDegrees()));
+        layout.addDouble("Heading (°)", () -> heading.getDegrees());
         layout.add(zeroYawCommand);
-    }
-
-    public Rotation2d getRotation() {
-        // if (navx.isMagnetometerCalibrated()) {
-        //     return Rotation2d.fromDegrees(navx.getFusedHeading());
-        // }
-
-        heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
-
-        return heading;
+        //#endregion
     }
 
     //#region Commands
@@ -65,4 +55,16 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
             .ignoringDisable(true);
     }
     //#endregion
+
+    //#region Public
+    public Rotation2d getRotation() {
+        // if (navx.isMagnetometerCalibrated()) {
+        //     return Rotation2d.fromDegrees(navx.getFusedHeading());
+        // }
+
+        heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
+
+        return heading;
+    }
+    //#endregion Public
 }

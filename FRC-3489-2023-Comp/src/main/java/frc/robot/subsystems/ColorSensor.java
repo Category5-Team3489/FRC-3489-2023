@@ -27,17 +27,16 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
 
     // State
     private Color color = new Color(0, 0, 0);
-    private int proximity = 0; // 0 to 2047
+    private int proximity = 0;
     private GamePiece detectedGamePiece = GamePiece.Unknown;
 
     private ColorSensor() {
         super((i) -> instance = i);
 
+        // proximity: 0 to 2047
         // https://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues.html#onboard-i2c-causing-system-lockups
-    }
-
-    @Override
-    public void initShuffleboard() {
+    
+        //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 
@@ -46,6 +45,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         layout.addDouble("Blue", () -> color.blue);
         layout.addInteger("Proximity", () -> proximity);
         layout.addString("Detected Game Piece", () -> detectedGamePiece.toString());
+        //#endregion
     }
 
     @Override
@@ -71,6 +71,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         }
     }
 
+    //#region Public
     public Color getColor() {
         return color;
     }
@@ -78,4 +79,5 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     public GamePiece getDetectedGamePiece() {
         return detectedGamePiece;
     }
+    //#endregion
 }

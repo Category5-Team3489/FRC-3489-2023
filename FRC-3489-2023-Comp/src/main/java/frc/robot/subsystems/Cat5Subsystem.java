@@ -15,8 +15,6 @@ public abstract class Cat5Subsystem<T extends Cat5Subsystem<?>> extends Subsyste
         RobotContainer.registerCat5Subsystem(this);
     }
 
-    public abstract void initShuffleboard();
-
     protected ShuffleboardLayout getLayout(Cat5ShuffleboardTab tab, LayoutType type) {
         String subsystemName = this.getClass().getSimpleName();
         return tab
