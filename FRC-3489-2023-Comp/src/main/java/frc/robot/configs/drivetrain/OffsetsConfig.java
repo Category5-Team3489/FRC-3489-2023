@@ -5,7 +5,6 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.configs.Cat5Config;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Drivetrain;
@@ -58,8 +57,8 @@ public class OffsetsConfig extends Cat5Config {
             backLeftEntry.setDouble(Math.toDegrees(backLeftOffsetRadians));
             backRightEntry.setDouble(Math.toDegrees(backRightOffsetRadians));
         })
-            .withName("Load")
             .ignoringDisable(true)
+            .withName("Load")
         );
 
         layout.add(Commands.runOnce(() -> {
@@ -70,8 +69,8 @@ public class OffsetsConfig extends Cat5Config {
 
             save();
         })
-            .withName("Save Shuffleboard")
             .ignoringDisable(true)
+            .withName("Save Shuffleboard")
         );
 
         layout.add(Commands.runOnce(() -> {
@@ -83,8 +82,8 @@ public class OffsetsConfig extends Cat5Config {
 
             save();
         })
-            .withName("Save Robot")
             .ignoringDisable(true)
+            .withName("Save Robot")
         );
     }
 

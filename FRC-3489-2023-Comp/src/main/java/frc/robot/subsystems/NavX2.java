@@ -51,8 +51,8 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         return Commands.runOnce(() -> {
             navx.zeroYaw();
         })
-            .withName("Zero Yaw")
-            .ignoringDisable(true);
+            .ignoringDisable(true)
+            .withName("Zero Yaw");
     }
     //#endregion
 

@@ -274,7 +274,7 @@ public class Arm extends Cat5Subsystem<Arm> {
                 y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxDownPercent, -y);
             }
             else {
-                y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxUpPercent, y);   
+                y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxUpPercent, y);
             }
 
             motor.setVoltage(y * 12.0);

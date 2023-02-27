@@ -55,6 +55,7 @@ public class RobotContainer {
         // If subsystem isn't working, call Subsystem.get() here
         // Check type if layout.add, or tab.add fails
         // If command doesnt run when disabled, set ignore disabled true
+        // When building commands, always put .withName last
 
         // Initialize subsystems
         Drivetrain.get();

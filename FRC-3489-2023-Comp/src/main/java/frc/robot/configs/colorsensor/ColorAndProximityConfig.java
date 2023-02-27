@@ -40,16 +40,16 @@ public class ColorAndProximityConfig extends Cat5Config {
             coneColor = ColorSensor.get().getColor();
             Preferences.setString(ConeColorPreferencesKey, coneColor.toHexString());
         })
-            .withName("Save Cone Color")
             .ignoringDisable(true)
+            .withName("Save Cone Color")
         );
 
         layout.add(Commands.runOnce(() -> {
             cubeColor = ColorSensor.get().getColor();
             Preferences.setString(CubeColorPreferencesKey, cubeColor.toHexString());
         })
-            .withName("Save Cube Color")
             .ignoringDisable(true)
+            .withName("Save Cube Color")
         );
 
         var setDetectionProximityEntry = layout.add("Set Detection Proximity", detectionProximity).getEntry();
@@ -57,8 +57,8 @@ public class ColorAndProximityConfig extends Cat5Config {
             detectionProximity = (int)setDetectionProximityEntry.getInteger(detectionProximity);
             Preferences.setDouble(DetectionProximityPreferencesKey, detectionProximity);
         })
-            .withName("Save Detection Proximity")
             .ignoringDisable(true)
+            .withName("Save Detection Proximity")
         );
     }
 }

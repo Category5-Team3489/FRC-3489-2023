@@ -32,8 +32,8 @@ public class MaxVelocityConfig extends Cat5Config {
             maxVelocityMetersPerSecond = setMaxVelocityEntry.getDouble(maxVelocityMetersPerSecond);
             Preferences.setDouble(MaxVelocityMetersPerSecondPreferencesKey, maxVelocityMetersPerSecond);
         })
-            .withName("Save")
             .ignoringDisable(true)
+            .withName("Save")
         );
     }
 }

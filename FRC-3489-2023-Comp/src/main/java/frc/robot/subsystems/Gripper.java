@@ -126,8 +126,8 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         return Commands.run(() -> {
             setMotors(0);
         }, this)
-            .withName("Stop")
-            .ignoringDisable(true);
+            .ignoringDisable(true)
+            .withName("Stop");
     }
     private CommandBase getIntakeCommand() {
         return Commands.run(() -> {
@@ -152,24 +152,24 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             setMotors(GripperConstants.OuttakeConePercent);
             heldGamePiece = GamePiece.Unknown;
         }, this)
-            .withName("Outtake Cone")
-            .withTimeout(GripperConstants.OuttakeConeSeconds);
+            .withTimeout(GripperConstants.OuttakeConeSeconds)
+            .withName("Outtake Cone");
     }
     private CommandBase getOuttakeCubeCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.OuttakeCubePercent);
             heldGamePiece = GamePiece.Unknown;
         }, this)
-            .withName("Outtake Cube")
-            .withTimeout(GripperConstants.OuttakeCubeSeconds);
+            .withTimeout(GripperConstants.OuttakeCubeSeconds)
+            .withName("Outtake Cube");  
     }
     private CommandBase getOuttakeUnknownCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.OuttakeUnknownPercent);
             heldGamePiece = GamePiece.Unknown;
         }, this)
-            .withName("Outtake Unknown")
-            .withTimeout(GripperConstants.OuttakeUnknownSeconds);
+            .withTimeout(GripperConstants.OuttakeUnknownSeconds)
+            .withName("Outtake Unknown");
     }
     //#endregion
 
