@@ -14,7 +14,7 @@ public final class Constants {
     public static class ArmConstants {
         public static final int HomeManButton = 12;
         public static final int LowManButton = 11;
-        public static final int MidManButton = 8;
+        public static final int MidManButton = 9;
         public static final int HighManButton = 7;
 
         public static final int MotorDeviceId = 11;
@@ -25,13 +25,13 @@ public final class Constants {
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
         public static final double MinAngleDegrees = -120.0; // FIXME FIND A BETTER VALUE!!!
-        public static final double MaxAngleDegrees = 45.0;
+        public static final double MaxAngleDegrees = 67.5;
 
-        public static final double LowConeAngleDegrees = -90.0;
-        public static final double LowCubeAngleDegrees = -90.0;
+        public static final double LowConeAngleDegrees = -105.0;
+        public static final double LowCubeAngleDegrees = -105.0;
         public static final double LowUnknownAngleDegrees = (LowConeAngleDegrees + LowCubeAngleDegrees) / 2.0;
 
-        public static final double MidConeAngleDegrees = 11.0;
+        public static final double MidConeAngleDegrees = 1.81; // 11.0
         public static final double MidCubeAngleDegrees = 11.0;
         public static final double MidUnknownAngleDegrees = (MidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
@@ -65,17 +65,21 @@ public final class Constants {
         public static final int LeftMotorDeviceId = 9;
         public static final int RightMotorDeviceId = 10;
 
+        public static final int IntakeCubeProximityThreshold = 300;
+
         public static final double IntakePercent = -0.5;
-        public static final double OuttakeConePercent = 1;
+        public static final double OuttakeConePercent = 0.05; // 1
         public static final double OuttakeCubePercent = 0.3;
         public static final double OuttakeUnknownPercent = (OuttakeConePercent + OuttakeCubePercent) / 2.0;
 
-        public static final double OuttakeConeSeconds = 0.5;
+        public static final double OuttakeConeSeconds = 2.0; // 0.5
         public static final double OuttakeCubeSeconds = 0.5;
         public static final double OuttakeUnknownSeconds = (OuttakeConeSeconds + OuttakeCubeSeconds) / 2.0;
     }
 
     public static class DrivetrainConstants {
+        public static final double XboxAxisDeadband = 0.05;
+
         public static final double MaxVoltage = 12.0 * 0.5; // FIXME This limits total drivetrain speed
 
         public static final double MetersPerRotation = SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;

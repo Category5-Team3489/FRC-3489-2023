@@ -14,7 +14,7 @@ import frc.robot.subsystems.ColorSensor;
 
 public class ColorAndProximityConfig extends Cat5Config {
     private static final String ConeColorPreferencesKey = "ColorSensor/ConeColor";
-    private static final String CubeColorPreferencesKey = "ColorSensor/ConeColor";
+    private static final String CubeColorPreferencesKey = "ColorSensor/CubeColor";
     private static final String DetectionProximityPreferencesKey = "ColorSensor/DetectionProximity";
 
     private Color coneColor;

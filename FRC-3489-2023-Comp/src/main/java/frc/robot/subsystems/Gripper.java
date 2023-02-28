@@ -125,6 +125,13 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getStopCommand() {
         return Commands.run(() -> {
             setMotors(0);
+
+            if (DriverStation.isEnabled() && heldGamePiece == GamePiece.Cube) {
+                int proximity = ColorSensor.get().getProximity();
+                if (proximity < GripperConstants.IntakeCubeProximityThreshold) {
+                    intakeCommand.schedule();
+                }
+            }
         }, this)
             .ignoringDisable(true)
             .withName("Stop");

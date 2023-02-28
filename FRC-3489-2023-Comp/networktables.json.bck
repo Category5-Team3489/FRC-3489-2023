@@ -10,7 +10,7 @@
   {
     "name": "/Preferences/ColorSensor/DetectionProximity",
     "type": "double",
-    "value": 5.0,
+    "value": 5312.0,
     "properties": {
       "persistent": true
     }

@@ -43,7 +43,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         layout.addDouble("Red", () -> color.red);
         layout.addDouble("Green", () -> color.green);
         layout.addDouble("Blue", () -> color.blue);
-        layout.addInteger("Proximity", () -> proximity);
+        layout.addString("Proximity", () -> Integer.toString(proximity));
         layout.addString("Detected Game Piece", () -> detectedGamePiece.toString());
         //#endregion
     }
@@ -74,6 +74,10 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     //#region Public
     public Color getColor() {
         return color;
+    }
+
+    public int getProximity() {
+        return proximity;
     }
 
     public GamePiece getDetectedGamePiece() {

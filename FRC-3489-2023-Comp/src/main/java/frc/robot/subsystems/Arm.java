@@ -173,7 +173,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         var subsystemLayout = getLayout(Cat5ShuffleboardTab.Arm, BuiltInLayouts.kList)
             .withSize(2, 3);
 
-        subsystemLayout.addDouble("Motor Applied Output (%)", () -> motor.getAppliedOutput());
+        subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
         subsystemLayout.addDouble("Motor Temperature (°F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
 
         var debugIsTrackingTargetEntry = subsystemLayout.add("Debug Track Target", false)
