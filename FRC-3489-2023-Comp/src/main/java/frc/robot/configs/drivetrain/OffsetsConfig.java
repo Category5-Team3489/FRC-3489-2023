@@ -26,7 +26,10 @@ public class OffsetsConfig extends Cat5Config {
     public final DoubleSupplier getBackRightOffsetRadians = () -> backRightOffsetRadians;
 
     public OffsetsConfig() {
-        load();
+        frontLeftOffsetRadians = Preferences.getDouble(FrontLeftOffsetRadiansPreferencesKey, 0);
+        frontRightOffsetRadians = Preferences.getDouble(FrontRightOffsetRadiansPreferencesKey, 0);
+        backLeftOffsetRadians = Preferences.getDouble(BackLeftOffsetRadiansPreferencesKey, 0);
+        backRightOffsetRadians = Preferences.getDouble(BackRightOffsetRadiansPreferencesKey, 0);
         
         var layout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList);
 
@@ -37,67 +40,64 @@ public class OffsetsConfig extends Cat5Config {
 
         layout.add(Commands.run(() -> {
             frontLeftOffsetRadians = 0;
-            frontRightOffsetRadians = 0;
-            backLeftOffsetRadians = 0;
-            backRightOffsetRadians = 0;
 
             Drivetrain.get().setFrontLeftPercentAngle(0, 0);
+        })
+            .withName("Zero Front Left")
+        );
+        layout.add(Commands.run(() -> {
+            frontRightOffsetRadians = 0;
+
             Drivetrain.get().setFrontRightPercentAngle(0, 0);
+        })
+            .withName("Zero Front Right")
+        );
+        layout.add(Commands.run(() -> {
+            backLeftOffsetRadians = 0;
+
             Drivetrain.get().setBackLeftPercentAngle(0, 0);
+        })
+            .withName("Zero Back Left")
+        );
+        layout.add(Commands.run(() -> {
+            backRightOffsetRadians = 0;
+
             Drivetrain.get().setBackRightPercentAngle(0, 0);
         })
-            .withName("Configure")
-        );
-
-        layout.add(Commands.runOnce(() -> {
-            load();
-
-            frontLeftEntry.setDouble(Math.toDegrees(frontLeftOffsetRadians));
-            frontRightEntry.setDouble(Math.toDegrees(frontRightOffsetRadians));
-            backLeftEntry.setDouble(Math.toDegrees(backLeftOffsetRadians));
-            backRightEntry.setDouble(Math.toDegrees(backRightOffsetRadians));
-        })
-            .ignoringDisable(true)
-            .withName("Load")
+            .withName("Zero Back Right")
         );
 
         layout.add(Commands.runOnce(() -> {
             frontLeftOffsetRadians = Math.toRadians(frontLeftEntry.getDouble(0));
-            frontRightOffsetRadians = Math.toRadians(frontRightEntry.getDouble(0));
-            backLeftOffsetRadians = Math.toRadians(backLeftEntry.getDouble(0));
-            backRightOffsetRadians = Math.toRadians(backRightEntry.getDouble(0));
 
-            save();
+            Preferences.setDouble(FrontLeftOffsetRadiansPreferencesKey, frontLeftOffsetRadians);
         })
             .ignoringDisable(true)
-            .withName("Save Shuffleboard")
+            .withName("Save Front Left")
         );
-
         layout.add(Commands.runOnce(() -> {
-            // TODO SAVE from robot, make sure to update shuffleboard values too
-            frontLeftOffsetRadians = Math.toRadians(frontLeftEntry.getDouble(0));
             frontRightOffsetRadians = Math.toRadians(frontRightEntry.getDouble(0));
-            backLeftOffsetRadians = Math.toRadians(backLeftEntry.getDouble(0));
-            backRightOffsetRadians = Math.toRadians(backRightEntry.getDouble(0));
 
-            save();
+            Preferences.setDouble(FrontRightOffsetRadiansPreferencesKey, frontRightOffsetRadians);
         })
             .ignoringDisable(true)
-            .withName("Save Robot")
+            .withName("Save Front Right")
         );
-    }
+        layout.add(Commands.runOnce(() -> {
+            backLeftOffsetRadians = Math.toRadians(backLeftEntry.getDouble(0));
 
-    private void load() {
-        frontLeftOffsetRadians = Preferences.getDouble(FrontLeftOffsetRadiansPreferencesKey, 0);
-        frontRightOffsetRadians = Preferences.getDouble(FrontRightOffsetRadiansPreferencesKey, 0);
-        backLeftOffsetRadians = Preferences.getDouble(BackLeftOffsetRadiansPreferencesKey, 0);
-        backRightOffsetRadians = Preferences.getDouble(BackRightOffsetRadiansPreferencesKey, 0);
-    }
+            Preferences.setDouble(BackLeftOffsetRadiansPreferencesKey, backLeftOffsetRadians);
+        })
+            .ignoringDisable(true)
+            .withName("Save Back Left")
+        );
+        layout.add(Commands.runOnce(() -> {
+            backRightOffsetRadians = Math.toRadians(backRightEntry.getDouble(0));
 
-    private void save() {
-        Preferences.setDouble(FrontLeftOffsetRadiansPreferencesKey, frontLeftOffsetRadians);
-        Preferences.setDouble(FrontRightOffsetRadiansPreferencesKey, frontRightOffsetRadians);
-        Preferences.setDouble(BackLeftOffsetRadiansPreferencesKey, backLeftOffsetRadians);
-        Preferences.setDouble(BackRightOffsetRadiansPreferencesKey, backRightOffsetRadians);
+            Preferences.setDouble(BackRightOffsetRadiansPreferencesKey, backRightOffsetRadians);
+        })
+            .ignoringDisable(true)
+            .withName("Save Back Right")
+        );
     }
 }
