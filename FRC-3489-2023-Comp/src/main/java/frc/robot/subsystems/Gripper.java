@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.GamePiece;
+import frc.robot.enums.GamePiece;
+import frc.robot.enums.GridPosition;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.GripperConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -34,9 +35,15 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     // Commands
     private final CommandBase stopCommand = getStopCommand();
     private final CommandBase intakeCommand = getIntakeCommand();
-    private final CommandBase outtakeConeCommand = getOuttakeConeCommand();
-    private final CommandBase outtakeCubeCommand = getOuttakeCubeCommand();
-    private final CommandBase outtakeUnknownCommand = getOuttakeUnknownCommand();
+    private final CommandBase lowOuttakeConeCommand = getLowOuttakeConeCommand();
+    private final CommandBase lowOuttakeCubeCommand = getLowOuttakeCubeCommand();
+    private final CommandBase lowOuttakeUnknownCommand = getLowOuttakeUnknownCommand();
+    private final CommandBase midOuttakeConeCommand = getMidOuttakeConeCommand();
+    private final CommandBase midOuttakeCubeCommand = getMidOuttakeCubeCommand();
+    private final CommandBase midOuttakeUnknownCommand = getMidOuttakeUnknownCommand();
+    private final CommandBase highOuttakeConeCommand = getHighOuttakeConeCommand();
+    private final CommandBase highOuttakeCubeCommand = getHighOuttakeCubeCommand();
+    private final CommandBase highOuttakeUnknownCommand = getHighOuttakeUnknownCommand();
     
     // State
     private GamePiece heldGamePiece = GamePiece.Unknown;
@@ -67,15 +74,46 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
         RobotContainer.get().man.button(GripperConstants.OuttakeManButton)
             .onTrue(Commands.runOnce(() -> {
-                switch (heldGamePiece) {
-                    case Cone:
-                        outtakeConeCommand.schedule();
+                GridPosition gridPosition = Arm.get().getGridPosition();
+                switch (gridPosition) {
+                    case Low:
+                        switch (heldGamePiece) {
+                            case Cone:
+                                lowOuttakeConeCommand.schedule();
+                                break;
+                            case Cube:
+                                lowOuttakeCubeCommand.schedule();
+                                break;
+                            case Unknown:
+                                lowOuttakeUnknownCommand.schedule();
+                                break;
+                        }
                         break;
-                    case Cube:
-                        outtakeCubeCommand.schedule();
+                    case Mid:
+                        switch (heldGamePiece) {
+                            case Cone:
+                                midOuttakeConeCommand.schedule();
+                                break;
+                            case Cube:
+                                midOuttakeCubeCommand.schedule();
+                                break;
+                            case Unknown:
+                                midOuttakeUnknownCommand.schedule();
+                                break;
+                        }
                         break;
-                    case Unknown:
-                        outtakeUnknownCommand.schedule();
+                    case High:
+                        switch (heldGamePiece) {
+                            case Cone:
+                                highOuttakeConeCommand.schedule();
+                                break;
+                            case Cube:
+                                highOuttakeCubeCommand.schedule();
+                                break;
+                            case Unknown:
+                                highOuttakeUnknownCommand.schedule();
+                                break;
+                        }
                         break;
                 }
             }));
@@ -101,9 +139,15 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
         subsystemLayout.add(stopCommand);
         subsystemLayout.add(intakeCommand);
-        subsystemLayout.add(outtakeConeCommand);
-        subsystemLayout.add(outtakeCubeCommand);
-        subsystemLayout.add(outtakeUnknownCommand);
+        subsystemLayout.add(lowOuttakeConeCommand);
+        subsystemLayout.add(lowOuttakeCubeCommand);
+        subsystemLayout.add(lowOuttakeUnknownCommand);
+        subsystemLayout.add(midOuttakeConeCommand);
+        subsystemLayout.add(midOuttakeCubeCommand);
+        subsystemLayout.add(midOuttakeUnknownCommand);
+        subsystemLayout.add(highOuttakeConeCommand);
+        subsystemLayout.add(highOuttakeCubeCommand);
+        subsystemLayout.add(highOuttakeUnknownCommand);
         //#endregion
     }
 
@@ -154,29 +198,80 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         }, this)
             .withName("Intake");
     }
-    private CommandBase getOuttakeConeCommand() {
+    // Low
+    private CommandBase getLowOuttakeConeCommand() {
         return Commands.run(() -> {
-            setMotors(GripperConstants.OuttakeConePercent);
+            setMotors(GripperConstants.LowOuttakeConePercent);
             heldGamePiece = GamePiece.Unknown;
         }, this)
-            .withTimeout(GripperConstants.OuttakeConeSeconds)
-            .withName("Outtake Cone");
+            .withTimeout(GripperConstants.LowOuttakeConeSeconds)
+            .withName("Low Outtake Cone");
     }
-    private CommandBase getOuttakeCubeCommand() {
+    private CommandBase getLowOuttakeCubeCommand() {
         return Commands.run(() -> {
-            setMotors(GripperConstants.OuttakeCubePercent);
+            setMotors(GripperConstants.LowOuttakeCubePercent);
             heldGamePiece = GamePiece.Unknown;
         }, this)
-            .withTimeout(GripperConstants.OuttakeCubeSeconds)
-            .withName("Outtake Cube");  
+            .withTimeout(GripperConstants.LowOuttakeCubeSeconds)
+            .withName("Low Outtake Cube");  
     }
-    private CommandBase getOuttakeUnknownCommand() {
+    private CommandBase getLowOuttakeUnknownCommand() {
         return Commands.run(() -> {
-            setMotors(GripperConstants.OuttakeUnknownPercent);
+            setMotors(GripperConstants.LowOuttakeUnknownPercent);
             heldGamePiece = GamePiece.Unknown;
         }, this)
-            .withTimeout(GripperConstants.OuttakeUnknownSeconds)
-            .withName("Outtake Unknown");
+            .withTimeout(GripperConstants.LowOuttakeUnknownSeconds)
+            .withName("Low Outtake Unknown");
+    }
+    // Mid
+    private CommandBase getMidOuttakeConeCommand() {
+        return Commands.run(() -> {
+            setMotors(GripperConstants.MidOuttakeConePercent);
+            heldGamePiece = GamePiece.Unknown;
+        }, this)
+            .withTimeout(GripperConstants.MidOuttakeConeSeconds)
+            .withName("Mid Outtake Cone");
+    }
+    private CommandBase getMidOuttakeCubeCommand() {
+        return Commands.run(() -> {
+            setMotors(GripperConstants.MidOuttakeCubePercent);
+            heldGamePiece = GamePiece.Unknown;
+        }, this)
+            .withTimeout(GripperConstants.MidOuttakeCubeSeconds)
+            .withName("Mid Outtake Cube");  
+    }
+    private CommandBase getMidOuttakeUnknownCommand() {
+        return Commands.run(() -> {
+            setMotors(GripperConstants.MidOuttakeUnknownPercent);
+            heldGamePiece = GamePiece.Unknown;
+        }, this)
+            .withTimeout(GripperConstants.MidOuttakeUnknownSeconds)
+            .withName("Mid Outtake Unknown");
+    }
+    // High
+    private CommandBase getHighOuttakeConeCommand() {
+        return Commands.run(() -> {
+            setMotors(GripperConstants.HighOuttakeConePercent);
+            heldGamePiece = GamePiece.Unknown;
+        }, this)
+            .withTimeout(GripperConstants.HighOuttakeConeSeconds)
+            .withName("High Outtake Cone");
+    }
+    private CommandBase getHighOuttakeCubeCommand() {
+        return Commands.run(() -> {
+            setMotors(GripperConstants.HighOuttakeCubePercent);
+            heldGamePiece = GamePiece.Unknown;
+        }, this)
+            .withTimeout(GripperConstants.HighOuttakeCubeSeconds)
+            .withName("High Outtake Cube");  
+    }
+    private CommandBase getHighOuttakeUnknownCommand() {
+        return Commands.run(() -> {
+            setMotors(GripperConstants.HighOuttakeUnknownPercent);
+            heldGamePiece = GamePiece.Unknown;
+        }, this)
+            .withTimeout(GripperConstants.HighOuttakeUnknownSeconds)
+            .withName("High Outtake Unknown");
     }
     //#endregion
 

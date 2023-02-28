@@ -36,4 +36,11 @@ public class Cat5Utils {
     public static double wrapAngle(double angleRadians) {
         return MathUtil.inputModulus(angleRadians, 0, 2.0 * Math.PI);
 	}
+
+    public static double lerpUnclamped(double a, double b, double t) {
+        return a + t * (b - a);
+    }
+    public static double inverseLerpUnclamped(double x, double a, double b) {
+        return (x - a) / (b - a);
+    }
 }

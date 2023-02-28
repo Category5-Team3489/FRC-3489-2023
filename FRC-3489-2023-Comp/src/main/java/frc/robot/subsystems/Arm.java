@@ -17,7 +17,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Cat5Utils;
-import frc.robot.GamePiece;
+import frc.robot.enums.GamePiece;
+import frc.robot.enums.GridPosition;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -56,6 +57,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     // State
     private boolean isHomed = false;
     private double targetAngleDegrees = ArmConstants.MinAngleDegrees;
+    private GridPosition generalArmPosition = GridPosition.Low;
 
     private Arm() {
         super((i) -> instance = i);
@@ -89,11 +91,13 @@ public class Arm extends Cat5Subsystem<Arm> {
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(Commands.runOnce(() -> {
                 setTargetAngleDegrees(ArmConstants.MinAngleDegrees);
+                generalArmPosition = GridPosition.Low;
             }));
 
         RobotContainer.get().man.button(ArmConstants.HomeManButton)
             .onTrue(Commands.runOnce(() -> {
                 setTargetAngleDegrees(MinAngleDegrees);
+                generalArmPosition = GridPosition.Low;
             }));
         
         RobotContainer.get().man.button(ArmConstants.LowManButton)
@@ -110,6 +114,7 @@ public class Arm extends Cat5Subsystem<Arm> {
                         setTargetAngleDegrees(LowUnknownAngleDegrees);
                         break;
                 }
+                generalArmPosition = GridPosition.Low;
             }));
 
         RobotContainer.get().man.button(ArmConstants.MidManButton)
@@ -126,6 +131,7 @@ public class Arm extends Cat5Subsystem<Arm> {
                         setTargetAngleDegrees(MidUnknownAngleDegrees);
                         break;
                 }
+                generalArmPosition = GridPosition.Mid;
             }));
 
         RobotContainer.get().man.button(ArmConstants.HighManButton)
@@ -142,6 +148,7 @@ public class Arm extends Cat5Subsystem<Arm> {
                         setTargetAngleDegrees(HighUnknownAngleDegrees);
                         break;
                 }
+                generalArmPosition = GridPosition.High;
             }));
         //#endregion
 
@@ -280,6 +287,12 @@ public class Arm extends Cat5Subsystem<Arm> {
             motor.setVoltage(y * 12.0);
         }, this)
             .withName("Manual Control");
+    }
+    //#endregion
+
+    //#region Public
+    public GridPosition getGridPosition() {
+        return generalArmPosition;
     }
     //#endregion
 }

@@ -3,7 +3,7 @@ package frc.robot.configs.drivetrain;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.robot.configs.Cat5Config;
-import frc.robot.subsystems.Drivetrain.ModulePosition;
+import frc.robot.enums.ModulePosition;
 
 public class DriveMotorConfig extends Cat5Config {
     private static int driveMotorIndex = 0;

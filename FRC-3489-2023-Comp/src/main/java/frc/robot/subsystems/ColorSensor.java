@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.GamePiece;
+import frc.robot.enums.GamePiece;
 import frc.robot.configs.colorsensor.ColorAndProximityConfig;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 

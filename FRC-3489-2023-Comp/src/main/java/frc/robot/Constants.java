@@ -65,20 +65,35 @@ public final class Constants {
         public static final int LeftMotorDeviceId = 9;
         public static final int RightMotorDeviceId = 10;
 
-        public static final int IntakeCubeProximityThreshold = 300;
+        public static final int IntakeCubeProximityThreshold = 300; // FIXME Likely too high
 
         public static final double IntakePercent = -0.5;
-        public static final double OuttakeConePercent = 0.05; // 1
-        public static final double OuttakeCubePercent = 0.3;
-        public static final double OuttakeUnknownPercent = (OuttakeConePercent + OuttakeCubePercent) / 2.0;
 
-        public static final double OuttakeConeSeconds = 2.0; // 0.5
-        public static final double OuttakeCubeSeconds = 0.5;
-        public static final double OuttakeUnknownSeconds = (OuttakeConeSeconds + OuttakeCubeSeconds) / 2.0;
+        public static final double LowOuttakeConePercent = 0.05; // 1
+        public static final double LowOuttakeCubePercent = 0.3;
+        public static final double LowOuttakeUnknownPercent = (LowOuttakeConePercent + LowOuttakeCubePercent) / 2.0;
+        public static final double MidOuttakeConePercent = 0.05; // 1
+        public static final double MidOuttakeCubePercent = 0.3;
+        public static final double MidOuttakeUnknownPercent = (MidOuttakeConePercent + MidOuttakeCubePercent) / 2.0;
+        public static final double HighOuttakeConePercent = 0.05; // 1
+        public static final double HighOuttakeCubePercent = 0.3;
+        public static final double HighOuttakeUnknownPercent = (HighOuttakeConePercent + HighOuttakeCubePercent) / 2.0;
+
+        public static final double LowOuttakeConeSeconds = 2.0; // 0.5
+        public static final double LowOuttakeCubeSeconds = 0.5;
+        public static final double LowOuttakeUnknownSeconds = (LowOuttakeConeSeconds + LowOuttakeCubeSeconds) / 2.0;
+        public static final double MidOuttakeConeSeconds = 2.0; // 0.5
+        public static final double MidOuttakeCubeSeconds = 0.5;
+        public static final double MidOuttakeUnknownSeconds = (MidOuttakeConeSeconds + MidOuttakeCubeSeconds) / 2.0;
+        public static final double HighOuttakeConeSeconds = 2.0; // 0.5
+        public static final double HighOuttakeCubeSeconds = 0.5;
+        public static final double HighOuttakeUnknownSeconds = (HighOuttakeConeSeconds + HighOuttakeCubeSeconds) / 2.0;
     }
 
     public static class DrivetrainConstants {
         public static final double XboxAxisDeadband = 0.05;
+
+        public static final double CenterOfRotationMaxScale = 5.0;
 
         public static final double MaxVoltage = 12.0 * 0.5; // FIXME This limits total drivetrain speed
 

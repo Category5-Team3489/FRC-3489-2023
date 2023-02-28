@@ -6,9 +6,12 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+
 import frc.robot.Cat5Utils;
-import frc.robot.commands.Brake;
-import frc.robot.commands.DefaultDrivetrain;
+import frc.robot.RobotContainer;
+import frc.robot.commands.drivetrain.BrakeRotation;
+import frc.robot.commands.drivetrain.BrakeTranslation;
+import frc.robot.commands.drivetrain.Drive;
 import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -32,18 +35,25 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     // Tests
     public final PercentSpeedTest percentTest = new PercentSpeedTest();
 
-    // Shuffleboard
-
     // Devices
     private final SwerveModule frontLeftModule;
     private final SwerveModule frontRightModule;
     private final SwerveModule backLeftModule;
     private final SwerveModule backRightModule;
 
+    // Commands
+    private final Drive driveCommand;
+    private final BrakeTranslation brakeTranslationCommand;
+    private final BrakeRotation brakeRotationCommand;
+
     private Drivetrain() {
         super((i) -> instance = i);
 
-        setDefaultCommand(new DefaultDrivetrain());
+        driveCommand = new Drive();
+        brakeTranslationCommand = new BrakeTranslation();
+        brakeRotationCommand = new BrakeRotation();
+
+        setDefaultCommand(driveCommand);
 
         //#region Devices
         ShuffleboardTab tab = Shuffleboard.getTab("SDS Debug");
@@ -93,13 +103,27 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         );
         //#endregion Init Modules
 
+        //#region Bindings
+        RobotContainer.get().xbox.leftStick()
+            .whileTrue(brakeTranslationCommand);
+        RobotContainer.get().xbox.rightStick()
+            .whileTrue(brakeRotationCommand);
+        //#endregion
+
         //#region Shufflboard
+        // Main
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 
         layout.add("Subsystem Info", this);
 
-        layout.add(new Brake());
+        // Subsytem
+        var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
+            .withSize(2, 3);
+
+        subsystemLayout.add(driveCommand);
+        subsystemLayout.add(brakeTranslationCommand);
+        subsystemLayout.add(brakeRotationCommand);
         //#endregion
     }
 
@@ -143,21 +167,6 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     }
     public void setBackRightVoltageAngle(double voltage, double radians) {
         backRightModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getBackRightOffsetRadians.getAsDouble()));
-    }
-    //#endregion
-
-    //#region Enums
-    public enum ModulePosition {
-        FrontLeft(0),
-        FrontRight(1),
-        BackLeft(2),
-        BackRight(3);
-
-        public final int index;
-
-        private ModulePosition(int index) {
-            this.index = index;
-        }
     }
     //#endregion
 }
