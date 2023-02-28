@@ -99,6 +99,12 @@ public class Arm extends Cat5Subsystem<Arm> {
                 setTargetAngleDegrees(MinAngleDegrees);
                 generalArmPosition = GridPosition.Low;
             }));
+
+        RobotContainer.get().man.button(ArmConstants.HumanPlayerButton)
+            .onTrue(Commands.runOnce(() -> {
+                setTargetAngleDegrees(HumanPlayerDegrees);
+                generalArmPosition = GridPosition.HumanPlayer;
+            }));
         
         RobotContainer.get().man.button(ArmConstants.LowManButton)
             .onTrue(Commands.runOnce(() -> {

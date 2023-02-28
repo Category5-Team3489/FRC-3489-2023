@@ -1,0 +1,28 @@
+Drivetrain:
+    Charge Station
+    Teleop Driving
+    Change Center of Rotation
+
+Arm:
+    Human Player Angle
+    High Cone Angle
+    Mid Cone Angle
+    High Cube Angle
+    Mid Cube Angle
+    Low Angle
+
+Gripper:
+    High Cone Speed
+    Mid Cone Speed
+    Low Cone Speed
+    High Cube Speed
+    Mid Cube Speed
+    Low Cube Speed
+
+Limelight:
+    center Robot between cones
+    Pose Estimator
+
+Robot:
+    Auto
+

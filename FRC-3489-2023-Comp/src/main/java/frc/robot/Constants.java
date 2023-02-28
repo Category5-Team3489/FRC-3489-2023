@@ -16,6 +16,7 @@ public final class Constants {
         public static final int LowManButton = 11;
         public static final int MidManButton = 9;
         public static final int HighManButton = 7;
+        public static final int HumanPlayerButton = 6;
 
         public static final int MotorDeviceId = 11;
         public static final int LimitSwitchChannel = 0;
@@ -26,6 +27,7 @@ public final class Constants {
 
         public static final double MinAngleDegrees = -120.0; // FIXME FIND A BETTER VALUE!!!
         public static final double MaxAngleDegrees = 67.5;
+        public static final double HumanPlayerDegrees = 20;
 
         public static final double LowConeAngleDegrees = -105.0;
         public static final double LowCubeAngleDegrees = -105.0;
