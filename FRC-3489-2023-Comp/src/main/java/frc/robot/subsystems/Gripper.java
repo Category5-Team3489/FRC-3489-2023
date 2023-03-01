@@ -64,6 +64,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
         RobotContainer.get().man.button(GripperConstants.StopManButton)
             .onTrue(Commands.runOnce(() -> {
+                heldGamePiece = GamePiece.Unknown;
                 stopCommand.schedule();
             }));
 

@@ -34,17 +34,21 @@ public class Drive extends CommandBase {
         double maxAngularVelocityRadiansPerSecond = Drivetrain.get().maxVelocityConfig.getMaxAngularVelocityRadiansPerSecond.getAsDouble();
 
         //#region Chassis Speeds
-        double x = -RobotContainer.get().xbox.getLeftX();
+        double x = -RobotContainer.get().xbox.getLeftY();
         x = Cat5Utils.quadraticAxis(x, XboxAxisDeadband);
         x *= maxVelocityMetersPerSecond;
 
-        double y = -RobotContainer.get().xbox.getLeftY();
+        double y = -RobotContainer.get().xbox.getLeftX();
         y = Cat5Utils.quadraticAxis(y, XboxAxisDeadband);
         y *= maxVelocityMetersPerSecond;
+
+        // Translation2d xy = new Translation2d(-RobotContainer.get().xbox.getLeftX(), -RobotContainer.get().xbox.getLeftY());
+        // double xyMag = xy.getNorm();
 
         double omega = -RobotContainer.get().xbox.getRightX();
         omega = Cat5Utils.quadraticAxis(omega, XboxAxisDeadband);
         omega *= maxAngularVelocityRadiansPerSecond;
+        // omega += 0.15 * xyMag;
 
         Rotation2d theta = NavX2.get().getRotation();
 
@@ -52,31 +56,31 @@ public class Drive extends CommandBase {
         //#endregion
 
         //#region Center of Rotation
-        double corLeft = RobotContainer.get().xbox.getLeftTriggerAxis();
-        if (corLeft < 0.05) {
-            corLeft = 0;
-        }
-        else if (corLeft < 0.15) {
-            corLeft = 1;
-        }
-        else {
-            corLeft = CenterOfRotationMaxScale * Cat5Utils.inverseLerpUnclamped(corLeft, 0.15, 1.0);
-        }
+        // double corLeft = RobotContainer.get().xbox.getLeftTriggerAxis();
+        // if (corLeft < 0.05) {
+        //     corLeft = 0;
+        // }
+        // else if (corLeft < 0.15) {
+        //     corLeft = 1;
+        // }
+        // else {
+        //     corLeft = CenterOfRotationMaxScale * Cat5Utils.inverseLerpUnclamped(corLeft, 0.15, 1.0);
+        // }
 
-        double corRight = RobotContainer.get().xbox.getRightTriggerAxis();
-        if (corRight < 0.05) {
-            corRight = 0;
-        }
-        else if (corLeft < 0.15) {
-            corRight = 1;
-        }
-        else {
-            corRight = CenterOfRotationMaxScale * Cat5Utils.inverseLerpUnclamped(corRight, 0.15, 1.0);
-        }
+        // double corRight = RobotContainer.get().xbox.getRightTriggerAxis();
+        // if (corRight < 0.05) {
+        //     corRight = 0;
+        // }
+        // else if (corLeft < 0.15) {
+        //     corRight = 1;
+        // }
+        // else {
+        //     corRight = CenterOfRotationMaxScale * Cat5Utils.inverseLerpUnclamped(corRight, 0.15, 1.0);
+        // }
 
         Translation2d centerOfRotation = new Translation2d();
-        centerOfRotation.plus(FrontLeftMeters.times(corLeft));
-        centerOfRotation.plus(FrontRightMeters.times(corRight));
+        // centerOfRotation.plus(FrontLeftMeters.times(corLeft));
+        // centerOfRotation.plus(FrontRightMeters.times(corRight));
         //#endregion
 
         //#region Apply
@@ -88,13 +92,13 @@ public class Drive extends CommandBase {
             chassisSpeeds.omegaRadiansPerSecond != 0) {
             frontLeftSteerAngleRadians = states[0].angle.getRadians();
             frontRightSteerAngleRadians = states[1].angle.getRadians();
-            backLeftSteerAngleRadians= states[2].angle.getRadians();
+            backLeftSteerAngleRadians = states[2].angle.getRadians();
             backRightSteerAngleRadians = states[3].angle.getRadians();
-
-            Drivetrain.get().setFrontRightSpeedAngle(states[0].speedMetersPerSecond, frontLeftSteerAngleRadians);
+            
+            Drivetrain.get().setFrontLeftSpeedAngle(states[0].speedMetersPerSecond, frontLeftSteerAngleRadians);
             Drivetrain.get().setFrontRightSpeedAngle(states[1].speedMetersPerSecond, frontRightSteerAngleRadians);
-            Drivetrain.get().setFrontRightSpeedAngle(states[2].speedMetersPerSecond, backLeftSteerAngleRadians);
-            Drivetrain.get().setFrontRightSpeedAngle(states[3].speedMetersPerSecond, backRightSteerAngleRadians);
+            Drivetrain.get().setBackLeftSpeedAngle(states[2].speedMetersPerSecond, backLeftSteerAngleRadians);
+            Drivetrain.get().setBackRightSpeedAngle(states[3].speedMetersPerSecond, backRightSteerAngleRadians);
         }
         else {
             Drivetrain.get().setFrontLeftPercentAngle(0, frontLeftSteerAngleRadians);

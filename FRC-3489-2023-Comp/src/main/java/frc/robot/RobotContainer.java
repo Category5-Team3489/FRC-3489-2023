@@ -18,6 +18,7 @@ import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.NavX2;
+import frc.robot.subsystems.PoseEstimator;
 
 public class RobotContainer {
     //#region Singleton
@@ -63,6 +64,7 @@ public class RobotContainer {
         Arm.get();
         ColorSensor.get();
         Gripper.get();
+        PoseEstimator.get();
         
         configureBindings();
     }

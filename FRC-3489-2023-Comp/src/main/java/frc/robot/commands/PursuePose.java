@@ -12,4 +12,9 @@ public class PursuePose extends CommandBase {
 
         this.desiredPose = desiredPose;
     }
+
+    @Override
+    public void execute() {
+        
+    }
 }

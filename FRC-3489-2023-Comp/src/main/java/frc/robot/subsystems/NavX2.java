@@ -62,7 +62,10 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         //     return Rotation2d.fromDegrees(navx.getFusedHeading());
         // }
 
+        // heading = Rotation2d.fromDegrees((360.0 + 90.0) - navx.getYaw());
         heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
+        // heading = new Rotation2d(-heading.getCos(), heading.getSin());
+        // new Rotation2d()
 
         return heading;
     }

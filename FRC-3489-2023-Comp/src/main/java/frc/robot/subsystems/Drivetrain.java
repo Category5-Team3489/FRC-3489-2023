@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -12,8 +15,10 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.drivetrain.BrakeRotation;
 import frc.robot.commands.drivetrain.BrakeTranslation;
 import frc.robot.commands.drivetrain.Drive;
+import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
+import frc.robot.enums.ModulePosition;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.tests.drivetrain.PercentSpeedTest;
 
@@ -117,6 +122,16 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
         layout.add("Subsystem Info", this);
 
+        // layout.addDouble("FL", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
+        // layout.addDouble("FR", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
+        // layout.addDouble("BL", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
+        // layout.addDouble("BR", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());
+
+        layout.addDouble("FL", () -> frontLeftModule.getDriveVelocity());
+        layout.addDouble("FR", () -> frontRightModule.getDriveVelocity());
+        layout.addDouble("BL", () -> backLeftModule.getDriveVelocity());
+        layout.addDouble("BR", () -> backRightModule.getDriveVelocity());
+
         // Subsytem
         var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
             .withSize(2, 3);
@@ -125,6 +140,32 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         subsystemLayout.add(brakeTranslationCommand);
         subsystemLayout.add(brakeRotationCommand);
         //#endregion
+    }
+
+    public SwerveModulePosition[] getSwerveModulePositions() {
+        // Distance Meters
+        TalonFX frontLeftMotor = DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft);
+        TalonFX frontRightMotor = DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight);
+        TalonFX backLeftMotor = DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft);
+        TalonFX backRightMotor = DriveMotorConfig.getDriveMotor(ModulePosition.BackRight);
+
+        double frontLeftDistanceMeters = (frontLeftMotor.getSelectedSensorPosition() / 2048.0) * MetersPerRotation;
+        double frontRightDistanceMeters = (frontRightMotor.getSelectedSensorPosition() / 2048.0) * MetersPerRotation;
+        double backLeftDistanceMeters = (backLeftMotor.getSelectedSensorPosition() / 2048.0) * MetersPerRotation;
+        double backRightDistanceMeters = (backRightMotor.getSelectedSensorPosition() / 2048.0) * MetersPerRotation;
+
+        // Rotation
+        Rotation2d frontLeftRotation = Rotation2d.fromRadians(Cat5Utils.wrapAngle(frontLeftModule.getSteerAngle() - offsetConfig.getFrontLeftOffsetRadians.getAsDouble()));
+        Rotation2d frontRightRotation = Rotation2d.fromRadians(Cat5Utils.wrapAngle(frontRightModule.getSteerAngle() - offsetConfig.getFrontRightOffsetRadians.getAsDouble()));
+        Rotation2d backLeftRotation = Rotation2d.fromRadians(Cat5Utils.wrapAngle(backLeftModule.getSteerAngle() - offsetConfig.getBackLeftOffsetRadians.getAsDouble()));
+        Rotation2d backRightRotation = Rotation2d.fromRadians(Cat5Utils.wrapAngle(backRightModule.getSteerAngle() - offsetConfig.getBackRightOffsetRadians.getAsDouble()));
+
+        return new SwerveModulePosition[] {
+            new SwerveModulePosition(frontLeftDistanceMeters, frontLeftRotation),
+            new SwerveModulePosition(frontRightDistanceMeters, frontRightRotation),
+            new SwerveModulePosition(backLeftDistanceMeters, backLeftRotation),
+            new SwerveModulePosition(backRightDistanceMeters, backRightRotation)
+        };
     }
 
     //#region Set

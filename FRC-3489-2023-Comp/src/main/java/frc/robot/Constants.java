@@ -26,18 +26,19 @@ public final class Constants {
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
         public static final double MinAngleDegrees = -120.0; // FIXME FIND A BETTER VALUE!!!
-        public static final double MaxAngleDegrees = 67.5;
+        public static final double MaxAngleDegrees = 37.0;
         public static final double HumanPlayerDegrees = 20;
+        public static final double ManualControlMinAngleDegrees = -100.0;
 
         public static final double LowConeAngleDegrees = -105.0;
         public static final double LowCubeAngleDegrees = -105.0;
         public static final double LowUnknownAngleDegrees = (LowConeAngleDegrees + LowCubeAngleDegrees) / 2.0;
 
-        public static final double MidConeAngleDegrees = 1.81; // 11.0
+        public static final double MidConeAngleDegrees = 15.0; // 11.0
         public static final double MidCubeAngleDegrees = 11.0;
         public static final double MidUnknownAngleDegrees = (MidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
-        public static final double HighConeAngleDegrees = 31.0;
+        public static final double HighConeAngleDegrees = 34.0;
         public static final double HighCubeAngleDegrees = 31.0;
         public static final double HighUnknownAngleDegrees = (HighConeAngleDegrees + HighCubeAngleDegrees) / 2.0;
     
@@ -74,10 +75,10 @@ public final class Constants {
         public static final double LowOuttakeConePercent = 0.05; // 1
         public static final double LowOuttakeCubePercent = 0.3;
         public static final double LowOuttakeUnknownPercent = (LowOuttakeConePercent + LowOuttakeCubePercent) / 2.0;
-        public static final double MidOuttakeConePercent = 0.05; // 1
+        public static final double MidOuttakeConePercent = 0.1; // 0.0
         public static final double MidOuttakeCubePercent = 0.3;
         public static final double MidOuttakeUnknownPercent = (MidOuttakeConePercent + MidOuttakeCubePercent) / 2.0;
-        public static final double HighOuttakeConePercent = 0.05; // 1
+        public static final double HighOuttakeConePercent = 1;
         public static final double HighOuttakeCubePercent = 0.3;
         public static final double HighOuttakeUnknownPercent = (HighOuttakeConePercent + HighOuttakeCubePercent) / 2.0;
 
@@ -87,7 +88,7 @@ public final class Constants {
         public static final double MidOuttakeConeSeconds = 2.0; // 0.5
         public static final double MidOuttakeCubeSeconds = 0.5;
         public static final double MidOuttakeUnknownSeconds = (MidOuttakeConeSeconds + MidOuttakeCubeSeconds) / 2.0;
-        public static final double HighOuttakeConeSeconds = 2.0; // 0.5
+        public static final double HighOuttakeConeSeconds = 0.5; // 0.5
         public static final double HighOuttakeCubeSeconds = 0.5;
         public static final double HighOuttakeUnknownSeconds = (HighOuttakeConeSeconds + HighOuttakeCubeSeconds) / 2.0;
     }

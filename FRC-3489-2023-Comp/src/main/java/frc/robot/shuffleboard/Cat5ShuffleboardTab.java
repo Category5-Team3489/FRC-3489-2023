@@ -8,7 +8,8 @@ public enum Cat5ShuffleboardTab {
     Drivetrain,
     Arm,
     ColorSensor,
-    Gripper;
+    Gripper,
+    PoseEstimator;
 
     public ShuffleboardTab get() {
         return Shuffleboard.getTab(toString());

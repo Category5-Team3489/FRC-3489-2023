@@ -57,7 +57,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     // State
     private boolean isHomed = false;
     private double targetAngleDegrees = ArmConstants.MinAngleDegrees;
-    private GridPosition generalArmPosition = GridPosition.Low;
+    private GridPosition gridPosition = GridPosition.Low;
 
     private Arm() {
         super((i) -> instance = i);
@@ -91,19 +91,19 @@ public class Arm extends Cat5Subsystem<Arm> {
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(Commands.runOnce(() -> {
                 setTargetAngleDegrees(ArmConstants.MinAngleDegrees);
-                generalArmPosition = GridPosition.Low;
+                gridPosition = GridPosition.Low;
             }));
 
         RobotContainer.get().man.button(ArmConstants.HomeManButton)
             .onTrue(Commands.runOnce(() -> {
                 setTargetAngleDegrees(MinAngleDegrees);
-                generalArmPosition = GridPosition.Low;
+                gridPosition = GridPosition.Low;
             }));
 
         RobotContainer.get().man.button(ArmConstants.HumanPlayerButton)
             .onTrue(Commands.runOnce(() -> {
                 setTargetAngleDegrees(HumanPlayerDegrees);
-                generalArmPosition = GridPosition.HumanPlayer;
+                gridPosition = GridPosition.High;
             }));
         
         RobotContainer.get().man.button(ArmConstants.LowManButton)
@@ -120,7 +120,7 @@ public class Arm extends Cat5Subsystem<Arm> {
                         setTargetAngleDegrees(LowUnknownAngleDegrees);
                         break;
                 }
-                generalArmPosition = GridPosition.Low;
+                gridPosition = GridPosition.Low;
             }));
 
         RobotContainer.get().man.button(ArmConstants.MidManButton)
@@ -137,7 +137,7 @@ public class Arm extends Cat5Subsystem<Arm> {
                         setTargetAngleDegrees(MidUnknownAngleDegrees);
                         break;
                 }
-                generalArmPosition = GridPosition.Mid;
+                gridPosition = GridPosition.Mid;
             }));
 
         RobotContainer.get().man.button(ArmConstants.HighManButton)
@@ -154,7 +154,7 @@ public class Arm extends Cat5Subsystem<Arm> {
                         setTargetAngleDegrees(HighUnknownAngleDegrees);
                         break;
                 }
-                generalArmPosition = GridPosition.High;
+                gridPosition = GridPosition.High;
             }));
         //#endregion
 
@@ -168,6 +168,8 @@ public class Arm extends Cat5Subsystem<Arm> {
         layout.addBoolean("Is Homed", () -> isHomed);
         layout.addDouble("Encoder Arm Angle (°)", () -> getEncoderAngleDegrees());
         layout.addDouble("Target Arm Angle (°)", () -> targetAngleDegrees);
+
+        layout.addString("Grid Position", () -> gridPosition.toString());
 
         layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 
@@ -285,9 +287,17 @@ public class Arm extends Cat5Subsystem<Arm> {
 
             if (y < 0) {
                 y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxDownPercent, -y);
+
+                if (getEncoderAngleDegrees() < ArmConstants.ManualControlMinAngleDegrees) {
+                    y = 0;
+                }
             }
             else {
                 y = MathUtil.interpolate(0, ArmConstants.ManualControlMaxUpPercent, y);
+
+                if (getEncoderAngleDegrees() > ArmConstants.MaxAngleDegrees) {
+                    y = 0;
+                }
             }
 
             motor.setVoltage(y * 12.0);
@@ -298,7 +308,7 @@ public class Arm extends Cat5Subsystem<Arm> {
 
     //#region Public
     public GridPosition getGridPosition() {
-        return generalArmPosition;
+        return gridPosition;
     }
     //#endregion
 }
