@@ -79,7 +79,7 @@ public class RobotContainer {
             Commands.runOnce(() -> {
                 Drivetrain.get().driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
             }),
-            new PursuePose(new Pose2d(2, 2))
+            new PursuePose(new Pose2d(2.0, 2.0, Rotation2d.fromDegrees(0)))
         );
     }
 }

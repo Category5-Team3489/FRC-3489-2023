@@ -34,7 +34,7 @@ public class Drive extends CommandBase {
         addRequirements(Drivetrain.get());
 
         omegaController.enableContinuousInput(-180, 180);
-        omegaController.setTolerance(HeadingKeeperToleranceDegrees);
+        omegaController.setTolerance(HeadingKeeperToleranceDegrees / 2.0);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class Drive extends CommandBase {
             }
 
             double desiredDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetAngle.getDegrees());
-            desiredDegreesPerSecond = MathUtil.clamp(desiredDegreesPerSecond, HeadingKeeperMinDegreesPerSecond, HeadingKeeperMaxDegreesPerSecond);
+            desiredDegreesPerSecond = MathUtil.clamp(desiredDegreesPerSecond, -HeadingKeeperMaxDegreesPerSecond, HeadingKeeperMaxDegreesPerSecond);
 
             if (!omegaController.atSetpoint()) {
                 omega = Math.toRadians(desiredDegreesPerSecond);

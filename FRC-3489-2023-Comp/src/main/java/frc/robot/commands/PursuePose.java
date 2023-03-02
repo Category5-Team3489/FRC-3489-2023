@@ -20,7 +20,7 @@ public class PursuePose extends CommandBase {
 
     @Override
     public void initialize() {
-        Drivetrain.get().driveCommand.setTargetAngle(desiredPose.getRotation());
+        // Drivetrain.get().driveCommand.setTargetAngle(desiredPose.getRotation());
         Drivetrain.get().driveCommand.setAutoXSupplier(() -> {
             Pose2d pose = PoseEstimator.get().getPose();
             double xVelocity = x.calculate(pose.getX(), desiredPose.getX());

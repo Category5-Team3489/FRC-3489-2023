@@ -104,8 +104,7 @@ public final class Constants {
         public static final int MaxSpeedButtonB = 4;
         public static final double XboxAxisDeadband = 0.05;
 
-        public static final double HeadingKeeperToleranceDegrees = 4.0 / 2.0; // (x / 2) because tolerance is same magnitude for + and -
-        public static final double HeadingKeeperMinDegreesPerSecond = -180.0;
+        public static final double HeadingKeeperToleranceDegrees = 4.0;
         public static final double HeadingKeeperMaxDegreesPerSecond = 180.0;
         public static final double HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError = 90.0 / 90.0;
         public static final double HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError = 0;
