@@ -11,12 +11,18 @@ public final class Constants {
         public static final int ManPort = 1;
     }
 
+    public static class LimelightConstants {
+        public static final int FiducialPipelineIndex = 0;
+        public static final int RetroreflectivePipelineIndex = 1;
+        public static final double FiducialTargetAreaThresholdPercent = 0.05;
+    }
+
     public static class ArmConstants {
         public static final int HomeManButton = 12;
         public static final int LowManButton = 11;
         public static final int MidManButton = 9;
         public static final int HighManButton = 7;
-        public static final int HumanPlayerButton = 6;
+        public static final int DoubleSubstationButton = 6;
 
         public static final int MotorDeviceId = 11;
         public static final int LimitSwitchChannel = 0;
@@ -27,8 +33,12 @@ public final class Constants {
 
         public static final double MinAngleDegrees = -120.0; // FIXME FIND A BETTER VALUE!!!
         public static final double MaxAngleDegrees = 37.0;
-        public static final double HumanPlayerDegrees = 20;
+
         public static final double ManualControlMinAngleDegrees = -100.0;
+        public static final double ManualControlMaxDownPercent = -0.3;
+        public static final double ManualControlMaxUpPercent = 0.3;
+
+        public static final double DoubleSubstationDegrees = 20;
 
         public static final double LowConeAngleDegrees = -105.0;
         public static final double LowCubeAngleDegrees = -105.0;
@@ -41,16 +51,12 @@ public final class Constants {
         public static final double HighConeAngleDegrees = 34.0;
         public static final double HighCubeAngleDegrees = 31.0;
         public static final double HighUnknownAngleDegrees = (HighConeAngleDegrees + HighCubeAngleDegrees) / 2.0;
-    
-        public static final int StallSmartCurrentLimitAmps = 30;
 
         public static final double HomingPercent = -0.40; // -0.15
         public static final double HorizontalResistGravityPercent = 0.025;
         public static final double ResistStaticFrictionPercent = 0;
 
-        public static final double ManualControlMaxDownPercent = -0.3;
-        public static final double ManualControlMaxUpPercent = 0.3;
-    
+        public static final int StallSmartCurrentLimitAmps = 30;
         public static final double ProportionalGainPercentPerRevolutionOfError = 0.025;
         // public static final double IntegralGainPercentPerRevolutionMillisecondOfError = 0;
         public static final double DerivativeGainPercentPerRevolutionPerMillisecondOfError = 0;
@@ -68,7 +74,7 @@ public final class Constants {
         public static final int LeftMotorDeviceId = 9;
         public static final int RightMotorDeviceId = 10;
 
-        public static final int IntakeCubeProximityThreshold = 300; // FIXME Likely too high
+        public static final int IntakeCubeProximityThreshold = 300; // FIXME Robot eats cube sometimes
 
         public static final double IntakePercent = -0.5;
 
@@ -94,11 +100,20 @@ public final class Constants {
     }
 
     public static class DrivetrainConstants {
+        public static final int MaxSpeedButtonA = 3;
+        public static final int MaxSpeedButtonB = 4;
         public static final double XboxAxisDeadband = 0.05;
 
-        public static final double CenterOfRotationMaxScale = 5.0;
+        public static final double HeadingKeeperToleranceDegrees = 4.0 / 2.0; // (x / 2) because tolerance is same magnitude for + and -
+        public static final double HeadingKeeperMinDegreesPerSecond = -180.0;
+        public static final double HeadingKeeperMaxDegreesPerSecond = 180.0;
+        public static final double HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError = 90.0 / 90.0;
+        public static final double HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError = 0;
+        public static final double HeadingKeeperDerivativeGainDegreesPerSecondPerDegreePerSecondOfError = 0;
 
         public static final double MaxVoltage = 12.0 * 0.5; // FIXME This limits total drivetrain speed
+
+        public static final double CenterOfRotationMaxScale = 5.0;
 
         public static final double MetersPerRotation = SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
         public static final double TheoreticalMaxVelocityMetersPerSecond = 6380.0 / 60.0 * MetersPerRotation;
@@ -121,7 +136,7 @@ public final class Constants {
         public static final int FrontLeftDriveDeviceId = 3;
         public static final int FrontLeftSteerDeviceId = 4;
         public static final int FrontLeftEncoderDeviceId = 20;
-    
+
         public static final int FrontRightDriveDeviceId = 5;
         public static final int FrontRightSteerDeviceId = 6;
         public static final int FrontRightEncoderDeviceId = 21;

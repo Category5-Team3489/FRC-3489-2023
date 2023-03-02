@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class Cat5Utils {
@@ -37,6 +38,9 @@ public class Cat5Utils {
         return MathUtil.inputModulus(angleRadians, 0, 2.0 * Math.PI);
 	}
 
+    public static Pose2d lerpUnclamped(Pose2d startValue, Pose2d endValue, double t) {
+        return startValue.plus((endValue.minus(startValue)).times(t));
+    }
     public static double lerpUnclamped(double a, double b, double t) {
         return a + t * (b - a);
     }

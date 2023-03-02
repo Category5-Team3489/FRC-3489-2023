@@ -7,11 +7,14 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.PursuePose;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
@@ -51,7 +54,7 @@ public class RobotContainer {
         instance = this;
         cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
 
-        // Look here for fixes to common problems
+        // Look here for fixes to common problems:
         // If shuffleboard layout doesn't show up, check size
         // If subsystem isn't working, call Subsystem.get() here
         // Check type if layout.add, or tab.add fails
@@ -72,6 +75,11 @@ public class RobotContainer {
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+                Drivetrain.get().driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
+            }),
+            new PursuePose(new Pose2d(2, 2))
+        );
     }
 }

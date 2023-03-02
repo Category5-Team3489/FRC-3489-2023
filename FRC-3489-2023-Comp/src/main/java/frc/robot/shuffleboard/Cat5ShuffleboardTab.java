@@ -9,7 +9,8 @@ public enum Cat5ShuffleboardTab {
     Arm,
     ColorSensor,
     Gripper,
-    PoseEstimator;
+    PoseEstimator,
+    Limelight;
 
     public ShuffleboardTab get() {
         return Shuffleboard.getTab(toString());

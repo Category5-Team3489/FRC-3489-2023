@@ -58,6 +58,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     private boolean isHomed = false;
     private double targetAngleDegrees = ArmConstants.MinAngleDegrees;
     private GridPosition gridPosition = GridPosition.Low;
+    private IdleMode idleMode = IdleMode.kCoast;
 
     private Arm() {
         super((i) -> instance = i);
@@ -76,7 +77,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         encoder = motor.getEncoder();
 
         motor.restoreFactoryDefaults();
-        motor.setIdleMode(IdleMode.kBrake);
+        motor.setIdleMode(idleMode);
         motor.enableVoltageCompensation(12.0);
         motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
         pidController.setP(ProportionalGainPercentPerRevolutionOfError);
@@ -90,19 +91,19 @@ public class Arm extends Cat5Subsystem<Arm> {
         //#region Bindings
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(Commands.runOnce(() -> {
-                setTargetAngleDegrees(ArmConstants.MinAngleDegrees);
+                setTargetAngleDegrees(ArmConstants.MinAngleDegrees, IdleMode.kCoast);
                 gridPosition = GridPosition.Low;
             }));
 
         RobotContainer.get().man.button(ArmConstants.HomeManButton)
             .onTrue(Commands.runOnce(() -> {
-                setTargetAngleDegrees(MinAngleDegrees);
+                setTargetAngleDegrees(MinAngleDegrees, IdleMode.kCoast);
                 gridPosition = GridPosition.Low;
             }));
 
-        RobotContainer.get().man.button(ArmConstants.HumanPlayerButton)
+        RobotContainer.get().man.button(ArmConstants.DoubleSubstationButton)
             .onTrue(Commands.runOnce(() -> {
-                setTargetAngleDegrees(HumanPlayerDegrees);
+                setTargetAngleDegrees(DoubleSubstationDegrees, IdleMode.kBrake);
                 gridPosition = GridPosition.High;
             }));
         
@@ -111,13 +112,13 @@ public class Arm extends Cat5Subsystem<Arm> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
                 switch (heldGamePiece) {
                     case Cone:
-                        setTargetAngleDegrees(LowConeAngleDegrees);
+                        setTargetAngleDegrees(LowConeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Cube:
-                        setTargetAngleDegrees(LowCubeAngleDegrees);
+                        setTargetAngleDegrees(LowCubeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Unknown:
-                        setTargetAngleDegrees(LowUnknownAngleDegrees);
+                        setTargetAngleDegrees(LowUnknownAngleDegrees, IdleMode.kBrake);
                         break;
                 }
                 gridPosition = GridPosition.Low;
@@ -128,13 +129,13 @@ public class Arm extends Cat5Subsystem<Arm> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
                 switch (heldGamePiece) {
                     case Cone:
-                        setTargetAngleDegrees(MidConeAngleDegrees);
+                        setTargetAngleDegrees(MidConeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Cube:
-                        setTargetAngleDegrees(MidCubeAngleDegrees);
+                        setTargetAngleDegrees(MidCubeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Unknown:
-                        setTargetAngleDegrees(MidUnknownAngleDegrees);
+                        setTargetAngleDegrees(MidUnknownAngleDegrees, IdleMode.kBrake);
                         break;
                 }
                 gridPosition = GridPosition.Mid;
@@ -145,13 +146,13 @@ public class Arm extends Cat5Subsystem<Arm> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
                 switch (heldGamePiece) {
                     case Cone:
-                        setTargetAngleDegrees(HighConeAngleDegrees);
+                        setTargetAngleDegrees(HighConeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Cube:
-                        setTargetAngleDegrees(HighCubeAngleDegrees);
+                        setTargetAngleDegrees(HighCubeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Unknown:
-                        setTargetAngleDegrees(HighUnknownAngleDegrees);
+                        setTargetAngleDegrees(HighUnknownAngleDegrees, IdleMode.kBrake);
                         break;
                 }
                 gridPosition = GridPosition.High;
@@ -217,7 +218,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         else {
             if (isHomed) {
                 if (debugIsTrackingTarget.getAsBoolean()) {
-                    setTargetAngleDegrees(debugTargetAngleDegrees.getAsDouble());
+                    setTargetAngleDegrees(debugTargetAngleDegrees.getAsDouble(), IdleMode.kBrake);
                 }
 
                 gotoTargetCommand.schedule();
@@ -229,9 +230,14 @@ public class Arm extends Cat5Subsystem<Arm> {
     }
 
     //#region Control
-    private void setTargetAngleDegrees(double angleDegrees) {
+    private void setTargetAngleDegrees(double angleDegrees, IdleMode idleMode) {
         angleDegrees = MathUtil.clamp(angleDegrees, MinAngleDegrees, MaxAngleDegrees);
         targetAngleDegrees = angleDegrees;
+
+        if (this.idleMode != idleMode) {
+            this.idleMode = idleMode;
+            motor.setIdleMode(idleMode);
+        }
     }
     //#endregion Control
 
@@ -247,6 +253,13 @@ public class Arm extends Cat5Subsystem<Arm> {
     //#endregion
 
     //#region Feedforward
+    private double getResistConstantForceSpringPercent() {
+        if (!isHomed) {
+            return 0;
+        }
+
+        return 0;
+    }
     private double getResistGravityPercent() {
         if (!isHomed) {
             return 0;
@@ -275,7 +288,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         return Commands.run(() -> {
             double targetRevolutions = targetAngleDegrees * MotorRevolutionsPerDegree;
             double direction = encoder.getVelocity() > 0 ? 1 : -1;
-            double arbFeedforward = getResistGravityPercent() + getResistStaticFrictionPercent(direction);
+            double arbFeedforward = getResistConstantForceSpringPercent() + getResistGravityPercent() + getResistStaticFrictionPercent(direction);
             pidController.setReference(targetRevolutions, ControlType.kPosition, 0, arbFeedforward * 12.0, ArbFFUnits.kVoltage);
         }, this)
             .withName("Goto Target");

@@ -1,5 +1,7 @@
 package frc.robot.commands.drivetrain;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,82 +16,123 @@ import frc.robot.subsystems.NavX2;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
 
-public class Drive extends CommandBase {
-    public Drive() {
-        addRequirements(Drivetrain.get());
-    }
+import java.util.function.DoubleSupplier;
 
+public class Drive extends CommandBase {
     private double frontLeftSteerAngleRadians = 0;
     private double frontRightSteerAngleRadians = 0;
     private double backLeftSteerAngleRadians = 0;
     private double backRightSteerAngleRadians = 0;
 
+    private Rotation2d targetAngle = null;
+    private PIDController omegaController = new PIDController(HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError, HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError, HeadingKeeperDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
+
+    private DoubleSupplier autoXSupplier = null;
+    private DoubleSupplier autoYSupplier = null;
+
+    public Drive() {
+        addRequirements(Drivetrain.get());
+
+        omegaController.enableContinuousInput(-180, 180);
+        omegaController.setTolerance(HeadingKeeperToleranceDegrees);
+    }
+
     @Override
     public void execute() {
-        if (DriverStation.isAutonomous()) {
-            return;
-        }
-
         double maxVelocityMetersPerSecond = Drivetrain.get().maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble();
         double maxAngularVelocityRadiansPerSecond = Drivetrain.get().maxVelocityConfig.getMaxAngularVelocityRadiansPerSecond.getAsDouble();
-
-        //#region Chassis Speeds
-        double x = -RobotContainer.get().xbox.getLeftY();
-        x = Cat5Utils.quadraticAxis(x, XboxAxisDeadband);
-        x *= maxVelocityMetersPerSecond;
-
-        double y = -RobotContainer.get().xbox.getLeftX();
-        y = Cat5Utils.quadraticAxis(y, XboxAxisDeadband);
-        y *= maxVelocityMetersPerSecond;
-
-        // Translation2d xy = new Translation2d(-RobotContainer.get().xbox.getLeftX(), -RobotContainer.get().xbox.getLeftY());
-        // double xyMag = xy.getNorm();
-
-        double omega = -RobotContainer.get().xbox.getRightX();
-        omega = Cat5Utils.quadraticAxis(omega, XboxAxisDeadband);
-        omega *= maxAngularVelocityRadiansPerSecond;
-        // omega += 0.15 * xyMag;
+        
+        double x = 0;
+        double y = 0;
+        double omega = 0;
 
         Rotation2d theta = NavX2.get().getRotation();
+        Translation2d centerOfRotation = new Translation2d();
+
+        if (DriverStation.isAutonomous()) {
+            if (autoXSupplier != null) {
+                x = autoXSupplier.getAsDouble();
+            }
+            if (autoYSupplier != null) {
+                y = autoYSupplier.getAsDouble();
+            }
+        }
+        else {
+            if (RobotContainer.get().man.getHID().getRawButton(MaxSpeedButtonA) &&
+                RobotContainer.get().man.getHID().getRawButton(MaxSpeedButtonB)) {
+                Drivetrain.get().setFrontLeftPercentAngle(1, frontLeftSteerAngleRadians);
+                Drivetrain.get().setFrontRightPercentAngle(1, frontRightSteerAngleRadians);
+                Drivetrain.get().setBackLeftPercentAngle(1, backLeftSteerAngleRadians);
+                Drivetrain.get().setBackRightPercentAngle(1, backRightSteerAngleRadians);
+                return;
+            }
+            
+            //#region Input
+            x = -RobotContainer.get().xbox.getLeftY();
+            x = Cat5Utils.quadraticAxis(x, XboxAxisDeadband);
+            x *= maxVelocityMetersPerSecond;
+
+            y = -RobotContainer.get().xbox.getLeftX();
+            y = Cat5Utils.quadraticAxis(y, XboxAxisDeadband);
+            y *= maxVelocityMetersPerSecond;
+
+            omega = -RobotContainer.get().xbox.getRightX();
+            omega = Cat5Utils.quadraticAxis(omega, XboxAxisDeadband);
+            omega *= maxAngularVelocityRadiansPerSecond;
+            //#endregion
+
+            //#region Center of Rotation
+            // double corLeft = RobotContainer.get().xbox.getLeftTriggerAxis();
+            // if (corLeft < 0.05) {
+            //     corLeft = 0;
+            // }
+            // else if (corLeft < 0.15) {
+            //     corLeft = 1;
+            // }
+            // else {
+            //     corLeft = CenterOfRotationMaxScale * Cat5Utils.inverseLerpUnclamped(corLeft, 0.15, 1.0);
+            // }
+
+            // double corRight = RobotContainer.get().xbox.getRightTriggerAxis();
+            // if (corRight < 0.05) {
+            //     corRight = 0;
+            // }
+            // else if (corLeft < 0.15) {
+            //     corRight = 1;
+            // }
+            // else {
+            //     corRight = CenterOfRotationMaxScale * Cat5Utils.inverseLerpUnclamped(corRight, 0.15, 1.0);
+            // }
+            //#endregion
+        }
 
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, omega, theta);
-        //#endregion
 
-        //#region Center of Rotation
-        // double corLeft = RobotContainer.get().xbox.getLeftTriggerAxis();
-        // if (corLeft < 0.05) {
-        //     corLeft = 0;
-        // }
-        // else if (corLeft < 0.15) {
-        //     corLeft = 1;
-        // }
-        // else {
-        //     corLeft = CenterOfRotationMaxScale * Cat5Utils.inverseLerpUnclamped(corLeft, 0.15, 1.0);
-        // }
+        if (omega == 0) {
+            if (targetAngle == null) {
+                targetAngle = NavX2.get().getRotation();
+            }
 
-        // double corRight = RobotContainer.get().xbox.getRightTriggerAxis();
-        // if (corRight < 0.05) {
-        //     corRight = 0;
-        // }
-        // else if (corLeft < 0.15) {
-        //     corRight = 1;
-        // }
-        // else {
-        //     corRight = CenterOfRotationMaxScale * Cat5Utils.inverseLerpUnclamped(corRight, 0.15, 1.0);
-        // }
+            double desiredDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetAngle.getDegrees());
+            desiredDegreesPerSecond = MathUtil.clamp(desiredDegreesPerSecond, HeadingKeeperMinDegreesPerSecond, HeadingKeeperMaxDegreesPerSecond);
 
-        Translation2d centerOfRotation = new Translation2d();
-        // centerOfRotation.plus(FrontLeftMeters.times(corLeft));
-        // centerOfRotation.plus(FrontRightMeters.times(corRight));
-        //#endregion
+            if (!omegaController.atSetpoint()) {
+                omega = Math.toRadians(desiredDegreesPerSecond);
+            }
+        }
+        else {
+            targetAngle = NavX2.get().getRotation();
+            omegaController.reset();
+
+            // centerOfRotation.plus(FrontLeftMeters.times(corLeft));
+            // centerOfRotation.plus(FrontRightMeters.times(corRight));
+        }
 
         //#region Apply
         SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond);
 
-        if (chassisSpeeds.vxMetersPerSecond != 0 ||
-            chassisSpeeds.vyMetersPerSecond != 0 ||
-            chassisSpeeds.omegaRadiansPerSecond != 0) {
+        if (x != 0 || y != 0 || omega != 0) {
             frontLeftSteerAngleRadians = states[0].angle.getRadians();
             frontRightSteerAngleRadians = states[1].angle.getRadians();
             backLeftSteerAngleRadians = states[2].angle.getRadians();
@@ -116,4 +159,17 @@ public class Drive extends CommandBase {
         backLeftSteerAngleRadians= 0;
         backRightSteerAngleRadians = 0;
     }
+
+    //#region Public
+    public void setTargetAngle(Rotation2d targetAngle) {
+        this.targetAngle = targetAngle;
+    }
+
+    public void setAutoXSupplier(DoubleSupplier autoXSupplier) {
+        this.autoXSupplier = autoXSupplier;
+    }
+    public void setAutoYSupplier(DoubleSupplier autoYSupplier) {
+        this.autoYSupplier = autoYSupplier;   
+    }
+    //#endregion
 }

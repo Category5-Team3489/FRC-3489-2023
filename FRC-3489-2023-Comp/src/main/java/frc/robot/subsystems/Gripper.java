@@ -127,7 +127,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
         layout.add("Subsystem Info", this);
         layout.addString("Held Game Piece", () -> heldGamePiece.toString());
-        layout.addDouble("Motor Percent", () -> motorPercent);
+        layout.addDouble("Motor (%)", () -> motorPercent);
 
         var isColorSensorDisabledEntry = layout.add("Disable Color Sensor", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)

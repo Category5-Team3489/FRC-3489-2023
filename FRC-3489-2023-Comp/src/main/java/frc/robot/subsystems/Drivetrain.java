@@ -9,18 +9,18 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Cat5Utils;
 import frc.robot.RobotContainer;
 import frc.robot.commands.drivetrain.BrakeRotation;
 import frc.robot.commands.drivetrain.BrakeTranslation;
 import frc.robot.commands.drivetrain.Drive;
+import frc.robot.commands.drivetrain.MapDriveMotors;
 import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
 import frc.robot.enums.ModulePosition;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
-import frc.robot.tests.drivetrain.PercentSpeedTest;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
 
@@ -37,19 +37,17 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     public final OffsetsConfig offsetConfig = new OffsetsConfig();
     public final MaxVelocityConfig maxVelocityConfig = new MaxVelocityConfig();
 
-    // Tests
-    public final PercentSpeedTest percentTest = new PercentSpeedTest();
-
     // Devices
-    private final SwerveModule frontLeftModule;
-    private final SwerveModule frontRightModule;
-    private final SwerveModule backLeftModule;
-    private final SwerveModule backRightModule;
+    public final SwerveModule frontLeftModule;
+    public final SwerveModule frontRightModule;
+    public final SwerveModule backLeftModule;
+    public final SwerveModule backRightModule;
 
     // Commands
-    private final Drive driveCommand;
+    public final Drive driveCommand;
     private final BrakeTranslation brakeTranslationCommand;
     private final BrakeRotation brakeRotationCommand;
+    private final MapDriveMotors mapDriveMotorsCommand;
 
     private Drivetrain() {
         super((i) -> instance = i);
@@ -57,6 +55,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         driveCommand = new Drive();
         brakeTranslationCommand = new BrakeTranslation();
         brakeRotationCommand = new BrakeRotation();
+        mapDriveMotorsCommand = new MapDriveMotors();
 
         setDefaultCommand(driveCommand);
 
@@ -113,6 +112,38 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             .whileTrue(brakeTranslationCommand);
         RobotContainer.get().xbox.rightStick()
             .whileTrue(brakeRotationCommand);
+        RobotContainer.get().xbox.povUp()
+            .onTrue(Commands.runOnce(() -> {
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
+            }));
+        RobotContainer.get().xbox.povUpRight()
+            .onTrue(Commands.runOnce(() -> {
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(45));
+            }));
+        RobotContainer.get().xbox.povRight()
+            .onTrue(Commands.runOnce(() -> {
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(90));
+            }));
+        RobotContainer.get().xbox.povDownRight()
+            .onTrue(Commands.runOnce(() -> {
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(135));
+            }));
+        RobotContainer.get().xbox.povDown()
+            .onTrue(Commands.runOnce(() -> {
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(180));
+            }));
+        RobotContainer.get().xbox.povDownLeft()
+            .onTrue(Commands.runOnce(() -> {
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(225));
+            }));
+        RobotContainer.get().xbox.povLeft()
+            .onTrue(Commands.runOnce(() -> {
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(270));
+            }));
+        RobotContainer.get().xbox.povUpLeft()
+            .onTrue(Commands.runOnce(() -> {
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(315));
+            }));
         //#endregion
 
         //#region Shufflboard
@@ -122,15 +153,15 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
         layout.add("Subsystem Info", this);
 
-        // layout.addDouble("FL", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
-        // layout.addDouble("FR", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
-        // layout.addDouble("BL", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
-        // layout.addDouble("BR", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());
+        // layout.addDouble("Front Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
+        // layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
+        // layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
+        // layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());
 
-        layout.addDouble("FL", () -> frontLeftModule.getDriveVelocity());
-        layout.addDouble("FR", () -> frontRightModule.getDriveVelocity());
-        layout.addDouble("BL", () -> backLeftModule.getDriveVelocity());
-        layout.addDouble("BR", () -> backRightModule.getDriveVelocity());
+        layout.addDouble("Front Left (m per s)", () -> frontLeftModule.getDriveVelocity());
+        layout.addDouble("Front Right (m per s)", () -> frontRightModule.getDriveVelocity());
+        layout.addDouble("Back Left (m per s)", () -> backLeftModule.getDriveVelocity());
+        layout.addDouble("Back Right (m per s)", () -> backRightModule.getDriveVelocity());
 
         // Subsytem
         var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
@@ -139,6 +170,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         subsystemLayout.add(driveCommand);
         subsystemLayout.add(brakeTranslationCommand);
         subsystemLayout.add(brakeRotationCommand);
+        subsystemLayout.add(mapDriveMotorsCommand);
         //#endregion
     }
 

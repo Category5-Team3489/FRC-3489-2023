@@ -50,6 +50,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     private CommandBase getZeroYawCommand() {
         return Commands.runOnce(() -> {
             navx.zeroYaw();
+            PoseEstimator.get().onNavxZeroYaw();
         })
             .ignoringDisable(true)
             .withName("Zero Yaw");

@@ -101,7 +101,9 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
         @Override
         public void setReferenceVoltage(double voltage) {
-            motor.set(TalonFXControlMode.PercentOutput, voltage / nominalVoltage);
+            double percent = voltage / nominalVoltage;
+            percent = DriveMotorConfig.getPercent(motor, percent);
+            motor.set(TalonFXControlMode.PercentOutput, percent);
         }
 
         @Override
