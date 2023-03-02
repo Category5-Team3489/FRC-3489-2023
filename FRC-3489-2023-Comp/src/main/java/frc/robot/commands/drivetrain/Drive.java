@@ -1,6 +1,5 @@
 package frc.robot.commands.drivetrain;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,8 +15,6 @@ import frc.robot.subsystems.NavX2;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
 
-import java.util.function.DoubleSupplier;
-
 public class Drive extends CommandBase {
     private double frontLeftSteerAngleRadians = 0;
     private double frontRightSteerAngleRadians = 0;
@@ -27,8 +24,8 @@ public class Drive extends CommandBase {
     private Rotation2d targetAngle = null;
     private PIDController omegaController = new PIDController(HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError, HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError, HeadingKeeperDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
-    private DoubleSupplier autoXSupplier = null;
-    private DoubleSupplier autoYSupplier = null;
+    private double autoX = 0;
+    private double autoY = 0;
 
     public Drive() {
         addRequirements(Drivetrain.get());
@@ -50,12 +47,8 @@ public class Drive extends CommandBase {
         Translation2d centerOfRotation = new Translation2d();
 
         if (DriverStation.isAutonomous()) {
-            if (autoXSupplier != null) {
-                x = autoXSupplier.getAsDouble();
-            }
-            if (autoYSupplier != null) {
-                y = autoYSupplier.getAsDouble();
-            }
+            x = autoX;
+            y = autoY;
         }
         else {
             if (RobotContainer.get().man.getHID().getRawButton(MaxSpeedButtonA) &&
@@ -108,25 +101,25 @@ public class Drive extends CommandBase {
 
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, omega, theta);
 
-        if (omega == 0) {
-            if (targetAngle == null) {
-                targetAngle = NavX2.get().getRotation();
-            }
+        // if (omega == 0) {
+        //     if (targetAngle == null) {
+        //         targetAngle = NavX2.get().getRotation();
+        //     }
 
-            double desiredDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetAngle.getDegrees());
-            desiredDegreesPerSecond = MathUtil.clamp(desiredDegreesPerSecond, -HeadingKeeperMaxDegreesPerSecond, HeadingKeeperMaxDegreesPerSecond);
+        //     double desiredDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetAngle.getDegrees());
+        //     desiredDegreesPerSecond = MathUtil.clamp(desiredDegreesPerSecond, -HeadingKeeperMaxDegreesPerSecond, HeadingKeeperMaxDegreesPerSecond);
 
-            if (!omegaController.atSetpoint()) {
-                omega = Math.toRadians(desiredDegreesPerSecond);
-            }
-        }
-        else {
-            targetAngle = NavX2.get().getRotation();
-            omegaController.reset();
+        //     if (!omegaController.atSetpoint()) {
+        //         omega = Math.toRadians(desiredDegreesPerSecond);
+        //     }
+        // }
+        // else {
+        //     targetAngle = NavX2.get().getRotation();
+        //     omegaController.reset();
 
-            // centerOfRotation.plus(FrontLeftMeters.times(corLeft));
-            // centerOfRotation.plus(FrontRightMeters.times(corRight));
-        }
+        //     // centerOfRotation.plus(FrontLeftMeters.times(corLeft));
+        //     // centerOfRotation.plus(FrontRightMeters.times(corRight));
+        // }
 
         //#region Apply
         SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
@@ -165,11 +158,11 @@ public class Drive extends CommandBase {
         this.targetAngle = targetAngle;
     }
 
-    public void setAutoXSupplier(DoubleSupplier autoXSupplier) {
-        this.autoXSupplier = autoXSupplier;
+    public void setAutoX(double x) {
+        autoX = x;
     }
-    public void setAutoYSupplier(DoubleSupplier autoYSupplier) {
-        this.autoYSupplier = autoYSupplier;   
+    public void setAutoY(double y) {
+        autoY = y;
     }
     //#endregion
 }

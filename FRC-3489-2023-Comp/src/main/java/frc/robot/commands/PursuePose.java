@@ -19,17 +19,16 @@ public class PursuePose extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        // Drivetrain.get().driveCommand.setTargetAngle(desiredPose.getRotation());
-        Drivetrain.get().driveCommand.setAutoXSupplier(() -> {
-            Pose2d pose = PoseEstimator.get().getPose();
-            double xVelocity = x.calculate(pose.getX(), desiredPose.getX());
-            return MathUtil.clamp(xVelocity, -MaxSpeedMetersPerSecond, MaxSpeedMetersPerSecond);
-        });
-        Drivetrain.get().driveCommand.setAutoYSupplier(() -> {
-            Pose2d pose = PoseEstimator.get().getPose();
-            double yVelocity = y.calculate(pose.getY(), desiredPose.getY());
-            return MathUtil.clamp(yVelocity, -MaxSpeedMetersPerSecond, MaxSpeedMetersPerSecond);
-        });
+    public void execute() {
+        Pose2d pose = PoseEstimator.get().getPose();
+
+        double xVelocity = x.calculate(pose.getX(), desiredPose.getX());
+        xVelocity = MathUtil.clamp(xVelocity, -MaxSpeedMetersPerSecond, MaxSpeedMetersPerSecond);
+        Drivetrain.get().driveCommand.setAutoX(xVelocity);
+
+        double yVelocity = y.calculate(pose.getY(), desiredPose.getY());
+        yVelocity = MathUtil.clamp(yVelocity, -MaxSpeedMetersPerSecond, MaxSpeedMetersPerSecond);
+
+        Drivetrain.get().driveCommand.setAutoY(yVelocity);
     }
 }
