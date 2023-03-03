@@ -31,24 +31,24 @@ public final class Constants {
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
-        public static final double MinAngleDegrees = -120.0; // FIXME FIND A BETTER VALUE!!!
+        public static final double MinAngleDegrees = -111.0; // FIXME FIND A BETTER VALUE!!! - 120
         public static final double MaxAngleDegrees = 37.0;
 
         public static final double ManualControlMinAngleDegrees = -100.0;
         public static final double ManualControlMaxDownPercent = -0.3;
         public static final double ManualControlMaxUpPercent = 0.3;
 
-        public static final double DoubleSubstationDegrees = 20;
+        public static final double DoubleSubstationDegrees = 0; // 20
 
-        public static final double LowConeAngleDegrees = -105.0;
-        public static final double LowCubeAngleDegrees = -105.0;
+        public static final double LowConeAngleDegrees = -94.0;
+        public static final double LowCubeAngleDegrees = -94.0;
         public static final double LowUnknownAngleDegrees = (LowConeAngleDegrees + LowCubeAngleDegrees) / 2.0;
 
-        public static final double MidConeAngleDegrees = 15.0; // 11.0
+        public static final double MidConeAngleDegrees = 14.0; // 11.0
         public static final double MidCubeAngleDegrees = 11.0;
         public static final double MidUnknownAngleDegrees = (MidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
-        public static final double HighConeAngleDegrees = 34.0;
+        public static final double HighConeAngleDegrees = 36.0;
         public static final double HighCubeAngleDegrees = 31.0;
         public static final double HighUnknownAngleDegrees = (HighConeAngleDegrees + HighCubeAngleDegrees) / 2.0;
 
