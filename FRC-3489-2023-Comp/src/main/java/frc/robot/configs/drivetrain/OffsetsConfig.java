@@ -43,6 +43,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Drivetrain.get().setFrontLeftPercentAngle(0, 0);
         })
+            .ignoringDisable(true)
             .withName("Zero Front Left")
         );
         layout.add(Commands.run(() -> {
@@ -50,6 +51,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Drivetrain.get().setFrontRightPercentAngle(0, 0);
         })
+            .ignoringDisable(true)
             .withName("Zero Front Right")
         );
         layout.add(Commands.run(() -> {
@@ -57,6 +59,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Drivetrain.get().setBackLeftPercentAngle(0, 0);
         })
+            .ignoringDisable(true)
             .withName("Zero Back Left")
         );
         layout.add(Commands.run(() -> {
@@ -64,37 +67,46 @@ public class OffsetsConfig extends Cat5Config {
 
             Drivetrain.get().setBackRightPercentAngle(0, 0);
         })
+            .ignoringDisable(true)
             .withName("Zero Back Right")
         );
 
         layout.add(Commands.runOnce(() -> {
-            frontLeftOffsetRadians = Math.toRadians(frontLeftEntry.getDouble(0));
+            frontLeftOffsetRadians = Drivetrain.get().frontLeftModule.getSteerAngle();
 
             Preferences.setDouble(FrontLeftOffsetRadiansPreferencesKey, frontLeftOffsetRadians);
+
+            System.out.println(frontLeftOffsetRadians);
         })
             .ignoringDisable(true)
             .withName("Save Front Left")
         );
         layout.add(Commands.runOnce(() -> {
-            frontRightOffsetRadians = Math.toRadians(frontRightEntry.getDouble(0));
+            frontRightOffsetRadians = Drivetrain.get().frontRightModule.getSteerAngle();
 
             Preferences.setDouble(FrontRightOffsetRadiansPreferencesKey, frontRightOffsetRadians);
+
+            System.out.println(frontRightOffsetRadians);
         })
             .ignoringDisable(true)
             .withName("Save Front Right")
         );
         layout.add(Commands.runOnce(() -> {
-            backLeftOffsetRadians = Math.toRadians(backLeftEntry.getDouble(0));
+            backLeftOffsetRadians = Drivetrain.get().backLeftModule.getSteerAngle();
 
             Preferences.setDouble(BackLeftOffsetRadiansPreferencesKey, backLeftOffsetRadians);
+
+            System.out.println(backLeftOffsetRadians);
         })
             .ignoringDisable(true)
             .withName("Save Back Left")
         );
         layout.add(Commands.runOnce(() -> {
-            backRightOffsetRadians = Math.toRadians(backRightEntry.getDouble(0));
+            backRightOffsetRadians = Drivetrain.get().backRightModule.getSteerAngle();
 
             Preferences.setDouble(BackRightOffsetRadiansPreferencesKey, backRightOffsetRadians);
+
+            System.out.println(backRightOffsetRadians);
         })
             .ignoringDisable(true)
             .withName("Save Back Right")

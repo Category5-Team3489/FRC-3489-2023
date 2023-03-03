@@ -27,6 +27,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     private final DoubleArraySubscriber onPoseUpdated = limelight.getDoubleArrayTopic("botpose").subscribe(null);
     private final NetworkTableEntry targetAreaEntry = limelight.getEntry("ta");
     private final NetworkTableEntry activePipelineEntry = limelight.getEntry("getpipe");
+    private final NetworkTableEntry pipelineEntry = limelight.getEntry("pipeline");
 
     // Consumers
     private final LongConsumer activePipelineConsumer;
@@ -84,4 +85,10 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     private void retroreflectivePeriodic() {
 
     }
+
+    //#region Public
+    public void setPipeline(Number pipeline) {
+        pipelineEntry.setNumber(pipeline);
+    }
+    //#endregion
 }

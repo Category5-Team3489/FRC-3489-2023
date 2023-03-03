@@ -7,6 +7,8 @@ import frc.robot.configs.Cat5Config;
 import frc.robot.enums.ModulePosition;
 
 public class DriveMotorConfig extends Cat5Config {
+    private static final String PercentVelocityMapsPreferencesKey = "Drivetrain/PercentVelocityMaps";
+
     private static int driveMotorIndex = 0;
     private static final TalonFX[] driveMotors = new TalonFX[4]; // frontLeft, frontRight, backLeft, backRight
     private static final PercentVelocityMap[] percentVelocityMaps = new PercentVelocityMap[4]; // frontLeft, frontRight, backLeft, backRight

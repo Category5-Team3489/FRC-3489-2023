@@ -258,7 +258,7 @@ public class Arm extends Cat5Subsystem<Arm> {
             return 0;
         }
 
-        return 0;
+        return Math.cos(getEncoderAngleDegrees()/2);
     }
     private double getResistGravityPercent() {
         if (!isHomed) {

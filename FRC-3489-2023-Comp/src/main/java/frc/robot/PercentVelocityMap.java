@@ -32,4 +32,11 @@ public class PercentVelocityMap {
     public double getPercent(double velocity) {
         return velocityToPercent.getSample(velocity).get();
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        // sb.append("")
+        return sb.toString();
+    }
 }
