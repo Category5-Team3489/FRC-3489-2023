@@ -17,6 +17,15 @@ public final class Constants {
         public static final double FiducialTargetAreaThresholdPercent = 0.05;
     }
 
+    public static class CameraConstants {
+        public static final int PixelWidth = 160;
+        public static final int PixelHeight = 120;
+        public static final int FPS = 20;
+
+        public static final int ServoStartingPositionIndex = 0;
+        public static final double[] ServoPositions = { 70, 140 };
+    }
+
     public static class ArmConstants {
         public static final int HomeManButton = 12;
         public static final int LowManButton = 11;
