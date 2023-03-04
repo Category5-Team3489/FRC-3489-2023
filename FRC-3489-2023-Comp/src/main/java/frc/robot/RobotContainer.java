@@ -7,17 +7,15 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.PursuePose;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
+import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.NavX2;
@@ -68,6 +66,7 @@ public class RobotContainer {
         ColorSensor.get();
         Gripper.get();
         PoseEstimator.get();
+        DriverCamera.get();
         
         configureBindings();
     }
@@ -75,11 +74,13 @@ public class RobotContainer {
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
-        return Commands.sequence(
-            Commands.runOnce(() -> {
-                Drivetrain.get().driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
-            }),
-            new PursuePose(new Pose2d(2.0, 2.0, Rotation2d.fromDegrees(0)))
-        );
+        // return Commands.sequence(
+        //     Commands.runOnce(() -> {
+        //         Drivetrain.get().driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
+        //     }),
+        //     new PursuePose(new Pose2d(2.0, 2.0, Rotation2d.fromDegrees(0)))
+        // );
+        
+        return Commands.print("No autonomous command set");
     }
 }

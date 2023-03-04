@@ -5,62 +5,39 @@ import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSink;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import frc.robot.Constants;
+import frc.robot.Constants.CameraConstants;
+import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
-public class DriverCamera {
+public class DriverCamera extends Cat5Subsystem<DriverCamera>{
+    private static DriverCamera instance = new DriverCamera();
 
-    // public DriverCamera() {
-    //     try {
-    //         UsbCamera camera = CameraServer.startAutomaticCapture(0);
-    //         VideoSink server = CameraServer.getServer();
+    public static DriverCamera get() {
+        return instance;
+    }
+
+    public DriverCamera() {
+        super((i) -> instance = i);
+
+        var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
+        .withSize(2, 3);
+        
+        try {
+            UsbCamera camera = CameraServer.startAutomaticCapture(0);
+            VideoSink server = CameraServer.getServer();
     
-    //         camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    //         camera.setResolution(Constants.CameraConstants.PixelWidth, Constants.CameraConstants.PixelHeight);
-    //         camera.setFPS(Constants.CameraConstants.FPS);
+            camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+            camera.setResolution(CameraConstants.PixelWidth, CameraConstants.PixelHeight);
+            camera.setFPS(CameraConstants.FPS);
     
-    //         shuffleboardHandler.createCameraWidget(server.getSource());
-    //         shuffleboardHandler.createLimelightCameraWidget(limelightFeed);
-    //     } catch (Exception e) {
-    //         System.out.println("[CameraHandler] Couldn't init cameras");
-    //     }
-    // }
+            // layout.createCameraWidget(server.getSource());
 
-    // @Override
-    // public void teleopInit() {
-    //     components.cameraServo.setAngle(Constants.CameraConstants.ServoPositions[Constants.CameraConstants.ServoStartingPositionIndex]);
-    //     servoPositionIndex = Constants.CameraConstants.ServoStartingPositionIndex;
-    // }
+        } catch (Exception e) {
+            System.out.println("[CameraHandler] Couldn't init cameras");
+        }
 
-    // @Override
-    // public void teleopPeriodic() {
-    //     /*
-    //     double throttle = components.manipulatorJoystick.getThrottle();
-    //     components.cameraServo.setAngle(GeneralUtils.lerp(70, 140, (throttle + 1d) / 2d));
-    //     */
-    //     if(shouldSwitchCamera()){
-    //         nextServoPosition();
-    //     }
-    // }
-
-    // public void nextServoPosition() {
-    //     if (!servoPositionIndexDirectionReversed)
-    //         servoPositionIndex++;
-    //     else
-    //         servoPositionIndex--;
-    //     if (servoPositionIndex == Constants.Camera.ServoPositions.length) {
-    //         servoPositionIndexDirectionReversed = true;
-    //         servoPositionIndex = Constants.Camera.ServoPositions.length - 2;
-    //     }
-    //     else if (servoPositionIndex == -1) {
-    //         servoPositionIndexDirectionReversed = false;
-    //         servoPositionIndex = 1;
-    //     }
-    //     components.cameraServo.setAngle(Constants.Camera.ServoPositions[servoPositionIndex]);
-    // }
-
-    // private boolean shouldSwitchCamera() {
-    //     return components.rightDriveJoystick.getRawButtonPressed(Constants.Buttons.SwitchCamera) ||
-    //         components.rightDriveJoystick.getRawButtonPressed(Constants.Buttons.SwitchCameraB);
-    // }
+         
+    }
     
 }

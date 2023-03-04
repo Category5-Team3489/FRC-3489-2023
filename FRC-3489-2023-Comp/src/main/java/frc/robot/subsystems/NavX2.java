@@ -41,7 +41,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
 
-        layout.addDouble("Heading (°)", () -> heading.getDegrees());
+        layout.addDouble("Heading (deg)", () -> heading.getDegrees());
         layout.add(zeroYawCommand);
         //#endregion
     }

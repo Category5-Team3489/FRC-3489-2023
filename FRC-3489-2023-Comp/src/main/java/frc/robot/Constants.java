@@ -14,16 +14,15 @@ public final class Constants {
     public static class LimelightConstants {
         public static final int FiducialPipelineIndex = 0;
         public static final int RetroreflectivePipelineIndex = 1;
+        
         public static final double FiducialTargetAreaThresholdPercent = 0.05;
     }
 
     public static class CameraConstants {
         public static final int PixelWidth = 160;
         public static final int PixelHeight = 120;
-        public static final int FPS = 20;
 
-        public static final int ServoStartingPositionIndex = 0;
-        public static final double[] ServoPositions = { 70, 140 };
+        public static final int FPS = 20;
     }
 
     public static class ArmConstants {
@@ -40,7 +39,7 @@ public final class Constants {
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
-        public static final double MinAngleDegrees = -111.0; // FIXME FIND A BETTER VALUE!!! - 120
+        public static final double MinAngleDegrees = -111.0; // -120.0
         public static final double MaxAngleDegrees = 37.0;
 
         public static final double ManualControlMinAngleDegrees = -100.0;
@@ -72,7 +71,7 @@ public final class Constants {
         // public static final double FeedforwardGainPercentPerRevolutionOfError = 0;
         // public static final double IntegrationZoneRevolutionsOfError = 0;
         public static final double MinOutputPercent = -0.5;
-        public static final double MaxOutputPercent = 0.75; // 0.85 twists motor mount
+        public static final double MaxOutputPercent = 0.75; // 0.85, be careful with higher values, will twist motor mount during accel
     }
 
     public static class GripperConstants {
@@ -111,15 +110,16 @@ public final class Constants {
     public static class DrivetrainConstants {
         public static final int MaxSpeedButtonA = 3;
         public static final int MaxSpeedButtonB = 4;
+        
         public static final double XboxAxisDeadband = 0.05;
 
-        public static final double HeadingKeeperToleranceDegrees = 4.0;
-        public static final double HeadingKeeperMaxDegreesPerSecond = 180.0;
+        public static final double MaxVoltage = 12.0 * 0.5; // FIXME This limits total drivetrain speed
+
         public static final double HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError = 90.0 / 90.0;
         public static final double HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError = 0;
         public static final double HeadingKeeperDerivativeGainDegreesPerSecondPerDegreePerSecondOfError = 0;
-
-        public static final double MaxVoltage = 12.0 * 0.5; // FIXME This limits total drivetrain speed
+        public static final double HeadingKeeperToleranceDegrees = 4.0;
+        public static final double HeadingKeeperMaxDegreesPerSecond = 180.0;
 
         public static final double CenterOfRotationMaxScale = 5.0;
 

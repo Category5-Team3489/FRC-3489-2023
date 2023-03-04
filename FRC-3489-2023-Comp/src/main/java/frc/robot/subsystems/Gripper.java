@@ -22,6 +22,10 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
     public static Gripper get() {
         return instance;
+
+        // TODO Anti-cube eater code, timer on intake after stopepd for cube
+        // TODO intake cone when stopped too?
+        // TODO have timeout for when intaking on already held piece and color sensor not seeing it
     }
     //#endregion
 

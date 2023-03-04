@@ -167,8 +167,8 @@ public class Arm extends Cat5Subsystem<Arm> {
         layout.add("Subsystem Info", this);
 
         layout.addBoolean("Is Homed", () -> isHomed);
-        layout.addDouble("Encoder Arm Angle (°)", () -> getEncoderAngleDegrees());
-        layout.addDouble("Target Arm Angle (°)", () -> targetAngleDegrees);
+        layout.addDouble("Encoder Arm Angle (deg)", () -> getEncoderAngleDegrees());
+        layout.addDouble("Target Arm Angle (deg)", () -> targetAngleDegrees);
 
         layout.addString("Grid Position", () -> gridPosition.toString());
 
@@ -190,14 +190,14 @@ public class Arm extends Cat5Subsystem<Arm> {
             .withSize(2, 3);
 
         subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
-        subsystemLayout.addDouble("Motor Temperature (°F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
+        subsystemLayout.addDouble("Motor Temperature (deg F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
 
         var debugIsTrackingTargetEntry = subsystemLayout.add("Debug Track Target", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .getEntry();
         debugIsTrackingTarget = () -> debugIsTrackingTargetEntry.getBoolean(false);
 
-        var debugTargetAngleDegreesEntry = subsystemLayout.add("Debug Target Angle (°)", MinAngleDegrees)
+        var debugTargetAngleDegreesEntry = subsystemLayout.add("Debug Target Angle (deg)", MinAngleDegrees)
             .withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(Map.of("min", MinAngleDegrees, "max", MaxAngleDegrees, "block increment", 1.0))
             .getEntry();
