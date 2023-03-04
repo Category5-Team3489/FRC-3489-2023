@@ -10,6 +10,7 @@ public enum Cat5ShuffleboardTab {
     ColorSensor,
     Gripper,
     PoseEstimator,
+    DriveCamera,
     Limelight;
 
     public ShuffleboardTab get() {
