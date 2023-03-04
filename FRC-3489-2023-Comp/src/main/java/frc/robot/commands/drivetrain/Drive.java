@@ -28,7 +28,7 @@ public class Drive extends CommandBase {
     private Rotation2d targetAngle = null;
     private PIDController omegaController = new PIDController(HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError, HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError, HeadingKeeperDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
-    private PIDController centerConeNodeController = new PIDController(1, 0, 0);
+    private PIDController centerConeNodeController = new PIDController(0.5, 0, 0); // 0.05
     private PIDController distanceConeNodeController = new PIDController(0.01, 0, 0);
 
     private double autoX = 0;

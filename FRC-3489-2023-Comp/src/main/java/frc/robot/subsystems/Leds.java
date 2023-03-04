@@ -52,11 +52,11 @@ public class Leds extends Cat5Subsystem<Leds> {
         // led.setData(buffer);
         // led.start();
 
-        RobotContainer.get().man.axisLessThan(4, Constants.LedConstants.CubeLEDManipulator)
+        RobotContainer.get().man.axisLessThan(3, Constants.LedConstants.CubeLEDManipulator)
         .onTrue(Commands.runOnce(() -> {
             setLeds(LedState.NeedCube);
         }));
-        RobotContainer.get().man.axisGreaterThan(4, Constants.LedConstants.ConeLEDManipulator)
+        RobotContainer.get().man.axisGreaterThan(3, Constants.LedConstants.ConeLEDManipulator)
         .onTrue(Commands.runOnce(() -> {
             setLeds(LedState.NeedCone);
         }));
