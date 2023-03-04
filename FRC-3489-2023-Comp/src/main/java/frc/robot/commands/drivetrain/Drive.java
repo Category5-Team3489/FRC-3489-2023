@@ -116,9 +116,9 @@ public class Drive extends CommandBase {
                 // if (Limelight.get().isPipeline(LimelightConstants.MidRetroreflectivePipelineIndex)) {
                 double targetX = Limelight.get().getTargetX();
                 double targetY = Limelight.get().getTargetY();
-                y = centerConeNodeController.calculate(-targetX, 3.9); // 3.9
+                y = centerConeNodeController.calculate(-targetX, 3.54); // 3.9
                 y = MathUtil.clamp(y, -0.5, 0.5); // 0.5
-                x = distanceConeNodeController.calculate(targetY, -6.6); // -6.6 works
+                x = distanceConeNodeController.calculate(targetY, -14.7); // -6.6 works
                 x = MathUtil.clamp(x, -0.75, 0.75); // 0.75
                 // }
             }
