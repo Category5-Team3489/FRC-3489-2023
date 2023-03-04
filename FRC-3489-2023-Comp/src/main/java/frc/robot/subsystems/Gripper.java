@@ -187,7 +187,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             if (DriverStation.isEnabled() && canReintakeAgain) {
                 int proximity = ColorSensor.get().getProximity();
                 if (heldGamePiece == GamePiece.Cone) {
-                    if (proximity < GripperConstants.ReintakeCubeProximityThreshold) {
+                    if (proximity < GripperConstants.ReintakeConeProximityThreshold) {
                         intakeCommand.schedule();
                         reintakeAntiEatTimer.restart();
                     }
