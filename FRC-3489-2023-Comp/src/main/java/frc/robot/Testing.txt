@@ -56,4 +56,4 @@ Test drive speed limiting
 Test heading keeping code
 Anti cube eating code
 Decide if reintaking cone is needed
-center of rotation stuff, be sure to change to go from 1..max, not 0..max
+center of rotation stuff, be sure to change to from 1..max, not 0..max for scaling
