@@ -82,13 +82,16 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     public void periodic() {
         int activePipeline = (int)activePipelineEntry.getInteger(-1);
 
-        if (activePipeline != LimelightConstants.MidRetroreflectivePipelineIndex) {
-            setPipeline(LimelightConstants.MidRetroreflectivePipelineIndex);
+        if (activePipeline != LimelightConstants.FiducialPipelineIndex) {
+            setPipeline(LimelightConstants.FiducialPipelineIndex);
         }
 
         activePipelineConsumer.accept(activePipeline);
         if (activePipeline == LimelightConstants.FiducialPipelineIndex) {
             fiducialPeriodic();
+
+            targetX = targetXEntry.getDouble(0);
+            targetY = targetYEntry.getDouble(0);
         }
         else if (activePipeline == LimelightConstants.MidRetroreflectivePipelineIndex || activePipeline == LimelightConstants.HighRetroreflectivePipelineIndex) {
             retroreflectivePeriodic();
@@ -101,16 +104,16 @@ public class Limelight extends Cat5Subsystem<Limelight> {
             return;
         }
 
-        var poseUpdate = onPoseUpdated.getAtomic();
-        if (poseUpdate.value != null) {
-            double time = Timer.getFPGATimestamp();
-            // double networkLatency = (poseUpdate.timestamp / 1000000.0) - time;
-            double limelightLatency = poseUpdate.value[6] / 1000.0;
-            // double timestamp = time - (networkLatency + limelightLatency);
-            double timestamp = time - limelightLatency;
-            Pose3d pose = new Pose3d(poseUpdate.value[0], poseUpdate.value[1], poseUpdate.value[2], new Rotation3d(poseUpdate.value[3], poseUpdate.value[4], poseUpdate.value[5]));
-            PoseEstimator.get().onLimelightPoseUpdate(timestamp, pose);
-        }
+        // var poseUpdate = onPoseUpdated.getAtomic();
+        // if (poseUpdate.value != null) {
+        //     double time = Timer.getFPGATimestamp();
+        //     // double networkLatency = (poseUpdate.timestamp / 1000000.0) - time;
+        //     double limelightLatency = poseUpdate.value[6] / 1000.0;
+        //     // double timestamp = time - (networkLatency + limelightLatency);
+        //     double timestamp = time - limelightLatency;
+        //     Pose3d pose = new Pose3d(poseUpdate.value[0], poseUpdate.value[1], poseUpdate.value[2], new Rotation3d(poseUpdate.value[3], poseUpdate.value[4], poseUpdate.value[5]));
+        //     PoseEstimator.get().onLimelightPoseUpdate(timestamp, pose);
+        // }
     }
 
     private void retroreflectivePeriodic() {

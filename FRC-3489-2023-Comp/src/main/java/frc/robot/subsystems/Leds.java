@@ -70,9 +70,9 @@ public class Leds extends Cat5Subsystem<Leds> {
             setLeds(LedState.Off);
         }));
 
-        if (DriverStation.isDisabled() && getCurrentAlliance() == "Blue")
+        if (RobotState.isDisabled() && getCurrentAlliance() == "Blue")
             setLeds(LedState.DisabledPatternBlue);
-        else if (DriverStation.isDisabled() && getCurrentAlliance() == "Red")
+        else if (RobotState.isDisabled() && getCurrentAlliance() == "Red")
             setLeds(LedState.DisabledPatternRed);
         else setLeds(LedState.Off);
         
@@ -124,16 +124,16 @@ public class Leds extends Cat5Subsystem<Leds> {
             setSolidColor(0.91);
         break;
         case DarkRed:
-            setSolidColor(59);
+            setSolidColor(0.59);
         break;
         case Red:
-            setSolidColor(61);
+            setSolidColor(0.61);
         break;
         case DisabledPatternBlue:
-            setSolidColor(-29);
+            setSolidColor(0.7);
         break;
         case DisabledPatternRed:
-            setSolidColor(-31);
+            setSolidColor(0.27);
         }
     }
 

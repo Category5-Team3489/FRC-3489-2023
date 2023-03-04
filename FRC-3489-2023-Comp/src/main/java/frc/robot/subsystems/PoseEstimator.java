@@ -73,17 +73,17 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
         pose = odometry.getPoseMeters();
     }
     public void onLimelightPoseUpdate(double timestamp, Pose3d pose) {
-        var bufferPose = buffer.getSample(timestamp);
+        // var bufferPose = buffer.getSample(timestamp);
 
-        if (bufferPose.isEmpty()) {
-            odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getSwerveModulePositions(), pose.toPose2d());
-        }
-        else {
-            var offset = this.pose.minus(bufferPose.get());
-            odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getSwerveModulePositions(), pose.toPose2d().plus(offset));
-        }
+        // if (bufferPose.isEmpty()) {
+        //     odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getSwerveModulePositions(), pose.toPose2d());
+        // }
+        // else {
+        //     var offset = this.pose.minus(bufferPose.get());
+        //     odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getSwerveModulePositions(), pose.toPose2d().plus(offset));
+        // }
 
-        this.pose = odometry.getPoseMeters();
+        // this.pose = odometry.getPoseMeters();
     }
     //#endregion
 }
