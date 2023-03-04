@@ -10,7 +10,10 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.enums.GridPosition;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 public class Limelight extends Cat5Subsystem<Limelight> {
@@ -28,11 +31,15 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     private final NetworkTableEntry targetAreaEntry = limelight.getEntry("ta");
     private final NetworkTableEntry activePipelineEntry = limelight.getEntry("getpipe");
     private final NetworkTableEntry pipelineEntry = limelight.getEntry("pipeline");
-    // private final NetworkTableEntry targetXEntry = limelight.getEntry("tx");
-    // private final NetworkTableEntry targetYEntry = limelight.getEntry("ty");
+    private final NetworkTableEntry targetXEntry = limelight.getEntry("tx");
+    private final NetworkTableEntry targetYEntry = limelight.getEntry("ty");
 
     // Consumers
     private final LongConsumer activePipelineConsumer;
+
+    // State
+    private double targetX = 0;
+    private double targetY = 0;
 
     private Limelight() {
         super((i) -> instance = i);
@@ -47,13 +54,27 @@ public class Limelight extends Cat5Subsystem<Limelight> {
 
         // TODO Can you check for noise somehow, just use SwerveDrivePoseEstimator?, Only accept new values when robot vel has been low for certain amt of time and ta high
 
+        setPipeline(LimelightConstants.MidRetroreflectivePipelineIndex);
+
         //#region Bindings
-        
+        // RobotContainer.get().man.button(3)
+        //     .onTrue(Commands.runOnce(() -> {
+        //         GridPosition gridPosition = Arm.get().getGridPosition();
+        //         if (gridPosition == GridPosition.Mid) {
+        //             setPipeline(LimelightConstants.MidRetroreflectivePipelineIndex);
+        //         }
+        //         else if (gridPosition == GridPosition.High) {
+        //             setPipeline(LimelightConstants.HighRetroreflectivePipelineIndex);
+        //         }
+        //     }));
         //#endregion
 
         //#region Shuffleboard
-        var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
+        var layout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
             .withSize(2, 1);
+
+        layout.addDouble("Target X", () -> targetX);
+        layout.addDouble("Target Y", () -> targetY);
         
         var activePipelineEntry = layout.add("Active Pipeline", -1).getEntry();
         activePipelineConsumer = (activePipeline) -> activePipelineEntry.setInteger(activePipeline);
@@ -63,11 +84,16 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     @Override
     public void periodic() {
         int activePipeline = (int)activePipelineEntry.getInteger(-1);
+
+        if (activePipeline != LimelightConstants.MidRetroreflectivePipelineIndex) {
+            setPipeline(LimelightConstants.MidRetroreflectivePipelineIndex);
+        }
+
         activePipelineConsumer.accept(activePipeline);
         if (activePipeline == LimelightConstants.FiducialPipelineIndex) {
             fiducialPeriodic();
         }
-        else if (activePipeline == LimelightConstants.MidRetroreflectivePipelineIndex) {
+        else if (activePipeline == LimelightConstants.MidRetroreflectivePipelineIndex || activePipeline == LimelightConstants.HighRetroreflectivePipelineIndex) {
             retroreflectivePeriodic();
         }
     }
@@ -91,12 +117,22 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     }
 
     private void retroreflectivePeriodic() {
-
+        targetX = targetXEntry.getDouble(0);
+        targetY = targetYEntry.getDouble(0);
     }
 
     //#region Public
     public void setPipeline(Number pipeline) {
         pipelineEntry.setNumber(pipeline);
+    }
+    public boolean isPipeline(Number pipeline) {
+        return activePipelineEntry.getNumber(-1) == pipeline;
+    }
+    public double getTargetX() {
+        return targetX;
+    }
+    public double getTargetY() {
+        return targetY;
     }
     //#endregion
 }

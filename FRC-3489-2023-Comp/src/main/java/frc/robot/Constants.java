@@ -50,14 +50,14 @@ public final class Constants {
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
-        public static final double MinAngleDegrees = -111.0; // -120.0
+        public static final double MinAngleDegrees = -111.0 - 3.0; // -111
         public static final double MaxAngleDegrees = 37.0;
 
         public static final double ManualControlMinAngleDegrees = -100.0;
         public static final double ManualControlMaxDownPercent = -0.3;
         public static final double ManualControlMaxUpPercent = 0.3;
 
-        public static final double DoubleSubstationDegrees = 8.9; // 20
+        public static final double DoubleSubstationDegrees = 0; // 8.9
 
         public static final double FloorAngleDegrees = -94.0;
 
@@ -127,6 +127,7 @@ public final class Constants {
     public static class DrivetrainConstants {
         public static final int MaxSpeedButtonA = 3;
         public static final int MaxSpeedButtonB = 4;
+        public static final int CenterConeNodeButton = 5;
         
         public static final double XboxAxisDeadband = 0.05;
 

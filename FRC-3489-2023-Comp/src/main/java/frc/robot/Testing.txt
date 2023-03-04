@@ -47,15 +47,22 @@ start auto and limelight
 
 ///////////////////////////////////////////
 
+/// DONE
 Driver camera works on shuffleboard?
 Test arm floor pickup button
-Test color sensor reinit logic by unplugging and replugging
 Test drive speed limiting
-
-See if carrying position / low arm angle is good
+Anti cube eating code
 Tune mid cone placement logic
 Test heading keeping code
-Anti cube eating code
+
+// LATER
+Test color sensor reinit logic by unplugging and replugging
+Backup after place, make cancellable
 Decide if reintaking cone is needed
+
+// Later today
 center of rotation stuff, be sure to change to from 1..max, not 0..max for scaling
+
+// TEST
+See if carrying position / low arm angle is good
 DoubleSubstationButton

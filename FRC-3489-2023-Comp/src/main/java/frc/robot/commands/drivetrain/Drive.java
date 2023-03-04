@@ -2,6 +2,7 @@ package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,7 +12,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Cat5Utils;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
@@ -24,6 +27,9 @@ public class Drive extends CommandBase {
 
     private Rotation2d targetAngle = null;
     private PIDController omegaController = new PIDController(HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError, HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError, HeadingKeeperDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
+
+    private PIDController centerConeNodeController = new PIDController(1, 0, 0);
+    private PIDController distanceConeNodeController = new PIDController(0.01, 0, 0);
 
     private double autoX = 0;
     private double autoY = 0;
@@ -98,6 +104,29 @@ public class Drive extends CommandBase {
             //     corRight = CenterOfRotationMaxScale * Cat5Utils.inverseLerpUnclamped(corRight, 0.15, 1.0);
             // }
             //#endregion
+        }
+
+        if (x == 0 && y == 0 && omega == 0) {
+            // .debounce(0.2, DebounceType.kBoth)
+            if (RobotContainer.get().man.button(CenterConeNodeButton).getAsBoolean()) {
+                targetAngle = Rotation2d.fromDegrees(-180);
+                // if (Limelight.get().isPipeline(LimelightConstants.MidRetroreflectivePipelineIndex)) {
+                double targetX = Limelight.get().getTargetX();
+                double targetY = Limelight.get().getTargetY();
+                y = centerConeNodeController.calculate(-targetX, 0);
+                y = MathUtil.clamp(y, -2.5, 2.5);
+
+                // x = distanceConeNodeController.calculate(targetY, -0.86);
+                // }
+            }
+            else {
+                centerConeNodeController.reset();
+                distanceConeNodeController.reset();
+            }
+        }
+        else {
+            centerConeNodeController.reset();
+            distanceConeNodeController.reset();
         }
 
         if (omega == 0) {
