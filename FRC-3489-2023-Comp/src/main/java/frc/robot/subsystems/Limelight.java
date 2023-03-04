@@ -43,6 +43,8 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         // use getpipe before reading data from pipeline, ex: was on april tag pipeline, need to center cone nodes, set cone node pipeline, then wait until getpipe == expected
         // then start centering, you can do pursue point until pipeline gives good data
 
+        // TODO Can you check for noise somehow, just use SwerveDrivePoseEstimator?, Only accept new values when robot vel has been low for certain amt of time and ta high
+
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
@@ -59,7 +61,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         if (activePipeline == LimelightConstants.FiducialPipelineIndex) {
             fiducialPeriodic();
         }
-        else if (activePipeline == LimelightConstants.RetroreflectivePipelineIndex) {
+        else if (activePipeline == LimelightConstants.MidRetroreflectivePipelineIndex) {
             retroreflectivePeriodic();
         }
     }

@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -106,6 +107,29 @@ public class Arm extends Cat5Subsystem<Arm> {
                 setTargetAngleDegrees(DoubleSubstationDegrees, IdleMode.kBrake);
                 gridPosition = GridPosition.High;
             }));
+
+        RobotContainer.get().man.button(ArmConstants.FloorManButton)
+            .onTrue(Commands.runOnce(() -> {
+                setTargetAngleDegrees(FloorAngleDegrees, IdleMode.kBrake);
+                gridPosition = GridPosition.Low;
+            }));
+
+        RobotContainer.get().man.button(ArmConstants.LowManButton)
+            .onTrue(Commands.runOnce(() -> {
+                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+                switch (heldGamePiece) {
+                    case Cone:
+                        setTargetAngleDegrees(LowConeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Cube:
+                        setTargetAngleDegrees(LowCubeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Unknown:
+                        setTargetAngleDegrees(LowUnknownAngleDegrees, IdleMode.kBrake);
+                        break;
+                }
+                gridPosition = GridPosition.Low;
+            }));
         
         RobotContainer.get().man.button(ArmConstants.LowManButton)
             .onTrue(Commands.runOnce(() -> {
@@ -125,11 +149,22 @@ public class Arm extends Cat5Subsystem<Arm> {
             }));
 
         RobotContainer.get().man.button(ArmConstants.MidManButton)
+            .debounce(0.1, DebounceType.kBoth) // May not be needed
             .onTrue(Commands.runOnce(() -> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
                 switch (heldGamePiece) {
                     case Cone:
-                        setTargetAngleDegrees(MidConeAngleDegrees, IdleMode.kBrake);
+                        if (gridPosition != GridPosition.Mid) {
+                            setTargetAngleDegrees(AboveMidConeAngleDegrees, IdleMode.kBrake);
+                        }
+                        else {
+                            if (targetAngleDegrees != OnMidConeAngleDegrees) {
+                                setTargetAngleDegrees(OnMidConeAngleDegrees, IdleMode.kBrake);
+                            }
+                            else {
+                                setTargetAngleDegrees(AboveMidConeAngleDegrees, IdleMode.kBrake);
+                            }
+                        }
                         break;
                     case Cube:
                         setTargetAngleDegrees(MidCubeAngleDegrees, IdleMode.kBrake);
@@ -171,6 +206,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         layout.addDouble("Target Arm Angle (deg)", () -> targetAngleDegrees);
 
         layout.addString("Grid Position", () -> gridPosition.toString());
+        layout.addString("Idle Mode", () -> idleMode.toString());
 
         layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 

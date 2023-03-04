@@ -15,7 +15,6 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.drivetrain.BrakeRotation;
 import frc.robot.commands.drivetrain.BrakeTranslation;
 import frc.robot.commands.drivetrain.Drive;
-import frc.robot.commands.drivetrain.MapDriveMotors;
 import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
@@ -47,7 +46,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     public final Drive driveCommand;
     private final BrakeTranslation brakeTranslationCommand;
     private final BrakeRotation brakeRotationCommand;
-    private final MapDriveMotors mapDriveMotorsCommand;
+    // private final MapDriveMotors mapDriveMotorsCommand;
 
     private Drivetrain() {
         super((i) -> instance = i);
@@ -55,7 +54,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         driveCommand = new Drive();
         brakeTranslationCommand = new BrakeTranslation();
         brakeRotationCommand = new BrakeRotation();
-        mapDriveMotorsCommand = new MapDriveMotors();
+        // mapDriveMotorsCommand = new MapDriveMotors();
 
         setDefaultCommand(driveCommand);
 
@@ -170,7 +169,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         subsystemLayout.add(driveCommand);
         subsystemLayout.add(brakeTranslationCommand);
         subsystemLayout.add(brakeRotationCommand);
-        subsystemLayout.add(mapDriveMotorsCommand);
+        // subsystemLayout.add(mapDriveMotorsCommand);
         //#endregion
     }
 

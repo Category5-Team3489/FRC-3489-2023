@@ -121,9 +121,17 @@ public class Drive extends CommandBase {
         //     // centerOfRotation.plus(FrontRightMeters.times(corRight));
         // }
 
+        double speedLimiter = 0.5;
+        if (RobotContainer.get().xbox.leftBumper().getAsBoolean()) {
+            speedLimiter = 1.0 / 3.0;
+        }
+        else if (RobotContainer.get().xbox.rightBumper().getAsBoolean()) {
+            speedLimiter = 1.0;
+        }
+
         //#region Apply
         SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond * speedLimiter);
 
         if (x != 0 || y != 0 || omega != 0) {
             frontLeftSteerAngleRadians = states[0].angle.getRadians();

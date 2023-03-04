@@ -4,6 +4,7 @@ import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.enums.GamePiece;
@@ -23,18 +24,21 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     public final ColorAndProximityConfig colorAndProximityConfig = new ColorAndProximityConfig();
 
     // Devices
-    private final ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kMXP);
+    private ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kMXP);
 
     // State
     private Color color = new Color(0, 0, 0);
     private int proximity = 0;
     private GamePiece detectedGamePiece = GamePiece.Unknown;
+    private Timer reconnectTimer = new Timer();
 
     private ColorSensor() {
         super((i) -> instance = i);
 
         // proximity: 0 to 2047
         // https://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues.html#onboard-i2c-causing-system-lockups
+
+        reconnectTimer.start();
     
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
@@ -52,6 +56,15 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     public void periodic() {
         color = colorSensor.getColor();
         proximity = colorSensor.getProximity();
+
+        if (!colorSensor.isConnected()) {
+            System.out.println("Color sensor is not connected!!!");
+            
+            if (reconnectTimer.advanceIfElapsed(2.0)) {
+                System.out.println("Color sensor has been disconnected for more than 2 seconds, reconnecting...");
+                colorSensor = new ColorSensorV3(I2C.Port.kMXP);
+            }
+        }
 
         if (proximity < colorAndProximityConfig.getDetectionProximity.get()) {
             detectedGamePiece = GamePiece.Unknown;

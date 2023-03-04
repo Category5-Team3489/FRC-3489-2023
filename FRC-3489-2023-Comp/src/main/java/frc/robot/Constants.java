@@ -13,7 +13,8 @@ public final class Constants {
 
     public static class LimelightConstants {
         public static final int FiducialPipelineIndex = 0;
-        public static final int RetroreflectivePipelineIndex = 1;
+        public static final int MidRetroreflectivePipelineIndex = 1;
+        public static final int HighRetroreflectivePipelineIndex = 2;
         
         public static final double FiducialTargetAreaThresholdPercent = 0.05;
     }
@@ -26,11 +27,12 @@ public final class Constants {
     }
 
     public static class ArmConstants {
-        public static final int HomeManButton = 12;
+        public static final int HomeManButton = 9; // 12
+        public static final int DoubleSubstationButton = 6;
+        public static final int FloorManButton = 12;
         public static final int LowManButton = 11;
         public static final int MidManButton = 9;
         public static final int HighManButton = 7;
-        public static final int DoubleSubstationButton = 6;
 
         public static final int MotorDeviceId = 11;
         public static final int LimitSwitchChannel = 0;
@@ -48,13 +50,16 @@ public final class Constants {
 
         public static final double DoubleSubstationDegrees = 0; // 20
 
-        public static final double LowConeAngleDegrees = -94.0;
-        public static final double LowCubeAngleDegrees = -94.0;
+        public static final double FloorAngleDegrees = -94.0;
+
+        public static final double LowConeAngleDegrees = -80.0; // -94.0
+        public static final double LowCubeAngleDegrees = -80.0; // -94.0
         public static final double LowUnknownAngleDegrees = (LowConeAngleDegrees + LowCubeAngleDegrees) / 2.0;
 
-        public static final double MidConeAngleDegrees = 14.0; // 11.0
+        public static final double AboveMidConeAngleDegrees = 14.0; // 11.0
+        public static final double OnMidConeAngleDegrees = 9.0; // 14.0
         public static final double MidCubeAngleDegrees = 11.0;
-        public static final double MidUnknownAngleDegrees = (MidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
+        public static final double MidUnknownAngleDegrees = (AboveMidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
         public static final double HighConeAngleDegrees = 36.0;
         public static final double HighCubeAngleDegrees = 31.0;
@@ -82,7 +87,10 @@ public final class Constants {
         public static final int LeftMotorDeviceId = 9;
         public static final int RightMotorDeviceId = 10;
 
-        public static final int IntakeCubeProximityThreshold = 300; // FIXME Robot eats cube sometimes
+        public static final int ReintakeConeProximityThreshold = 300;
+        public static final int ReintakeCubeProximityThreshold = 300; // FIXME Robot eats cube sometimes
+        public static final double ReintakeAntiConeEatTimeout = 0.5;
+        public static final double ReintakeAntiCubeEatTimeout = 0.25;
 
         public static final double IntakePercent = -0.5;
 
@@ -113,7 +121,7 @@ public final class Constants {
         
         public static final double XboxAxisDeadband = 0.05;
 
-        public static final double MaxVoltage = 12.0 * 0.5; // FIXME This limits total drivetrain speed
+        public static final double MaxVoltage = 12.0;
 
         public static final double HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError = 90.0 / 90.0;
         public static final double HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError = 0;

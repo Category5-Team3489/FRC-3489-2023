@@ -10,7 +10,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
-public class DriverCamera extends Cat5Subsystem<DriverCamera>{
+public class DriverCamera extends Cat5Subsystem<DriverCamera> {
     private static DriverCamera instance = new DriverCamera();
 
     public static DriverCamera get() {

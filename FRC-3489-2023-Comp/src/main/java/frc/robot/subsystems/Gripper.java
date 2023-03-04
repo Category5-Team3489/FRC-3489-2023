@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -52,6 +53,8 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     // State
     private GamePiece heldGamePiece = GamePiece.Unknown;
     private double motorPercent = 0;
+    private boolean canReintakeAgain = true;
+    private Timer reintakeAntiEatTimer = new Timer();
 
     private Gripper() {
         super((i) -> instance = i);
@@ -121,6 +124,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         }
                         break;
                 }
+                heldGamePiece = GamePiece.Unknown;
             }));
         //#endregion
 
@@ -132,6 +136,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         layout.add("Subsystem Info", this);
         layout.addString("Held Game Piece", () -> heldGamePiece.toString());
         layout.addDouble("Motor (%)", () -> motorPercent);
+        layout.addBoolean("Can Reintake Again", () -> canReintakeAgain);
 
         var isColorSensorDisabledEntry = layout.add("Disable Color Sensor", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
@@ -173,12 +178,25 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     //#region Commands
     private CommandBase getStopCommand() {
         return Commands.run(() -> {
+            if (heldGamePiece == GamePiece.Unknown) {
+                canReintakeAgain = true;
+            }
+
             setMotors(0);
 
-            if (DriverStation.isEnabled() && heldGamePiece == GamePiece.Cube) {
+            if (DriverStation.isEnabled() && canReintakeAgain) {
                 int proximity = ColorSensor.get().getProximity();
-                if (proximity < GripperConstants.IntakeCubeProximityThreshold) {
-                    intakeCommand.schedule();
+                if (heldGamePiece == GamePiece.Cone) {
+                    if (proximity < GripperConstants.ReintakeCubeProximityThreshold) {
+                        intakeCommand.schedule();
+                        reintakeAntiEatTimer.restart();
+                    }
+                }
+                else if (heldGamePiece == GamePiece.Cube) {
+                    if (proximity < GripperConstants.ReintakeCubeProximityThreshold) {
+                        intakeCommand.schedule();
+                        reintakeAntiEatTimer.restart();
+                    }
                 }
             }
         }, this)
@@ -187,6 +205,10 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     }
     private CommandBase getIntakeCommand() {
         return Commands.run(() -> {
+            if (heldGamePiece == GamePiece.Unknown) {
+                canReintakeAgain = true;
+            }
+
             GamePiece detectedGamePiece = GamePiece.Unknown;
 
             if (!isColorSensorDisabled.getAsBoolean()) {
@@ -194,6 +216,19 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             }
 
             if (detectedGamePiece == GamePiece.Unknown) {
+                if (heldGamePiece == GamePiece.Cone) {
+                    if (canReintakeAgain && reintakeAntiEatTimer.hasElapsed(GripperConstants.ReintakeAntiConeEatTimeout)) {
+                        canReintakeAgain = false;
+                        stopCommand.schedule();
+                    }
+                }
+                else if (heldGamePiece == GamePiece.Cube) {
+                    if (canReintakeAgain && reintakeAntiEatTimer.hasElapsed(GripperConstants.ReintakeAntiCubeEatTimeout)) {
+                        canReintakeAgain = false;
+                        stopCommand.schedule();
+                    }
+                }
+
                 setMotors(GripperConstants.IntakePercent);
             }
             else {
@@ -207,7 +242,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getLowOuttakeConeCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.LowOuttakeConePercent);
-            heldGamePiece = GamePiece.Unknown;
         }, this)
             .withTimeout(GripperConstants.LowOuttakeConeSeconds)
             .withName("Low Outtake Cone");
@@ -215,7 +249,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getLowOuttakeCubeCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.LowOuttakeCubePercent);
-            heldGamePiece = GamePiece.Unknown;
         }, this)
             .withTimeout(GripperConstants.LowOuttakeCubeSeconds)
             .withName("Low Outtake Cube");  
@@ -223,7 +256,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getLowOuttakeUnknownCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.LowOuttakeUnknownPercent);
-            heldGamePiece = GamePiece.Unknown;
         }, this)
             .withTimeout(GripperConstants.LowOuttakeUnknownSeconds)
             .withName("Low Outtake Unknown");
@@ -232,7 +264,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getMidOuttakeConeCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.MidOuttakeConePercent);
-            heldGamePiece = GamePiece.Unknown;
         }, this)
             .withTimeout(GripperConstants.MidOuttakeConeSeconds)
             .withName("Mid Outtake Cone");
@@ -240,7 +271,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getMidOuttakeCubeCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.MidOuttakeCubePercent);
-            heldGamePiece = GamePiece.Unknown;
         }, this)
             .withTimeout(GripperConstants.MidOuttakeCubeSeconds)
             .withName("Mid Outtake Cube");  
@@ -248,7 +278,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getMidOuttakeUnknownCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.MidOuttakeUnknownPercent);
-            heldGamePiece = GamePiece.Unknown;
         }, this)
             .withTimeout(GripperConstants.MidOuttakeUnknownSeconds)
             .withName("Mid Outtake Unknown");
@@ -257,7 +286,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getHighOuttakeConeCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.HighOuttakeConePercent);
-            heldGamePiece = GamePiece.Unknown;
         }, this)
             .withTimeout(GripperConstants.HighOuttakeConeSeconds)
             .withName("High Outtake Cone");
@@ -265,7 +293,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getHighOuttakeCubeCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.HighOuttakeCubePercent);
-            heldGamePiece = GamePiece.Unknown;
         }, this)
             .withTimeout(GripperConstants.HighOuttakeCubeSeconds)
             .withName("High Outtake Cube");  
@@ -273,7 +300,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private CommandBase getHighOuttakeUnknownCommand() {
         return Commands.run(() -> {
             setMotors(GripperConstants.HighOuttakeUnknownPercent);
-            heldGamePiece = GamePiece.Unknown;
         }, this)
             .withTimeout(GripperConstants.HighOuttakeUnknownSeconds)
             .withName("High Outtake Unknown");
