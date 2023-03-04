@@ -18,6 +18,7 @@ import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
+import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.NavX2;
 import frc.robot.subsystems.PoseEstimator;
 
@@ -67,6 +68,7 @@ public class RobotContainer {
         Gripper.get();
         PoseEstimator.get();
         DriverCamera.get();
+        Leds.get();
         
         configureBindings();
     }

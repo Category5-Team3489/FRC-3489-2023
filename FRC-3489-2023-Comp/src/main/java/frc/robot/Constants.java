@@ -19,6 +19,15 @@ public final class Constants {
         public static final double FiducialTargetAreaThresholdPercent = 0.05;
     }
 
+    public static class LedConstants {
+        public static final int RightPort = 0;
+        public static final int LeftPort = 1;
+        public static final int Length = 162;
+
+        public static final double CubeLEDManipulator = -.8;
+        public static final double ConeLEDManipulator = .8;
+    }
+
     public static class CameraConstants {
         public static final int PixelWidth = 160;
         public static final int PixelHeight = 120;
