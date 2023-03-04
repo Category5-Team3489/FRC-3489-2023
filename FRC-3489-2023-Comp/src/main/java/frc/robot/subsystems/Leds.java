@@ -8,6 +8,8 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -55,11 +57,25 @@ public class Leds extends Cat5Subsystem<Leds> {
         RobotContainer.get().man.axisLessThan(3, Constants.LedConstants.CubeLEDManipulator)
         .onTrue(Commands.runOnce(() -> {
             setLeds(LedState.NeedCube);
+        }))
+        .onFalse(Commands.runOnce(() -> {
+            setLeds(LedState.Off);
         }));
+
         RobotContainer.get().man.axisGreaterThan(3, Constants.LedConstants.ConeLEDManipulator)
         .onTrue(Commands.runOnce(() -> {
             setLeds(LedState.NeedCone);
+        }))
+        .onFalse(Commands.runOnce(() -> {
+            setLeds(LedState.Off);
         }));
+
+        if (DriverStation.isDisabled() && getCurrentAlliance() == "Blue")
+            setLeds(LedState.DisabledPatternBlue);
+        else if (DriverStation.isDisabled() && getCurrentAlliance() == "Red")
+            setLeds(LedState.DisabledPatternRed);
+        else setLeds(LedState.Off);
+        
 
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 3);
@@ -81,6 +97,8 @@ public class Leds extends Cat5Subsystem<Leds> {
         PlaceCube,
         DarkRed,
         Red,
+        DisabledPatternBlue,
+        DisabledPatternRed
     }
 
     public void setLeds(LedState ledState) {
@@ -102,14 +120,20 @@ public class Leds extends Cat5Subsystem<Leds> {
         case PlaceCone: //Yellow
             setSolidColor(0.69);
         break;
-        case PlaceCube: //Blue Violet 
-            setSolidColor(0.89);
+        case PlaceCube: //Violet 
+            setSolidColor(0.91);
         break;
         case DarkRed:
             setSolidColor(59);
         break;
         case Red:
             setSolidColor(61);
+        break;
+        case DisabledPatternBlue:
+            setSolidColor(-29);
+        break;
+        case DisabledPatternRed:
+            setSolidColor(-31);
         }
     }
 
@@ -174,6 +198,14 @@ public class Leds extends Cat5Subsystem<Leds> {
         return Commands.startEnd(start, end, this)
             .withTimeout(seconds)
             .withInterruptBehavior(interruptBehavior);
+    }
+
+    private String getCurrentAlliance(){
+        if (DriverStation.getAlliance() == Alliance.Blue)
+        return "Blue";
+        else if (DriverStation.getAlliance() == Alliance.Red)
+        return "Red";
+        else return "Invalid";
     }
 
     // public CommandBase LedDiognostic() {
