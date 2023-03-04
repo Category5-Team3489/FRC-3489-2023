@@ -111,37 +111,54 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             .whileTrue(brakeTranslationCommand);
         RobotContainer.get().xbox.rightStick()
             .whileTrue(brakeRotationCommand);
-        RobotContainer.get().xbox.povUp()
+        // RobotContainer.get().xbox.povUp()
+        //     .onTrue(Commands.runOnce(() -> {
+        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
+        //     }));
+        // RobotContainer.get().xbox.povUpRight()
+        //     .onTrue(Commands.runOnce(() -> {
+        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-45));
+        //     }));
+        // RobotContainer.get().xbox.povRight()
+        //     .onTrue(Commands.runOnce(() -> {
+        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-90));
+        //     }));
+        // RobotContainer.get().xbox.povDownRight()
+        //     .onTrue(Commands.runOnce(() -> {
+        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-135));
+        //     }));
+        // RobotContainer.get().xbox.povDown()
+        //     .onTrue(Commands.runOnce(() -> {
+        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-180));
+        //     }));
+        // RobotContainer.get().xbox.povDownLeft()
+        //     .onTrue(Commands.runOnce(() -> {
+        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-225));
+        //     }));
+        // RobotContainer.get().xbox.povLeft()
+        //     .onTrue(Commands.runOnce(() -> {
+        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-270));
+        //     }));
+        // RobotContainer.get().xbox.povUpLeft()
+        //     .onTrue(Commands.runOnce(() -> {
+        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-315));
+        //     }));
+
+        RobotContainer.get().xbox.y()
             .onTrue(Commands.runOnce(() -> {
                 driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
-            }));
-        RobotContainer.get().xbox.povUpRight()
+            }));  
+        RobotContainer.get().xbox.b()
             .onTrue(Commands.runOnce(() -> {
-                driveCommand.setTargetAngle(Rotation2d.fromDegrees(45));
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(-90));
             }));
-        RobotContainer.get().xbox.povRight()
+        RobotContainer.get().xbox.a()
             .onTrue(Commands.runOnce(() -> {
-                driveCommand.setTargetAngle(Rotation2d.fromDegrees(90));
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(-180));
             }));
-        RobotContainer.get().xbox.povDownRight()
+        RobotContainer.get().xbox.x()
             .onTrue(Commands.runOnce(() -> {
-                driveCommand.setTargetAngle(Rotation2d.fromDegrees(135));
-            }));
-        RobotContainer.get().xbox.povDown()
-            .onTrue(Commands.runOnce(() -> {
-                driveCommand.setTargetAngle(Rotation2d.fromDegrees(180));
-            }));
-        RobotContainer.get().xbox.povDownLeft()
-            .onTrue(Commands.runOnce(() -> {
-                driveCommand.setTargetAngle(Rotation2d.fromDegrees(225));
-            }));
-        RobotContainer.get().xbox.povLeft()
-            .onTrue(Commands.runOnce(() -> {
-                driveCommand.setTargetAngle(Rotation2d.fromDegrees(270));
-            }));
-        RobotContainer.get().xbox.povUpLeft()
-            .onTrue(Commands.runOnce(() -> {
-                driveCommand.setTargetAngle(Rotation2d.fromDegrees(315));
+                driveCommand.setTargetAngle(Rotation2d.fromDegrees(-270));
             }));
         //#endregion
 

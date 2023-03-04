@@ -66,7 +66,7 @@ public class RobotContainer {
         ColorSensor.get();
         Gripper.get();
         PoseEstimator.get();
-        // DriverCamera.get();
+        DriverCamera.get();
         
         configureBindings();
     }

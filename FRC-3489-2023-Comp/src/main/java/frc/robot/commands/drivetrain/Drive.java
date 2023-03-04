@@ -1,5 +1,6 @@
 package frc.robot.commands.drivetrain;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -99,27 +100,27 @@ public class Drive extends CommandBase {
             //#endregion
         }
 
+        if (omega == 0) {
+            if (targetAngle == null) {
+                targetAngle = NavX2.get().getRotation();
+            }
+
+            double desiredDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetAngle.getDegrees());
+            desiredDegreesPerSecond = MathUtil.clamp(desiredDegreesPerSecond, -HeadingKeeperMaxDegreesPerSecond, HeadingKeeperMaxDegreesPerSecond);
+
+            if (!omegaController.atSetpoint()) {
+                omega = Math.toRadians(desiredDegreesPerSecond);
+            }
+        }
+        else {
+            targetAngle = NavX2.get().getRotation();
+            omegaController.reset();
+
+            // centerOfRotation.plus(FrontLeftMeters.times(corLeft));
+            // centerOfRotation.plus(FrontRightMeters.times(corRight));
+        }
+
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, omega, theta);
-
-        // if (omega == 0) {
-        //     if (targetAngle == null) {
-        //         targetAngle = NavX2.get().getRotation();
-        //     }
-
-        //     double desiredDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetAngle.getDegrees());
-        //     desiredDegreesPerSecond = MathUtil.clamp(desiredDegreesPerSecond, -HeadingKeeperMaxDegreesPerSecond, HeadingKeeperMaxDegreesPerSecond);
-
-        //     if (!omegaController.atSetpoint()) {
-        //         omega = Math.toRadians(desiredDegreesPerSecond);
-        //     }
-        // }
-        // else {
-        //     targetAngle = NavX2.get().getRotation();
-        //     omegaController.reset();
-
-        //     // centerOfRotation.plus(FrontLeftMeters.times(corLeft));
-        //     // centerOfRotation.plus(FrontRightMeters.times(corRight));
-        // }
 
         double speedLimiter = 0.5;
         if (RobotContainer.get().xbox.leftBumper().getAsBoolean()) {
@@ -159,6 +160,8 @@ public class Drive extends CommandBase {
         frontRightSteerAngleRadians = 0;
         backLeftSteerAngleRadians= 0;
         backRightSteerAngleRadians = 0;
+
+        targetAngle = null;
     }
 
     //#region Public

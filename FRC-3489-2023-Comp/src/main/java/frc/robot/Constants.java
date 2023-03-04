@@ -23,11 +23,11 @@ public final class Constants {
         public static final int PixelWidth = 160;
         public static final int PixelHeight = 120;
 
-        public static final int FPS = 20;
+        public static final int FPS = 10;
     }
 
     public static class ArmConstants {
-        public static final int HomeManButton = 9; // 12
+        public static final int HomeManButton = 10; // 12
         public static final int DoubleSubstationButton = 6;
         public static final int FloorManButton = 12;
         public static final int LowManButton = 11;
@@ -48,16 +48,16 @@ public final class Constants {
         public static final double ManualControlMaxDownPercent = -0.3;
         public static final double ManualControlMaxUpPercent = 0.3;
 
-        public static final double DoubleSubstationDegrees = 0; // 20
+        public static final double DoubleSubstationDegrees = 8.9; // 20
 
         public static final double FloorAngleDegrees = -94.0;
 
-        public static final double LowConeAngleDegrees = -80.0; // -94.0
-        public static final double LowCubeAngleDegrees = -80.0; // -94.0
+        public static final double LowConeAngleDegrees = -70.0; // -80
+        public static final double LowCubeAngleDegrees = -70.0; // -80
         public static final double LowUnknownAngleDegrees = (LowConeAngleDegrees + LowCubeAngleDegrees) / 2.0;
 
         public static final double AboveMidConeAngleDegrees = 14.0; // 11.0
-        public static final double OnMidConeAngleDegrees = 9.0; // 14.0
+        public static final double OnMidConeAngleDegrees = -4.0; // 14.0
         public static final double MidCubeAngleDegrees = 11.0;
         public static final double MidUnknownAngleDegrees = (AboveMidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
@@ -70,7 +70,7 @@ public final class Constants {
         public static final double ResistStaticFrictionPercent = 0;
 
         public static final int StallSmartCurrentLimitAmps = 30;
-        public static final double ProportionalGainPercentPerRevolutionOfError = 0.025;
+        public static final double ProportionalGainPercentPerRevolutionOfError = 0.025 * 4; // 1
         // public static final double IntegralGainPercentPerRevolutionMillisecondOfError = 0;
         public static final double DerivativeGainPercentPerRevolutionPerMillisecondOfError = 0;
         // public static final double FeedforwardGainPercentPerRevolutionOfError = 0;
@@ -88,29 +88,29 @@ public final class Constants {
         public static final int RightMotorDeviceId = 10;
 
         public static final int ReintakeConeProximityThreshold = 300;
-        public static final int ReintakeCubeProximityThreshold = 300; // FIXME Robot eats cube sometimes
-        public static final double ReintakeAntiConeEatTimeout = 0.5;
-        public static final double ReintakeAntiCubeEatTimeout = 0.25;
+        public static final int ReintakeCubeProximityThreshold = 200;
+        public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
+        public static final double ReintakeAntiCubeEatTimeout = 0.75; // 0.25
 
         public static final double IntakePercent = -0.5;
 
-        public static final double LowOuttakeConePercent = 0.05; // 1
+        public static final double LowOuttakeConePercent = 1.0; // 0.05
         public static final double LowOuttakeCubePercent = 0.3;
         public static final double LowOuttakeUnknownPercent = (LowOuttakeConePercent + LowOuttakeCubePercent) / 2.0;
-        public static final double MidOuttakeConePercent = 0.1; // 0.0
+        public static final double MidOuttakeConePercent = 0.1; // good
         public static final double MidOuttakeCubePercent = 0.3;
         public static final double MidOuttakeUnknownPercent = (MidOuttakeConePercent + MidOuttakeCubePercent) / 2.0;
-        public static final double HighOuttakeConePercent = 1;
+        public static final double HighOuttakeConePercent = 1; // good
         public static final double HighOuttakeCubePercent = 0.3;
         public static final double HighOuttakeUnknownPercent = (HighOuttakeConePercent + HighOuttakeCubePercent) / 2.0;
 
-        public static final double LowOuttakeConeSeconds = 2.0; // 0.5
+        public static final double LowOuttakeConeSeconds = 1.0; // good, 0.5
         public static final double LowOuttakeCubeSeconds = 0.5;
         public static final double LowOuttakeUnknownSeconds = (LowOuttakeConeSeconds + LowOuttakeCubeSeconds) / 2.0;
-        public static final double MidOuttakeConeSeconds = 2.0; // 0.5
+        public static final double MidOuttakeConeSeconds = 2.0; // good, 0.5
         public static final double MidOuttakeCubeSeconds = 0.5;
         public static final double MidOuttakeUnknownSeconds = (MidOuttakeConeSeconds + MidOuttakeCubeSeconds) / 2.0;
-        public static final double HighOuttakeConeSeconds = 0.5; // 0.5
+        public static final double HighOuttakeConeSeconds = 1.0; // good, 0.5
         public static final double HighOuttakeCubeSeconds = 0.5;
         public static final double HighOuttakeUnknownSeconds = (HighOuttakeConeSeconds + HighOuttakeCubeSeconds) / 2.0;
     }
@@ -123,11 +123,11 @@ public final class Constants {
 
         public static final double MaxVoltage = 12.0;
 
-        public static final double HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError = 90.0 / 90.0;
+        public static final double HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError = 180.0 / 30.0;
         public static final double HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError = 0;
         public static final double HeadingKeeperDerivativeGainDegreesPerSecondPerDegreePerSecondOfError = 0;
-        public static final double HeadingKeeperToleranceDegrees = 4.0;
-        public static final double HeadingKeeperMaxDegreesPerSecond = 180.0;
+        public static final double HeadingKeeperToleranceDegrees = 0.0;
+        public static final double HeadingKeeperMaxDegreesPerSecond = 720.0;
 
         public static final double CenterOfRotationMaxScale = 5.0;
 

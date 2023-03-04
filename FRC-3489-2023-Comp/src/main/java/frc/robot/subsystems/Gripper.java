@@ -186,13 +186,13 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
             if (DriverStation.isEnabled() && canReintakeAgain) {
                 int proximity = ColorSensor.get().getProximity();
-                if (heldGamePiece == GamePiece.Cone) {
-                    if (proximity < GripperConstants.ReintakeConeProximityThreshold) {
-                        intakeCommand.schedule();
-                        reintakeAntiEatTimer.restart();
-                    }
-                }
-                else if (heldGamePiece == GamePiece.Cube) {
+                // if (heldGamePiece == GamePiece.Cone) {
+                //     if (proximity < GripperConstants.ReintakeConeProximityThreshold) {
+                //         intakeCommand.schedule();
+                //         reintakeAntiEatTimer.restart();
+                //     }
+                // }
+                if (heldGamePiece == GamePiece.Cube) {
                     if (proximity < GripperConstants.ReintakeCubeProximityThreshold) {
                         intakeCommand.schedule();
                         reintakeAntiEatTimer.restart();
@@ -216,13 +216,13 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             }
 
             if (detectedGamePiece == GamePiece.Unknown) {
-                if (heldGamePiece == GamePiece.Cone) {
-                    if (canReintakeAgain && reintakeAntiEatTimer.hasElapsed(GripperConstants.ReintakeAntiConeEatTimeout)) {
-                        canReintakeAgain = false;
-                        stopCommand.schedule();
-                    }
-                }
-                else if (heldGamePiece == GamePiece.Cube) {
+                // if (heldGamePiece == GamePiece.Cone) {
+                //     if (canReintakeAgain && reintakeAntiEatTimer.hasElapsed(GripperConstants.ReintakeAntiConeEatTimeout)) {
+                //         canReintakeAgain = false;
+                //         stopCommand.schedule();
+                //     }
+                // }
+                if (heldGamePiece == GamePiece.Cube) {
                     if (canReintakeAgain && reintakeAntiEatTimer.hasElapsed(GripperConstants.ReintakeAntiCubeEatTimeout)) {
                         canReintakeAgain = false;
                         stopCommand.schedule();

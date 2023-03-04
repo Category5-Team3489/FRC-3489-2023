@@ -51,6 +51,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         return Commands.runOnce(() -> {
             navx.zeroYaw();
             PoseEstimator.get().onNavxZeroYaw();
+            Drivetrain.get().driveCommand.setTargetAngle(getRotation());
         })
             .ignoringDisable(true)
             .withName("Zero Yaw");

@@ -28,6 +28,8 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     private final NetworkTableEntry targetAreaEntry = limelight.getEntry("ta");
     private final NetworkTableEntry activePipelineEntry = limelight.getEntry("getpipe");
     private final NetworkTableEntry pipelineEntry = limelight.getEntry("pipeline");
+    // private final NetworkTableEntry targetXEntry = limelight.getEntry("tx");
+    // private final NetworkTableEntry targetYEntry = limelight.getEntry("ty");
 
     // Consumers
     private final LongConsumer activePipelineConsumer;
@@ -44,6 +46,10 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         // then start centering, you can do pursue point until pipeline gives good data
 
         // TODO Can you check for noise somehow, just use SwerveDrivePoseEstimator?, Only accept new values when robot vel has been low for certain amt of time and ta high
+
+        //#region Bindings
+        
+        //#endregion
 
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)

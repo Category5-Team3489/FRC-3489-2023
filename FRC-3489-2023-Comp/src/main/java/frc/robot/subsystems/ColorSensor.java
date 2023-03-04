@@ -37,8 +37,6 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
 
         // proximity: 0 to 2047
         // https://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues.html#onboard-i2c-causing-system-lockups
-
-        reconnectTimer.start();
     
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
@@ -58,6 +56,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         proximity = colorSensor.getProximity();
 
         if (!colorSensor.isConnected()) {
+            reconnectTimer.start();
             System.out.println("Color sensor is not connected!!!");
             
             if (reconnectTimer.advanceIfElapsed(2.0)) {
