@@ -113,23 +113,6 @@ public class Arm extends Cat5Subsystem<Arm> {
                 setTargetAngleDegrees(FloorAngleDegrees, IdleMode.kBrake);
                 gridPosition = GridPosition.Low;
             }));
-
-        RobotContainer.get().man.button(ArmConstants.LowManButton)
-            .onTrue(Commands.runOnce(() -> {
-                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
-                switch (heldGamePiece) {
-                    case Cone:
-                        setTargetAngleDegrees(LowConeAngleDegrees, IdleMode.kBrake);
-                        break;
-                    case Cube:
-                        setTargetAngleDegrees(LowCubeAngleDegrees, IdleMode.kBrake);
-                        break;
-                    case Unknown:
-                        setTargetAngleDegrees(LowUnknownAngleDegrees, IdleMode.kBrake);
-                        break;
-                }
-                gridPosition = GridPosition.Low;
-            }));
         
         RobotContainer.get().man.button(ArmConstants.LowManButton)
             .onTrue(Commands.runOnce(() -> {
