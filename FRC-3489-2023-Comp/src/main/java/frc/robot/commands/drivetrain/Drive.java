@@ -28,8 +28,8 @@ public class Drive extends CommandBase {
     private Rotation2d targetAngle = null;
     private PIDController omegaController = new PIDController(HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError, HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError, HeadingKeeperDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
-    private PIDController centerConeNodeController = new PIDController(0.5, 0, 0); // 0.05
-    private PIDController distanceConeNodeController = new PIDController(0.01, 0, 0);
+    private PIDController centerConeNodeController = new PIDController(0.12, 0, 0); // 0.05
+    private PIDController distanceConeNodeController = new PIDController(0.12, 0, 0);
 
     private double autoX = 0;
     private double autoY = 0;
@@ -39,6 +39,9 @@ public class Drive extends CommandBase {
 
         omegaController.enableContinuousInput(-180, 180);
         omegaController.setTolerance(HeadingKeeperToleranceDegrees / 2.0);
+
+        // centerConeNodeController.setTolerance(0.5 / 2.0);
+        // distanceConeNodeController.setTolerance(0.5 / 2.0);
     }
 
     @Override
@@ -113,9 +116,10 @@ public class Drive extends CommandBase {
                 // if (Limelight.get().isPipeline(LimelightConstants.MidRetroreflectivePipelineIndex)) {
                 double targetX = Limelight.get().getTargetX();
                 double targetY = Limelight.get().getTargetY();
-                y = centerConeNodeController.calculate(-targetX, 0);
-                y = MathUtil.clamp(y, -2.5, 2.5);
-
+                y = centerConeNodeController.calculate(-targetX, 3.9);
+                y = MathUtil.clamp(y, -0.5, 0.5);
+                x = distanceConeNodeController.calculate(targetY, -6.6);
+                x = MathUtil.clamp(x, -0.75, 0.75);
                 // x = distanceConeNodeController.calculate(targetY, -0.86);
                 // }
             }
