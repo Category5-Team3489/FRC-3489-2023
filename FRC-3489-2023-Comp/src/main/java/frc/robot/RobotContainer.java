@@ -62,14 +62,17 @@ public class RobotContainer {
         // When building commands, always put .withName last
 
         // Initialize subsystems
-        Drivetrain.get();
         NavX2.get();
-        Arm.get();
+        Limelight.get();
+        Drivetrain.get();
+        PoseEstimator.get();
+
         ColorSensor.get();
         Gripper.get();
-        Limelight.get();
-        PoseEstimator.get();
+        Arm.get();
+
         DriverCamera.get();
+        
         Leds.get();
         
         configureBindings();

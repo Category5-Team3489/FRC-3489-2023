@@ -190,7 +190,52 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         //#endregion
     }
 
-    public SwerveModulePosition[] getSwerveModulePositions() {
+    //#region Public
+    // Front Left
+    public void setFrontLeftPercentAngle(double percent, double radians) {
+        setFrontLeftVoltageAngle(percent * MaxVoltage, radians);
+    }
+    public void setFrontLeftSpeedAngle(double speedMetersPerSecond, double radians) {
+        setFrontLeftVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
+    }
+    public void setFrontLeftVoltageAngle(double voltage, double radians) {
+        frontLeftModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getFrontLeftOffsetRadians.getAsDouble()));
+    }
+
+    // Front Right
+    public void setFrontRightPercentAngle(double percent, double radians) {
+        setFrontRightVoltageAngle(percent * MaxVoltage, radians);
+    }
+    public void setFrontRightSpeedAngle(double speedMetersPerSecond, double radians) {
+        setFrontRightVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
+    }
+    public void setFrontRightVoltageAngle(double voltage, double radians) {
+        frontRightModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getFrontRightOffsetRadians.getAsDouble()));
+    }
+
+    // Back Left
+    public void setBackLeftPercentAngle(double percent, double radians) {
+        setBackLeftVoltageAngle(percent * MaxVoltage, radians);
+    }
+    public void setBackLeftSpeedAngle(double speedMetersPerSecond, double radians) {
+        setBackLeftVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
+    }
+    public void setBackLeftVoltageAngle(double voltage, double radians) {
+        backLeftModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getBackLeftOffsetRadians.getAsDouble()));
+    }
+
+    // Back Right
+    public void setBackRightPercentAngle(double percent, double radians) {
+        setBackRightVoltageAngle(percent * MaxVoltage, radians);
+    }
+    public void setBackRightSpeedAngle(double speedMetersPerSecond, double radians) {
+        setBackRightVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
+    }
+    public void setBackRightVoltageAngle(double voltage, double radians) {
+        backRightModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getBackRightOffsetRadians.getAsDouble()));
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
         // Distance Meters
         TalonFX frontLeftMotor = DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft);
         TalonFX frontRightMotor = DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight);
@@ -214,48 +259,6 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             new SwerveModulePosition(backLeftDistanceMeters, backLeftRotation),
             new SwerveModulePosition(backRightDistanceMeters, backRightRotation)
         };
-    }
-
-    //#region Set
-    // Front Left
-    public void setFrontLeftPercentAngle(double percent, double radians) {
-        setFrontLeftVoltageAngle(percent * MaxVoltage, radians);
-    }
-    public void setFrontLeftSpeedAngle(double speedMetersPerSecond, double radians) {
-        setFrontLeftVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
-    }
-    public void setFrontLeftVoltageAngle(double voltage, double radians) {
-        frontLeftModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getFrontLeftOffsetRadians.getAsDouble()));
-    }
-    // Front Right
-    public void setFrontRightPercentAngle(double percent, double radians) {
-        setFrontRightVoltageAngle(percent * MaxVoltage, radians);
-    }
-    public void setFrontRightSpeedAngle(double speedMetersPerSecond, double radians) {
-        setFrontRightVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
-    }
-    public void setFrontRightVoltageAngle(double voltage, double radians) {
-        frontRightModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getFrontRightOffsetRadians.getAsDouble()));
-    }
-    // Back Left
-    public void setBackLeftPercentAngle(double percent, double radians) {
-        setBackLeftVoltageAngle(percent * MaxVoltage, radians);
-    }
-    public void setBackLeftSpeedAngle(double speedMetersPerSecond, double radians) {
-        setBackLeftVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
-    }
-    public void setBackLeftVoltageAngle(double voltage, double radians) {
-        backLeftModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getBackLeftOffsetRadians.getAsDouble()));
-    }
-    // Back Right
-    public void setBackRightPercentAngle(double percent, double radians) {
-        setBackRightVoltageAngle(percent * MaxVoltage, radians);
-    }
-    public void setBackRightSpeedAngle(double speedMetersPerSecond, double radians) {
-        setBackRightVoltageAngle((speedMetersPerSecond / maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble()) * MaxVoltage, radians);
-    }
-    public void setBackRightVoltageAngle(double voltage, double radians) {
-        backRightModule.set(voltage, Cat5Utils.wrapAngle(radians + offsetConfig.getBackRightOffsetRadians.getAsDouble()));
     }
     //#endregion
 }

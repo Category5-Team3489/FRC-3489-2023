@@ -27,6 +27,12 @@ public class Robot extends TimedRobot {
     }
 
     @Override
+    public void simulationInit() {}
+
+    @Override
+    public void simulationPeriodic() {}
+
+    @Override
     public void disabledInit() {}
 
     @Override

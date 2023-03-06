@@ -18,6 +18,7 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
+import static frc.robot.Constants.OperatorConstants.*;
 
 public class Drive extends CommandBase {
     private double frontLeftSteerAngleRadians = 0;
@@ -26,7 +27,7 @@ public class Drive extends CommandBase {
     private double backRightSteerAngleRadians = 0;
 
     private Rotation2d targetAngle = null;
-    private PIDController omegaController = new PIDController(HeadingKeeperProportionalGainDegreesPerSecondPerDegreeOfError, HeadingKeeperIntegralGainDegreesPerSecondPerDegreeSecondOfError, HeadingKeeperDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
+    private PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
     private PIDController centerConeNodeController = new PIDController(0.12, 0, 0); // 0.05
     private PIDController distanceConeNodeController = new PIDController(0.12, 0, 0);
@@ -38,7 +39,7 @@ public class Drive extends CommandBase {
         addRequirements(Drivetrain.get());
 
         omegaController.enableContinuousInput(-180, 180);
-        omegaController.setTolerance(HeadingKeeperToleranceDegrees / 2.0);
+        omegaController.setTolerance(OmegaToleranceDegrees / 2.0);
 
         // centerConeNodeController.setTolerance(0.5 / 2.0);
         // distanceConeNodeController.setTolerance(0.5 / 2.0);
@@ -60,16 +61,7 @@ public class Drive extends CommandBase {
             x = autoX;
             y = autoY;
         }
-        else {
-            if (RobotContainer.get().man.getHID().getRawButton(MaxSpeedButtonA) &&
-                RobotContainer.get().man.getHID().getRawButton(MaxSpeedButtonB)) {
-                Drivetrain.get().setFrontLeftPercentAngle(1, frontLeftSteerAngleRadians);
-                Drivetrain.get().setFrontRightPercentAngle(1, frontRightSteerAngleRadians);
-                Drivetrain.get().setBackLeftPercentAngle(1, backLeftSteerAngleRadians);
-                Drivetrain.get().setBackRightPercentAngle(1, backRightSteerAngleRadians);
-                return;
-            }
-            
+        else {            
             //#region Input
             x = -RobotContainer.get().xbox.getLeftY();
             x = Cat5Utils.quadraticAxis(x, XboxAxisDeadband);
@@ -111,7 +103,7 @@ public class Drive extends CommandBase {
 
         if (x == 0 && y == 0 && omega == 0) {
             // .debounce(0.2, DebounceType.kBoth)
-            if (RobotContainer.get().man.button(CenterConeNodeButton).getAsBoolean()) {
+            if (RobotContainer.get().man.button(CenterConeNodeManButton).getAsBoolean()) {
                 targetAngle = Rotation2d.fromDegrees(-180);
                 // if (Limelight.get().isPipeline(LimelightConstants.MidRetroreflectivePipelineIndex)) {
                 double targetX = Limelight.get().getTargetX();
@@ -138,7 +130,7 @@ public class Drive extends CommandBase {
             }
 
             double desiredDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetAngle.getDegrees());
-            desiredDegreesPerSecond = MathUtil.clamp(desiredDegreesPerSecond, -HeadingKeeperMaxDegreesPerSecond, HeadingKeeperMaxDegreesPerSecond);
+            desiredDegreesPerSecond = MathUtil.clamp(desiredDegreesPerSecond, -OmegaMaxDegreesPerSecond, OmegaMaxDegreesPerSecond);
 
             if (!omegaController.atSetpoint()) {
                 omega = Math.toRadians(desiredDegreesPerSecond);

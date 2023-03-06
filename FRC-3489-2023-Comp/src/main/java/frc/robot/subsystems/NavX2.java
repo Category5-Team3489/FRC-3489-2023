@@ -31,10 +31,10 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     private NavX2() {
         super((i) -> instance = i);
 
-        // TODO Zeroing the yaw effects the pose estimator!!!!!!!!!!!!!!!
-
+        //#region Bindings
         RobotContainer.get().xbox.start()
             .onTrue(zeroYawCommand);
+        //#endregion
 
         //#region Shuffleboard
         // Main
@@ -42,6 +42,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
             .withSize(2, 3);
 
         layout.addDouble("Heading (deg)", () -> heading.getDegrees());
+
         layout.add(zeroYawCommand);
         //#endregion
     }
@@ -50,8 +51,8 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     private CommandBase getZeroYawCommand() {
         return Commands.runOnce(() -> {
             navx.zeroYaw();
-            PoseEstimator.get().onNavxZeroYaw();
-            Drivetrain.get().driveCommand.setTargetAngle(getRotation());
+
+            PoseEstimator.get().notifyNavxZeroYaw(getRotation());
         })
             .ignoringDisable(true)
             .withName("Zero Yaw");
@@ -64,10 +65,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         //     return Rotation2d.fromDegrees(navx.getFusedHeading());
         // }
 
-        // heading = Rotation2d.fromDegrees((360.0 + 90.0) - navx.getYaw());
         heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
-        // heading = new Rotation2d(-heading.getCos(), heading.getSin());
-        // new Rotation2d()
 
         return heading;
     }

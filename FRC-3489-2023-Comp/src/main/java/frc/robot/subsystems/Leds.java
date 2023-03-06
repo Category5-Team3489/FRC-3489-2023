@@ -4,51 +4,39 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.LedConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
-import frc.robot.subsystems.Cat5Subsystem;
 
 public class Leds extends Cat5Subsystem<Leds> {
+    //#region Singleton
     private static Leds instance = new Leds();
     
     public static Leds get() {
         return instance;
     }
-    //private final ShuffleboardTab tab = Cat5ShuffleboardTab;
-    // private final GenericEntry colorEntry = tab.add("LED Color", "").getEntry();
-
-    // private final AddressableLED led = new AddressableLED(LedConstants.Port);
-    // private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LedConstants.Length);
+    //#endregion
 
     private boolean haveTeleopLedsFlashedThisEnable = false;
 
-    PWMSparkMax rightLeds = new PWMSparkMax(LedConstants.RightPort);
+    private final PWMSparkMax rightLeds = new PWMSparkMax(LedConstants.RightPort);
     PWMSparkMax leftLeds = new PWMSparkMax(LedConstants.LeftPort);
 
     public LedState ledState = LedState.Off;
 
     // TODO Limit led setting bandwidth, compare led buffer with applied and unapplied on update then only set if they are different
 
-   private Leds(){
+   private Leds() {
     super((i) -> instance = i);
         // led.setLength(buffer.getLength());
         // led.setData(buffer);
@@ -134,6 +122,9 @@ public class Leds extends Cat5Subsystem<Leds> {
         break;
         case DisabledPatternRed:
             setSolidColor(0.27);
+            break;
+            default:
+                break;
         }
     }
 
@@ -207,9 +198,4 @@ public class Leds extends Cat5Subsystem<Leds> {
         return "Red";
         else return "Invalid";
     }
-
-    // public CommandBase LedDiognostic() {
-    //     return getSolidColorForSecondsCommand(LedColor.White, 5, true)
-    //         .withName("Set Solid Color");
-    // }
  }

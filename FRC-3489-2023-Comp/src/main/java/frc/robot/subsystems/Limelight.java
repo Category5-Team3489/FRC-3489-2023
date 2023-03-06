@@ -31,24 +31,19 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     private final NetworkTableEntry targetXEntry = limelight.getEntry("tx");
     private final NetworkTableEntry targetYEntry = limelight.getEntry("ty");
 
-    // Consumers
-    private final LongConsumer activePipelineConsumer;
-
     // State
-    private double targetX = 0;
-    private double targetY = 0;
+    private long activePipeline = -1;
+    private double targetX = Double.NaN;
+    private double targetY = Double.NaN;
 
     private Limelight() {
         super((i) -> instance = i);
 
         // https://www.andymark.com/products/limelight-2-plus
         // Field of View: 59.6 x 49.7 degrees
-
         // botpose	Robot transform in field-space. Translation (X,Y,Z) Rotation(Roll,Pitch,Yaw), total latency (cl+tl)
-
         // use getpipe before reading data from pipeline, ex: was on april tag pipeline, need to center cone nodes, set cone node pipeline, then wait until getpipe == expected
         // then start centering, you can do pursue point until pipeline gives good data
-
         // TODO Can you check for noise somehow, just use SwerveDrivePoseEstimator?, Only accept new values when robot vel has been low for certain amt of time and ta high
 
         setPipeline(LimelightConstants.MidRetroreflectivePipelineIndex);
@@ -69,18 +64,18 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
             .withSize(2, 1);
-
-        layout.addDouble("Target X", () -> targetX);
-        layout.addDouble("Target Y", () -> targetY);
         
-        var activePipelineEntry = layout.add("Active Pipeline", -1).getEntry();
-        activePipelineConsumer = (activePipeline) -> activePipelineEntry.setInteger(activePipeline);
+        layout.addInteger("Active Pipeline", () -> activePipelineEntry.getInteger(-1));
+        layout.addDouble("Target X", () -> targetXEntry.getDouble(Double.NaN));
+        layout.addDouble("Target Y", () -> targetYEntry.getDouble(Double.NaN));
         //#endregion
     }
 
     @Override
     public void periodic() {
-        int activePipeline = (int)activePipelineEntry.getInteger(-1);
+        activePipeline = activePipelineEntry.getInteger(-1);
+        targetX = targetXEntry.getDouble(Double.NaN);
+        targetY = targetYEntry.getDouble(Double.NaN);
 
         if (activePipeline != LimelightConstants.FiducialPipelineIndex) {
             setPipeline(LimelightConstants.FiducialPipelineIndex);

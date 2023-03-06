@@ -20,7 +20,7 @@ public class PursuePose extends CommandBase {
 
     @Override
     public void execute() {
-        Pose2d pose = PoseEstimator.get().getPose();
+        Pose2d pose = PoseEstimator.get().getPoseMeters();
 
         double xVelocity = x.calculate(pose.getX(), desiredPose.getX());
         xVelocity = MathUtil.clamp(xVelocity, -MaxSpeedMetersPerSecond, MaxSpeedMetersPerSecond);
