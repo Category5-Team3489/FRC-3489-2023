@@ -1,11 +1,12 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -26,17 +27,11 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
     private SwerveDriveOdometry odometry = null;
     private Pose2d poseMeters = null;
     private TimeInterpolatableBuffer<Pose2d> poseMetersBuffer = TimeInterpolatableBuffer.createBuffer(Cat5Utils::lerpUnclamped, 4);
+    private ArrayList<SwerveDriveOdometry> odometries = new ArrayList<SwerveDriveOdometry>();
 
     private PoseEstimator() {
         super((i) -> instance = i);
-        // Seconds since last vision update widget
-        // April tag area, and tag count, current encoder-based robot velocity, can be used to determine trustworthiness of vision measurement
-        // ^^^ Use this to adjust for limelight pipeline latency and reckon from past point
-        // for latency, add the amount of latency + how much limelight docs say, they say to add extra
-        // tl + cl!!!!!!!!!!!!! https://docs.limelightvision.io/en/latest/networktables_api.html
-        // any way to get timestamp of update to figure out how old it is?
-        // yes, use ts from json https://docs.limelightvision.io/en/latest/json_dump.html
-        // maybe just dont worry about network latency
+
         // +Y = right
         // +X = forward
 
@@ -44,49 +39,98 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
         var layout = getLayout(Cat5ShuffleboardTab.PoseEstimator, BuiltInLayouts.kList)
             .withSize(2, 1);
 
-        layout.addDouble("X (m)", () -> poseMeters.getX());
-        layout.addDouble("Y (m)", () -> poseMeters.getY());
-        layout.addDouble("Angle (deg)", () -> poseMeters.getRotation().getDegrees());
+        layout.addDouble("X (m)", () -> getX());
+        layout.addDouble("Y (m)", () -> getY());
+        layout.addDouble("Angle (deg)", () -> getDegrees());
         //#endregion
     }
 
     @Override
     public void periodic() {
-        if (DriverStation.isEnabled() && odometry == null) {
-            odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), new Pose2d());
-        }
-        
+        Rotation2d rotation = NavX2.get().getRotation();
+        var modulePositions = Drivetrain.get().getModulePositions();
+
         if (odometry != null) {
-            poseMeters = odometry.update(NavX2.get().getRotation(), Drivetrain.get().getModulePositions());
-            double time = Timer.getFPGATimestamp();
-            poseMetersBuffer.addSample(time, poseMeters);
+            poseMeters = odometry.update(rotation, modulePositions);
+            poseMetersBuffer.addSample(Timer.getFPGATimestamp(), poseMeters);
+        }
+
+        for (var odometry : odometries) {
+            odometry.update(rotation, modulePositions);
         }
     }
 
+    //#region Pose
+    private double getX() {
+        if (poseMeters == null) {
+            return Double.NaN;
+        }
+        return poseMeters.getX();
+    }
+    private double getY() {
+        if (poseMeters == null) {
+            return Double.NaN;
+        }
+        return poseMeters.getY();
+    }
+    private double getDegrees() {
+        if (poseMeters == null) {
+            return Double.NaN;
+        }
+        return poseMeters.getRotation().getDegrees();
+    }
+    //#endregion
+
     //#region Public
+    public SwerveDriveOdometry createOdometry(Pose2d initialPose) {
+        var odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), initialPose);
+        odometries.add(odometry);
+        return odometry;
+    }
+
+    public void deleteOdometry(SwerveDriveOdometry odometry) {
+        odometries.remove(odometry);
+    }
+
     public Pose2d getPoseMeters() {
         return poseMeters;
     }
 
     public void notifyNavxZeroYaw(Rotation2d rotation) {
-        Drivetrain.get().driveCommand.setTargetAngle(rotation);
+        var modulePositions = Drivetrain.get().getModulePositions();
 
-        odometry.resetPosition(rotation, Drivetrain.get().getModulePositions(), poseMeters);
-        poseMeters = odometry.getPoseMeters();
+        if (odometry != null) {
+            odometry.resetPosition(rotation, modulePositions, poseMeters);
+            poseMeters = odometry.getPoseMeters();
+        }
+
+        for (var odometry : odometries) {
+            odometry.resetPosition(rotation, modulePositions, odometry.getPoseMeters());
+        }
     }
 
-    public void notifyLimelightBotposePublish(double timestamp, Pose3d botpose) {
-        // var bufferPose = buffer.getSample(timestamp);
+    public void notifyLimelightBotpose(Pose3d botposeMeters, double latencySeconds) {
+        if (odometry == null) {
+            if (NavX2.get().isCalibrating()) {
+                return;
+            }
 
-        // if (bufferPose.isEmpty()) {
-        //     odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getSwerveModulePositions(), pose.toPose2d());
-        // }
-        // else {
-        //     var offset = this.pose.minus(bufferPose.get());
-        //     odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getSwerveModulePositions(), pose.toPose2d().plus(offset));
-        // }
+            odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
+        }
+        else {
+            var latentPoseMeters = poseMetersBuffer.getSample(Timer.getFPGATimestamp() - latencySeconds);
 
-        // this.pose = odometry.getPoseMeters();
+            if (latentPoseMeters.isEmpty()) {
+                odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
+            }
+            else {
+                var offsetMeters = poseMeters.minus(latentPoseMeters.get());
+                odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d().plus(offsetMeters));
+            }
+
+            poseMeters = odometry.getPoseMeters();
+            poseMetersBuffer.addSample(Timer.getFPGATimestamp(), poseMeters);
+        }
     }
     //#endregion
 }

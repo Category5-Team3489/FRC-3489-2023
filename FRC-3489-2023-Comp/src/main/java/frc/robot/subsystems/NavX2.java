@@ -52,7 +52,9 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         return Commands.runOnce(() -> {
             navx.zeroYaw();
 
-            PoseEstimator.get().notifyNavxZeroYaw(getRotation());
+            Rotation2d rotation = getRotation();
+            Drivetrain.get().driveCommand.setTargetAngle(rotation);
+            PoseEstimator.get().notifyNavxZeroYaw(rotation);
         })
             .ignoringDisable(true)
             .withName("Zero Yaw");
@@ -68,6 +70,10 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
 
         return heading;
+    }
+
+    public boolean isCalibrating() {
+        return navx.isCalibrating();
     }
     //#endregion Public
 }

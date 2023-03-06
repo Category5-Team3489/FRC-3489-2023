@@ -10,11 +10,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Commands;
+
 import frc.robot.Cat5Utils;
 import frc.robot.RobotContainer;
 import frc.robot.commands.drivetrain.BrakeRotation;
 import frc.robot.commands.drivetrain.BrakeTranslation;
 import frc.robot.commands.drivetrain.Drive;
+import frc.robot.commands.drivetrain.MaxSpeed;
 import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
@@ -46,7 +48,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     public final Drive driveCommand;
     private final BrakeTranslation brakeTranslationCommand;
     private final BrakeRotation brakeRotationCommand;
-    // private final MapDriveMotors mapDriveMotorsCommand;
+    private final MaxSpeed maxSpeedCommand;
 
     private Drivetrain() {
         super((i) -> instance = i);
@@ -54,7 +56,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         driveCommand = new Drive();
         brakeTranslationCommand = new BrakeTranslation();
         brakeRotationCommand = new BrakeRotation();
-        // mapDriveMotorsCommand = new MapDriveMotors();
+        maxSpeedCommand = new MaxSpeed();
 
         setDefaultCommand(driveCommand);
 
@@ -104,46 +106,14 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             BackRightEncoderDeviceId,
             0
         );
-        //#endregion Init Modules
+        //#endregion
 
         //#region Bindings
         RobotContainer.get().xbox.leftStick()
             .whileTrue(brakeTranslationCommand);
         RobotContainer.get().xbox.rightStick()
             .whileTrue(brakeRotationCommand);
-        // RobotContainer.get().xbox.povUp()
-        //     .onTrue(Commands.runOnce(() -> {
-        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
-        //     }));
-        // RobotContainer.get().xbox.povUpRight()
-        //     .onTrue(Commands.runOnce(() -> {
-        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-45));
-        //     }));
-        // RobotContainer.get().xbox.povRight()
-        //     .onTrue(Commands.runOnce(() -> {
-        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-90));
-        //     }));
-        // RobotContainer.get().xbox.povDownRight()
-        //     .onTrue(Commands.runOnce(() -> {
-        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-135));
-        //     }));
-        // RobotContainer.get().xbox.povDown()
-        //     .onTrue(Commands.runOnce(() -> {
-        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-180));
-        //     }));
-        // RobotContainer.get().xbox.povDownLeft()
-        //     .onTrue(Commands.runOnce(() -> {
-        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-225));
-        //     }));
-        // RobotContainer.get().xbox.povLeft()
-        //     .onTrue(Commands.runOnce(() -> {
-        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-270));
-        //     }));
-        // RobotContainer.get().xbox.povUpLeft()
-        //     .onTrue(Commands.runOnce(() -> {
-        //         driveCommand.setTargetAngle(Rotation2d.fromDegrees(-315));
-        //     }));
-
+        
         RobotContainer.get().xbox.y()
             .onTrue(Commands.runOnce(() -> {
                 driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
@@ -186,7 +156,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         subsystemLayout.add(driveCommand);
         subsystemLayout.add(brakeTranslationCommand);
         subsystemLayout.add(brakeRotationCommand);
-        // subsystemLayout.add(mapDriveMotorsCommand);
+        subsystemLayout.add(maxSpeedCommand);
         //#endregion
     }
 
@@ -259,6 +229,10 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             new SwerveModulePosition(backLeftDistanceMeters, backLeftRotation),
             new SwerveModulePosition(backRightDistanceMeters, backRightRotation)
         };
+    }
+
+    public double getAverageDriveVelocityMetersPerSecond() {
+        return (Math.abs(frontLeftModule.getDriveVelocity()) + Math.abs(frontRightModule.getDriveVelocity()) + Math.abs(backLeftModule.getDriveVelocity()) + Math.abs(backRightModule.getDriveVelocity())) / 4.0;
     }
     //#endregion
 }

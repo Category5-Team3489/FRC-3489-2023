@@ -14,19 +14,23 @@ public final class Constants {
     }
 
     public static class LimelightConstants {
-        public static final int FiducialPipelineIndex = 0;
-        public static final int MidRetroreflectivePipelineIndex = 1;
-        public static final int HighRetroreflectivePipelineIndex = 2;
-        
-        public static final double FiducialTargetAreaThresholdPercent = 0.05;
+        public static final long FiducialPipelineIndex = 0;
+        public static final long MidRetroreflectivePipelineIndex = 1;
+        public static final long HighRetroreflectivePipelineIndex = 2;
+
+        public static final long DefaultPipelineIndex = FiducialPipelineIndex;
+
+        public static final double BotposeValidActivePipelineSeconds = 0.5;
+        public static final double BotposeValidTargetArea = 0.005;
+        public static final double BotposeValidAverageDriveVelocityLimitMetersPerSecond = 0.25;
     }
 
     public static class LedConstants {
-        public static final int RightPort = 0;
-        public static final int LeftPort = 1;
-
         public static final double CubeLEDManipulator = -0.8;
         public static final double ConeLEDManipulator = 0.8;
+
+        public static final int RightPort = 0;
+        public static final int LeftPort = 1;
     }
 
     public static class CameraConstants {
@@ -126,7 +130,7 @@ public final class Constants {
     }
 
     public static class DrivetrainConstants {
-        public static final int CenterConeNodeManButton = 5; // FIXME Think through how to do automation
+        public static final double PovSpeedMetersPerSecond = 0.2;
 
         public static final double OmegaProportionalGainDegreesPerSecondPerDegreeOfError = 180.0 / 30.0;
         public static final double OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError = 0;

@@ -4,7 +4,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PoseEstimator;
 
 public class PursuePose extends CommandBase {
@@ -24,11 +23,11 @@ public class PursuePose extends CommandBase {
 
         double xVelocity = x.calculate(pose.getX(), desiredPose.getX());
         xVelocity = MathUtil.clamp(xVelocity, -MaxSpeedMetersPerSecond, MaxSpeedMetersPerSecond);
-        Drivetrain.get().driveCommand.setAutoX(xVelocity);
+        // Drivetrain.get().driveCommand.setAutoX(xVelocity);
 
         double yVelocity = y.calculate(pose.getY(), desiredPose.getY());
         yVelocity = MathUtil.clamp(yVelocity, -MaxSpeedMetersPerSecond, MaxSpeedMetersPerSecond);
 
-        Drivetrain.get().driveCommand.setAutoY(yVelocity);
+        // Drivetrain.get().driveCommand.setAutoY(yVelocity);
     }
 }
