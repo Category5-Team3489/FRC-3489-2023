@@ -16,6 +16,8 @@ import frc.robot.enums.GridPosition;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.GripperConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
+import frc.robot.subsystems.Leds;
+import frc.robot.subsystems.Leds.LedState;
 
 public class Gripper extends Cat5Subsystem<Gripper> {
     //#region Singleton
@@ -87,9 +89,11 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         switch (heldGamePiece) {
                             case Cone:
                                 lowOuttakeConeCommand.schedule();
+                                Leds.get().setLeds(LedState.PlaceCone);
                                 break;
                             case Cube:
-                                lowOuttakeCubeCommand.schedule();
+                                lowOuttakeCubeCommand.schedule();                              
+                                Leds.get().setLeds(LedState.PlaceCube);
                                 break;
                             case Unknown:
                                 lowOuttakeUnknownCommand.schedule();
@@ -100,9 +104,11 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         switch (heldGamePiece) {
                             case Cone:
                                 midOuttakeConeCommand.schedule();
+                                Leds.get().setLeds(LedState.PlaceCone);
                                 break;
                             case Cube:
                                 midOuttakeCubeCommand.schedule();
+                                Leds.get().setLeds(LedState.PlaceCube);
                                 break;
                             case Unknown:
                                 midOuttakeUnknownCommand.schedule();
@@ -113,9 +119,11 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         switch (heldGamePiece) {
                             case Cone:
                                 highOuttakeConeCommand.schedule();
+                                Leds.get().setLeds(LedState.PlaceCone);
                                 break;
                             case Cube:
                                 highOuttakeCubeCommand.schedule();
+                                Leds.get().setLeds(LedState.PlaceCube);
                                 break;
                             case Unknown:
                                 highOuttakeUnknownCommand.schedule();

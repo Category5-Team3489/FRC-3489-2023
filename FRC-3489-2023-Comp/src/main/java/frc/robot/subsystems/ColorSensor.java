@@ -90,21 +90,30 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     }
 
     public boolean isColorSensorWorking() {
+        if (colorSensor.hasReset()) {
+            System.out.println("Color Sensor reset");
+            Leds.get().setLeds(LedState.ErrorPattern);
+        }
         if (!colorSensor.isConnected()) {
-            reconnectTimer.start();
-            // System.out.println("Color sensor is not connected!!!");
+            // reconnectTimer.start();
+            System.out.println("Color sensor is not connected!!!");
+            Leds.get().setLeds(LedState.ErrorPattern);
 
-            if (reconnectTimer.advanceIfElapsed(2.0)) {
-                // System.out.println("Color sensor has been disconnected for more than 2 seconds, reconnecting...");
-                // colorSensor = new ColorSensorV3(I2C.Port.kMXP);
-                return true;
-            }
+            // if (reconnectTimer.advanceIfElapsed(2.0)) {
+            // System.out.println("Color sensor has been disconnected for more than 2
+            // seconds, reconnecting...");
+            // colorSensor = new ColorSensorV3(I2C.Port.kMXP);
+
         }
 
         // in connected but not working situation, reconstruct and return.
-        if ((proximity == 0 && color.blue == 0 && color.red == 0)) {
+        if ((proximity == 0 && color.blue == 0 && color.red == 0))
+
+        {
+            System.out.println("Color sensor is connected but not sending values");
+            Leds.get().setLeds(LedState.ErrorPattern);
             // colorSensor = new ColorSensorV3(I2C.Port.kMXP);
-            return true;
+
         }
         return true;
     }

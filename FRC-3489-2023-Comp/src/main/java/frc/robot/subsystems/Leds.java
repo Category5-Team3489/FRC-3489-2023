@@ -96,7 +96,8 @@ public class Leds extends Cat5Subsystem<Leds> {
         DarkRed,
         Red,
         DisabledPatternBlue,
-        DisabledPatternRed
+        DisabledPatternRed,
+        ErrorPattern
     }
 
     public void setLeds(LedState ledState) {
@@ -106,20 +107,20 @@ public class Leds extends Cat5Subsystem<Leds> {
             case Off: // Off
                 stopLeds();
                 break;
-            case TeleopBlink: // Lawn Green
-                setSolidColor(0.71);
+            case TeleopBlink: // Green
+                setSolidColor(0.77);
                 break;
             case NeedCone: // Yellow
                 setSolidColor(0.69);
                 break;
-            case NeedCube: // Blue Violet
+            case NeedCube: // Violet
                 setSolidColor(0.89);
                 break;
-            case PlaceCone: // Yellow
-                setSolidColor(0.69);
+            case PlaceCone: // Light Chase Grey
+                setSolidColor(0.27);
                 break;
-            case PlaceCube: // Violet
-                setSolidColor(0.91);
+            case PlaceCube: // Light Chase Grey
+                setSolidColor(0.27);
                 break;
             case DarkRed:
                 setSolidColor(0.59);
@@ -133,6 +134,9 @@ public class Leds extends Cat5Subsystem<Leds> {
             case DisabledPatternRed:
                 setSolidColor(0.27);
                 break;
+            case ErrorPattern: //Strobe Red
+                setSolidColor( -0.11);
+                break;
             default:
                 break;
         }
@@ -142,6 +146,8 @@ public class Leds extends Cat5Subsystem<Leds> {
         rightLeds.set(colorSpeed);
         leftLeds.set(colorSpeed);
     }
+
+    
 
     public void stopLeds() {
         rightLeds.set(0.99);

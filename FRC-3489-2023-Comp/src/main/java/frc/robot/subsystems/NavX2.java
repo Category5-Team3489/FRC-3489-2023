@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -20,7 +21,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     //#endregion
 
     // Devices
-    private final AHRS navx = new AHRS(SPI.Port.kMXP);
+    private final AHRS navx = new AHRS(Port.kMXP,(byte) 66);
 
     // Commands
     private final CommandBase zeroYawCommand = getZeroYawCommand();
