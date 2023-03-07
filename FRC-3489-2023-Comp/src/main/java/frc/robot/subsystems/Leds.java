@@ -66,12 +66,12 @@ public class Leds extends Cat5Subsystem<Leds> {
         else
             setLeds(LedState.Off);
 
-        var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
+        var layout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
                 .withSize(2, 3);
 
         layout.addString("LED", () -> ledState.toString());
 
-        var mainLayout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
+        var mainLayout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
                 .withSize(2, 4);
         mainLayout.addString("LED State", () -> ledState.toString());
     }

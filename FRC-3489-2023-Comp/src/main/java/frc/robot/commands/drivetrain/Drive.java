@@ -14,7 +14,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Cat5Utils;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.commands.automation.MidConeNode;
+import frc.robot.commands.automation.MidCubeNode;
+import frc.robot.enums.GridPosition;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
 
@@ -24,7 +29,7 @@ import static frc.robot.Constants.OperatorConstants.*;
 public class Drive extends CommandBase {
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
-    private double omegaMetersPerSecond = 0;
+    private double omegaRadiansPerSecond = 0;
 
     private double corLeft;
     private double corRight;
@@ -56,6 +61,10 @@ public class Drive extends CommandBase {
         theta();
 
         if (DriverStation.isTeleop()) {
+            // TODO FIND BETTER WAY
+            double x = xMetersPerSecond;
+            double y = yMetersPerSecond;
+
             xMetersPerSecond = -RobotContainer.get().xbox.getLeftY();
             xMetersPerSecond = Cat5Utils.quadraticAxis(xMetersPerSecond, XboxAxisDeadband);
             xMetersPerSecond *= maxVelocityMetersPerSecond;
@@ -67,43 +76,34 @@ public class Drive extends CommandBase {
             if (xMetersPerSecond == 0 && yMetersPerSecond == 0) {
                 int pov = RobotContainer.get().xbox.getHID().getPOV();
                 if (pov != -1) {
+                    pov += 90;
                     xMetersPerSecond += Math.sin(Math.toRadians(pov)) * PovSpeedMetersPerSecond;
                     yMetersPerSecond += Math.cos(Math.toRadians(pov)) * PovSpeedMetersPerSecond;
                 }
+
+                xMetersPerSecond = x;
+                yMetersPerSecond = y;
             }
 
-            omegaMetersPerSecond = -RobotContainer.get().xbox.getRightX();
-            omegaMetersPerSecond = Cat5Utils.quadraticAxis(omegaMetersPerSecond, XboxAxisDeadband);
-            omegaMetersPerSecond *= maxAngularVelocityRadiansPerSecond;
+            omegaRadiansPerSecond = -RobotContainer.get().xbox.getRightX();
+            omegaRadiansPerSecond = Cat5Utils.quadraticAxis(omegaRadiansPerSecond, XboxAxisDeadband);
+            omegaRadiansPerSecond *= maxAngularVelocityRadiansPerSecond;
 
             centerOfRotation();
         }
 
+        // if (!isAutomating) {
+        //     isAutomating = true;
+        //     new MidConeNode().schedule();
+        // }
+
+        speedLimiter();
+
         automation();
 
-        if (omegaMetersPerSecond == 0) {
-            if (targetAngle == null) {
-                targetAngle = theta;
-            }
-
-            double outputDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetAngle.getDegrees());
-            outputDegreesPerSecond = MathUtil.clamp(outputDegreesPerSecond, -OmegaMaxDegreesPerSecond, OmegaMaxDegreesPerSecond);
-
-            if (!omegaController.atSetpoint()) {
-                omegaMetersPerSecond = Math.toRadians(outputDegreesPerSecond);
-            }
-        }
-        else {
-            targetAngle = theta;
-            omegaController.reset();
-
-            centerOfRotation.plus(FrontLeftMeters.times(corLeft));
-            centerOfRotation.plus(FrontRightMeters.times(corRight));
-        }
-
         omega();
+        // System.out.println(yMetersPerSecond);
         chassisSpeeds();
-        speedLimiter();
         apply();
     }
 
@@ -117,6 +117,8 @@ public class Drive extends CommandBase {
     }
 
     private void centerOfRotation() {
+        centerOfRotation = new Translation2d();
+
         corLeft = RobotContainer.get().xbox.getLeftTriggerAxis();
         if (corLeft < 0.05) {
             corLeft = 0;
@@ -140,8 +142,18 @@ public class Drive extends CommandBase {
         }
     }
 
+    private void speedLimiter() {
+        speedLimiter = 1.0 / 2.0;
+        if (RobotContainer.get().xbox.leftBumper().getAsBoolean()) {
+            speedLimiter = 1.0 / 3.0;
+        }
+        else if (RobotContainer.get().xbox.rightBumper().getAsBoolean()) {
+            speedLimiter = 1.0;
+        }
+    }
+
     private void omega() {
-        if (omegaMetersPerSecond == 0) {
+        if (omegaRadiansPerSecond == 0) {
             if (targetAngle == null) {
                 targetAngle = theta;
             }
@@ -150,7 +162,7 @@ public class Drive extends CommandBase {
             outputDegreesPerSecond = MathUtil.clamp(outputDegreesPerSecond, -OmegaMaxDegreesPerSecond, OmegaMaxDegreesPerSecond);
 
             if (!omegaController.atSetpoint()) {
-                omegaMetersPerSecond = Math.toRadians(outputDegreesPerSecond);
+                omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
             }
         }
         else {
@@ -163,24 +175,14 @@ public class Drive extends CommandBase {
     }
 
     private void chassisSpeeds() {
-        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSecond, yMetersPerSecond, omegaMetersPerSecond, theta);
-    }
-
-    private void speedLimiter() {
-        speedLimiter = 1.0 / 2.0;
-        if (RobotContainer.get().xbox.leftBumper().getAsBoolean()) {
-            speedLimiter = 1.0 / 3.0;
-        }
-        else if (RobotContainer.get().xbox.rightBumper().getAsBoolean()) {
-            speedLimiter = 1.0;
-        }
+        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, theta);
     }
 
     private void apply() {
         SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond * speedLimiter);
 
-        if (xMetersPerSecond != 0 || yMetersPerSecond != 0 || omegaMetersPerSecond != 0) {
+        if (xMetersPerSecond != 0 || yMetersPerSecond != 0 || omegaRadiansPerSecond != 0) {
             frontLeftSteerAngleRadians = states[0].angle.getRadians();
             frontRightSteerAngleRadians = states[1].angle.getRadians();
             backLeftSteerAngleRadians = states[2].angle.getRadians();
@@ -203,7 +205,7 @@ public class Drive extends CommandBase {
     public void end(boolean interrupted) {
         xMetersPerSecond = 0;
         yMetersPerSecond = 0;
-        omegaMetersPerSecond = 0;
+        omegaRadiansPerSecond = 0;
 
         corLeft = 0;
         corRight = 0;
@@ -226,44 +228,81 @@ public class Drive extends CommandBase {
     }
 
     //#region Public
+    public void setXMetersPerSecond(double xMetersPerSecond) {
+        this.xMetersPerSecond = xMetersPerSecond;
+    }
+    public void setYMetersPerSecond(double yMetersPerSecond) {
+        this.yMetersPerSecond = yMetersPerSecond;
+    }
+    public void setSpeedLimiter(double speedLimiter) {
+        this.speedLimiter = speedLimiter;
+    }
     public void setTargetAngle(Rotation2d targetAngle) {
         this.targetAngle = targetAngle;
     }
     //#endregion
 
     //#region Automation
-    private Trigger automateTrigger = RobotContainer.get().man.button(5).debounce(0.1, DebounceType.kFalling);
+    private Trigger automateTrigger = RobotContainer.get().man.button(AutomateManButton);
+    private Trigger stopAutomationTrigger = RobotContainer.get().man.button(StopAutomationManButton);
+    
+    private boolean isAutomating = false;
 
-    private PIDController centerConeNodeController = new PIDController(0.12, 0, 0);
-    private PIDController distanceConeNodeController = new PIDController(0.12, 0, 0);
+    // double targetX = Limelight.get().getTargetX();
+    // double targetY = Limelight.get().getTargetY();
+    // yMetersPerSecond = centerConeNodeController.calculate(-targetX, 3.54); // 3.9
+    // yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -0.5, 0.5); // 0.5
+    // xMetersPerSecond = distanceConeNodeController.calculate(targetY, -14.7); // -6.6 works
+    // xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -0.75, 0.75); // 0.75
+
+    int i = 0;
 
     private void automation() {
-        boolean isBeingTeleoperated = xMetersPerSecond == 0 && yMetersPerSecond == 0 && omegaMetersPerSecond == 0;
+        boolean isNotBeingTeleoperated = xMetersPerSecond == 0 && yMetersPerSecond == 0 && omegaRadiansPerSecond == 0;
 
-        if (!isBeingTeleoperated || !automateTrigger.getAsBoolean()) {
+        if (i++ % 50 == 0) {
+            System.out.println("isNotBeingTeleoperated "+ isNotBeingTeleoperated);
+            System.out.println(" automateTrigger.getAsBoolean()"+  automateTrigger.getAsBoolean());
+            System.out.println("!isAutomating"+ !isAutomating);
+        }
+
+        if (isNotBeingTeleoperated && automateTrigger.getAsBoolean() && !isAutomating) {
+            isAutomating = true;
+
+            switch (Arm.get().getGridPosition()) {
+                case Low:
+                    break;
+                case Mid:
+                    switch (Gripper.get().getHeldGamePiece()) {
+                        case Cone:
+                            System.out.println("start cone mid place");
+                            new MidConeNode().schedule();
+                            break;
+                        case Cube:
+                            System.out.println("start cube mid place");
+                            new MidCubeNode().schedule();
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case High:
+                    break;
+            }
+        }
+
+        if (stopAutomationTrigger.getAsBoolean() || !isNotBeingTeleoperated) {
             resetAutomation();
             return;
         }
-
-        targetAngle = Rotation2d.fromDegrees(-180);
-        Limelight.get().setDesiredPipeline(LimelightConstants.MidRetroreflectivePipelineIndex);
-
-        if (!Limelight.get().isActivePipeline(LimelightConstants.MidRetroreflectivePipelineIndex)) {
-            resetAutomation();
-            return;
-        }
-
-        double targetX = Limelight.get().getTargetX();
-        double targetY = Limelight.get().getTargetY();
-        yMetersPerSecond = centerConeNodeController.calculate(-targetX, 3.54); // 3.9
-        yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -0.5, 0.5); // 0.5
-        xMetersPerSecond = distanceConeNodeController.calculate(targetY, -14.7); // -6.6 works
-        xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -0.75, 0.75); // 0.75
     }
 
     private void resetAutomation() {
-        centerConeNodeController.reset();
-        distanceConeNodeController.reset();
+        isAutomating = false;
+    }
+
+    public boolean isAutomating() {
+        return isAutomating;
     }
     //#endregion
 }

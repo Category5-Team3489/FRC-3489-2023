@@ -92,18 +92,18 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     public boolean isColorSensorWorking() {
         if (!colorSensor.isConnected()) {
             reconnectTimer.start();
-            System.out.println("Color sensor is not connected!!!");
+            // System.out.println("Color sensor is not connected!!!");
 
             if (reconnectTimer.advanceIfElapsed(2.0)) {
-                System.out.println("Color sensor has been disconnected for more than 2 seconds, reconnecting...");
-                colorSensor = new ColorSensorV3(I2C.Port.kMXP);
+                // System.out.println("Color sensor has been disconnected for more than 2 seconds, reconnecting...");
+                // colorSensor = new ColorSensorV3(I2C.Port.kMXP);
                 return true;
             }
         }
 
         // in connected but not working situation, reconstruct and return.
         if ((proximity == 0 && color.blue == 0 && color.red == 0)) {
-            colorSensor = new ColorSensorV3(I2C.Port.kMXP);
+            // colorSensor = new ColorSensorV3(I2C.Port.kMXP);
             return true;
         }
         return true;

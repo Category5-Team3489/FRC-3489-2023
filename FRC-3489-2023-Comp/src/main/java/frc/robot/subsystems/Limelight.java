@@ -37,7 +37,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     private Timer activePipelineTimer = new Timer();
     private Timer botposeTimer = new Timer();
 
-    private long desiredPipeline = LimelightConstants.DefaultPipelineIndex;
+    private long desiredPipeline = LimelightConstants.DefaultPipeline;
     private long activePipeline = -1;
     private double targetX = Double.NaN;
     private double targetY = Double.NaN;
@@ -74,7 +74,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     @Override
     public void periodic() {
         if (DriverStation.isDisabled()) {
-            setDesiredPipeline(LimelightConstants.DefaultPipelineIndex);
+            setDesiredPipeline(LimelightConstants.DefaultPipeline);
         }
 
         long getpipe = getpipeEntry.getInteger(-1);
@@ -90,23 +90,23 @@ public class Limelight extends Cat5Subsystem<Limelight> {
             setPipeline(desiredPipeline);
         }
 
-        if (isBotposeValid()) {
-            var botpose = botposeSubscriber.getAtomic();
-            if (botpose.timestamp != lastBotposeTimestamp && botpose.value.length == 7) {
-                lastBotposeTimestamp = botpose.timestamp;
-                botposeTimer.restart();
+        // if (isBotposeValid()) {
+        //     var botpose = botposeSubscriber.getAtomic();
+        //     if (botpose.timestamp != lastBotposeTimestamp && botpose.value.length == 7) {
+        //         lastBotposeTimestamp = botpose.timestamp;
+        //         botposeTimer.restart();
 
-                Translation3d translation = new Translation3d(botpose.value[0], botpose.value[1], botpose.value[2]);
-                Rotation3d rotation = new Rotation3d(botpose.value[3], botpose.value[4], botpose.value[5]);
-                Pose3d botposeMeters = new Pose3d(translation, rotation);
-                double latencySeconds = botpose.value[6] / 1000.0;
-                PoseEstimator.get().notifyLimelightBotpose(botposeMeters, latencySeconds);
-            }
-        }
+        //         Translation3d translation = new Translation3d(botpose.value[0], botpose.value[1], botpose.value[2]);
+        //         Rotation3d rotation = new Rotation3d(botpose.value[3], botpose.value[4], botpose.value[5]);
+        //         Pose3d botposeMeters = new Pose3d(translation, rotation);
+        //         double latencySeconds = botpose.value[6] / 1000.0;
+        //         PoseEstimator.get().notifyLimelightBotpose(botposeMeters, latencySeconds);
+        //     }
+        // }
     }
 
     private boolean isBotposeValid() {
-        return activePipeline == LimelightConstants.FiducialPipelineIndex &&
+        return activePipeline == LimelightConstants.FiducialPipeline &&
             activePipelineTimer.get() > LimelightConstants.BotposeValidActivePipelineSeconds &&
             targetArea > LimelightConstants.BotposeValidTargetArea &&
             Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.BotposeValidAverageDriveVelocityLimitMetersPerSecond;

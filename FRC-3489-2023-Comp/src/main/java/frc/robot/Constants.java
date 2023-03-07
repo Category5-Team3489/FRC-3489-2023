@@ -14,11 +14,11 @@ public final class Constants {
     }
 
     public static class LimelightConstants {
-        public static final long FiducialPipelineIndex = 0;
-        public static final long MidRetroreflectivePipelineIndex = 1;
-        public static final long HighRetroreflectivePipelineIndex = 2;
+        public static final long FiducialPipeline = 0;
+        public static final long MidRetroreflectivePipeline = 1;
+        public static final long HighRetroreflectivePipeline = 2;
 
-        public static final long DefaultPipelineIndex = FiducialPipelineIndex;
+        public static final long DefaultPipeline = FiducialPipeline;
 
         public static final double BotposeValidActivePipelineSeconds = 0.5;
         public static final double BotposeValidTargetArea = 0.005;
@@ -130,7 +130,10 @@ public final class Constants {
     }
 
     public static class DrivetrainConstants {
-        public static final double PovSpeedMetersPerSecond = 0.2;
+        public static final int AutomateManButton = 5;
+        public static final int StopAutomationManButton = 4;
+
+        public static final double PovSpeedMetersPerSecond = 0.4;
 
         public static final double OmegaProportionalGainDegreesPerSecondPerDegreeOfError = 180.0 / 30.0;
         public static final double OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError = 0;
