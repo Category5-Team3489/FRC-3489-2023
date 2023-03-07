@@ -2,6 +2,7 @@ package frc.robot.commands.automation;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -10,46 +11,67 @@ import frc.robot.subsystems.Limelight;
 public class MidCubeNode extends CommandBase {
     private PIDController strafeController = new PIDController(0.12, 0, 0);
     private PIDController distanceController = new PIDController(0.12, 0, 0);
+
+    private double xMetersPerSecond = 0;
+    private double yMetersPerSecond = 0;
     
     public MidCubeNode() {
-        
+        strafeController.setTolerance(1);
+        distanceController.setTolerance(1);
     }
 
     @Override
     public void initialize() {
         Limelight.get().setDesiredPipeline(LimelightConstants.FiducialPipeline);
 
+        Drivetrain.get().driveCommand.setTargetAngle(Rotation2d.fromDegrees(180));
+        Drivetrain.get().driveCommand.setAutomationXSupplier(() -> xMetersPerSecond);
+        Drivetrain.get().driveCommand.setAutomationYSupplier(() -> yMetersPerSecond);
+        Drivetrain.get().driveCommand.setAutomationSpeedLimiterSupplier(() -> 0.5);
+
         System.out.println("Mid cube node init");
     }
 
     @Override
     public void execute() {
-        // if (!Limelight.get().isActivePipeline(LimelightConstants.FiducialPipeline)) {
-        //     return;
-        // }
+        if (!Drivetrain.get().driveCommand.isAutomationAllowed()) {
+            cancel();
+            return;
+        }
+
+        if (!Limelight.get().isActivePipeline(LimelightConstants.FiducialPipeline)) {
+            return;
+        }
 
         double targetX = Limelight.get().getTargetX();
         if (!Double.isNaN(targetX)) {
-            double yMetersPerSecond = -strafeController.calculate(targetX, -3.54);
+            yMetersPerSecond = -strafeController.calculate(targetX, -3.54);
             yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -0.5, 0.5);
-            Drivetrain.get().driveCommand.setYMetersPerSecond(yMetersPerSecond);   
+        }
+        else {
+            yMetersPerSecond = 0;
         }
 
         double targetY = Limelight.get().getTargetY();
         if (!Double.isNaN(targetY)) {
-            double xMetersPerSecond = distanceController.calculate(targetY, -14.7);
+            xMetersPerSecond = distanceController.calculate(targetY, -14.7);
             xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -0.75, 0.75);
-            Drivetrain.get().driveCommand.setXMetersPerSecond(xMetersPerSecond);
+        }
+        else {
+            xMetersPerSecond = 0;
         }
     }
 
     @Override
     public boolean isFinished() {
-        return !Drivetrain.get().driveCommand.isAutomating();
+        return strafeController.atSetpoint() && distanceController.atSetpoint();
     }
 
     @Override
     public void end(boolean interrupted) {
         System.out.println("Mid cube node end");
+
+        xMetersPerSecond = 0;
+        yMetersPerSecond = 0;
     }
 }

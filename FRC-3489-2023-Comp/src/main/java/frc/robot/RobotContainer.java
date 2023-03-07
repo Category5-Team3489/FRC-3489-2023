@@ -41,6 +41,7 @@ public class RobotContainer {
                 throw new RuntimeException("Attempted to register subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\" twice");
             }
         }
+
         cat5Subsystems.add(cat5Subsystem);
         System.out.println("Registered subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\"");
     }

@@ -1,9 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -25,7 +21,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     // Devices
     private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
 
-    private final DoubleArraySubscriber botposeSubscriber = limelight.getDoubleArrayTopic("botpose").subscribe(new double[] {});
+    // private final DoubleArraySubscriber botposeSubscriber = limelight.getDoubleArrayTopic("botpose").subscribe(new double[] {});
     
     private final NetworkTableEntry getpipeEntry = limelight.getEntry("getpipe");
     private final NetworkTableEntry pipelineEntry = limelight.getEntry("pipeline");
@@ -42,7 +38,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     private double targetX = Double.NaN;
     private double targetY = Double.NaN;
     private double targetArea = 0;
-    private long lastBotposeTimestamp = 0;
+    // private long lastBotposeTimestamp = 0;
 
     private Limelight() {
         super((i) -> instance = i);
@@ -55,7 +51,6 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         // Can you check for noise somehow, just use SwerveDrivePoseEstimator?, Only accept new values when robot vel has been low for certain amt of time and ta high
 
         activePipelineTimer.restart();
-        botposeTimer.restart();
 
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
@@ -105,12 +100,12 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         // }
     }
 
-    private boolean isBotposeValid() {
-        return activePipeline == LimelightConstants.FiducialPipeline &&
-            activePipelineTimer.get() > LimelightConstants.BotposeValidActivePipelineSeconds &&
-            targetArea > LimelightConstants.BotposeValidTargetArea &&
-            Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.BotposeValidAverageDriveVelocityLimitMetersPerSecond;
-    }
+    // private boolean isBotposeValid() {
+    //     return activePipeline == LimelightConstants.FiducialPipeline &&
+    //         activePipelineTimer.get() > LimelightConstants.BotposeValidActivePipelineSeconds &&
+    //         targetArea > LimelightConstants.BotposeValidTargetArea &&
+    //         Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.BotposeValidAverageDriveVelocityLimitMetersPerSecond;
+    // }
 
     //#region Public
     public long getActivePipeline() {

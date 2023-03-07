@@ -139,15 +139,15 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
         layout.add("Subsystem Info", this);
 
-        // layout.addDouble("Front Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
-        // layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
-        // layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
-        // layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());
-
         layout.addDouble("Front Left (m per s)", () -> frontLeftModule.getDriveVelocity());
         layout.addDouble("Front Right (m per s)", () -> frontRightModule.getDriveVelocity());
         layout.addDouble("Back Left (m per s)", () -> backLeftModule.getDriveVelocity());
         layout.addDouble("Back Right (m per s)", () -> backRightModule.getDriveVelocity());
+
+        // layout.addDouble("Front Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
+        // layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
+        // layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
+        // layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());
 
         // Subsytem
         var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)

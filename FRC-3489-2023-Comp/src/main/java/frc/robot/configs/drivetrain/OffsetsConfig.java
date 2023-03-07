@@ -33,10 +33,10 @@ public class OffsetsConfig extends Cat5Config {
         
         var layout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList);
 
-        var frontLeftEntry = layout.add("Front Left", Math.toDegrees(getFrontLeftOffsetRadians.getAsDouble())).getEntry();
-        var frontRightEntry = layout.add("Front Right", Math.toDegrees(getFrontRightOffsetRadians.getAsDouble())).getEntry();
-        var backLeftEntry = layout.add("Back Left", Math.toDegrees(getBackLeftOffsetRadians.getAsDouble())).getEntry();
-        var backRightEntry = layout.add("Back Right", Math.toDegrees(getBackRightOffsetRadians.getAsDouble())).getEntry();
+        layout.add("Front Left", Math.toDegrees(getFrontLeftOffsetRadians.getAsDouble()));
+        layout.add("Front Right", Math.toDegrees(getFrontRightOffsetRadians.getAsDouble()));
+        layout.add("Back Left", Math.toDegrees(getBackLeftOffsetRadians.getAsDouble()));
+        layout.add("Back Right", Math.toDegrees(getBackRightOffsetRadians.getAsDouble()));
 
         layout.add(Commands.run(() -> {
             frontLeftOffsetRadians = 0;

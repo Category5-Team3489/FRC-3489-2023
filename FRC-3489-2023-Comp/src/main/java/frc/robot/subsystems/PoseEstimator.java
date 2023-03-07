@@ -32,9 +32,6 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
     private PoseEstimator() {
         super((i) -> instance = i);
 
-        // +Y = right
-        // +X = forward
-
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.PoseEstimator, BuiltInLayouts.kList)
             .withSize(2, 1);
@@ -47,6 +44,11 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
 
     @Override
     public void periodic() {
+        // TODO remove when using limelight botpose
+        if (odometry == null && !NavX2.get().isCalibrating()) {
+            odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), new Pose2d());
+        }
+
         Rotation2d rotation = NavX2.get().getRotation();
         var modulePositions = Drivetrain.get().getModulePositions();
 
@@ -110,27 +112,27 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
     }
 
     public void notifyLimelightBotpose(Pose3d botposeMeters, double latencySeconds) {
-        if (odometry == null) {
-            if (NavX2.get().isCalibrating()) {
-                return;
-            }
+        // if (odometry == null) {
+        //     if (NavX2.get().isCalibrating()) {
+        //         return;
+        //     }
 
-            odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
-        }
-        else {
-            var latentPoseMeters = poseMetersBuffer.getSample(Timer.getFPGATimestamp() - latencySeconds);
+        //     odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
+        // }
+        // else {
+        //     var latentPoseMeters = poseMetersBuffer.getSample(Timer.getFPGATimestamp() - latencySeconds);
 
-            if (latentPoseMeters.isEmpty()) {
-                odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
-            }
-            else {
-                var offsetMeters = poseMeters.minus(latentPoseMeters.get());
-                odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d().plus(offsetMeters));
-            }
+        //     if (latentPoseMeters.isEmpty()) {
+        //         odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
+        //     }
+        //     else {
+        //         var offsetMeters = poseMeters.minus(latentPoseMeters.get());
+        //         odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d().plus(offsetMeters));
+        //     }
 
-            poseMeters = odometry.getPoseMeters();
-            poseMetersBuffer.addSample(Timer.getFPGATimestamp(), poseMeters);
-        }
+        //     poseMeters = odometry.getPoseMeters();
+        //     poseMetersBuffer.addSample(Timer.getFPGATimestamp(), poseMeters);
+        // }
     }
     //#endregion
 }

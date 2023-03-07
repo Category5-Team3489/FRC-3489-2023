@@ -25,10 +25,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
     public static Gripper get() {
         return instance;
-
-        // TODO Anti-cube eater code, timer on intake after stopepd for cube
-        // TODO intake cone when stopped too?
-        // TODO have timeout for when intaking on already held piece and color sensor not seeing it
     }
     //#endregion
 
@@ -40,17 +36,17 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private final BooleanSupplier isColorSensorDisabled;
 
     // Commands
-    private final CommandBase stopCommand = getStopCommand();
-    private final CommandBase intakeCommand = getIntakeCommand();
-    private final CommandBase lowOuttakeConeCommand = getLowOuttakeConeCommand();
-    private final CommandBase lowOuttakeCubeCommand = getLowOuttakeCubeCommand();
-    private final CommandBase lowOuttakeUnknownCommand = getLowOuttakeUnknownCommand();
-    private final CommandBase midOuttakeConeCommand = getMidOuttakeConeCommand();
-    private final CommandBase midOuttakeCubeCommand = getMidOuttakeCubeCommand();
-    private final CommandBase midOuttakeUnknownCommand = getMidOuttakeUnknownCommand();
-    private final CommandBase highOuttakeConeCommand = getHighOuttakeConeCommand();
-    private final CommandBase highOuttakeCubeCommand = getHighOuttakeCubeCommand();
-    private final CommandBase highOuttakeUnknownCommand = getHighOuttakeUnknownCommand();
+    public final CommandBase stopCommand = getStopCommand();
+    public final CommandBase intakeCommand = getIntakeCommand();
+    public final CommandBase lowOuttakeConeCommand = getLowOuttakeConeCommand();
+    public final CommandBase lowOuttakeCubeCommand = getLowOuttakeCubeCommand();
+    public final CommandBase lowOuttakeUnknownCommand = getLowOuttakeUnknownCommand();
+    public final CommandBase midOuttakeConeCommand = getMidOuttakeConeCommand();
+    public final CommandBase midOuttakeCubeCommand = getMidOuttakeCubeCommand();
+    public final CommandBase midOuttakeUnknownCommand = getMidOuttakeUnknownCommand();
+    public final CommandBase highOuttakeConeCommand = getHighOuttakeConeCommand();
+    public final CommandBase highOuttakeCubeCommand = getHighOuttakeCubeCommand();
+    public final CommandBase highOuttakeUnknownCommand = getHighOuttakeUnknownCommand();
     
     // State
     private GamePiece heldGamePiece = GamePiece.Unknown;
