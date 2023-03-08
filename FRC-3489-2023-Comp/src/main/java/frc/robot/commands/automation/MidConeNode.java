@@ -9,8 +9,8 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
 public class MidConeNode extends CommandBase {
-    private PIDController strafeController = new PIDController(0.12, 0, 0);
-    private PIDController distanceController = new PIDController(0.12, 0, 0);
+    private PIDController strafeController = new PIDController(0.18, 0, 0); // 0.16, 12
+    private PIDController distanceController = new PIDController(0.18, 0, 0); // 0.12
 
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
@@ -29,8 +29,8 @@ public class MidConeNode extends CommandBase {
 
         // https://docs.limelightvision.io/en/latest/networktables_api.html#advanced-usage-with-raw-contours
 
-        strafeController.setTolerance(1);
-        distanceController.setTolerance(1);
+        strafeController.setTolerance(1.25);
+        distanceController.setTolerance(1.25);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class MidConeNode extends CommandBase {
 
         double targetX = Limelight.get().getTargetX();
         if (!Double.isNaN(targetX)) {
-            yMetersPerSecond = -strafeController.calculate(targetX, -3.9);
+            yMetersPerSecond = -strafeController.calculate(targetX, -4.4); //-3.9
             yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -0.5, 0.5);
         }
         else {
@@ -67,7 +67,7 @@ public class MidConeNode extends CommandBase {
 
         double targetY = Limelight.get().getTargetY();
         if (!Double.isNaN(targetY)) {
-            xMetersPerSecond = distanceController.calculate(targetY, -6.6);
+            xMetersPerSecond = distanceController.calculate(targetY, -6.06); // -6.6
             xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -0.75, 0.75);
         }
         else {

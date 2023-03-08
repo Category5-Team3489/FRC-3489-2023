@@ -112,27 +112,27 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
     }
 
     public void notifyLimelightBotpose(Pose3d botposeMeters, double latencySeconds) {
-        // if (odometry == null) {
-        //     if (NavX2.get().isCalibrating()) {
-        //         return;
-        //     }
+        if (odometry == null) {
+            if (NavX2.get().isCalibrating()) {
+                return;
+            }
 
-        //     odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
-        // }
-        // else {
-        //     var latentPoseMeters = poseMetersBuffer.getSample(Timer.getFPGATimestamp() - latencySeconds);
+            odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
+        }
+        else {
+            var latentPoseMeters = poseMetersBuffer.getSample(Timer.getFPGATimestamp() - latencySeconds);
 
-        //     if (latentPoseMeters.isEmpty()) {
-        //         odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
-        //     }
-        //     else {
-        //         var offsetMeters = poseMeters.minus(latentPoseMeters.get());
-        //         odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d().plus(offsetMeters));
-        //     }
+            if (latentPoseMeters.isEmpty()) {
+                odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d());
+            }
+            else {
+                var offsetMeters = poseMeters.minus(latentPoseMeters.get());
+                odometry.resetPosition(NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), botposeMeters.toPose2d().plus(offsetMeters));
+            }
 
-        //     poseMeters = odometry.getPoseMeters();
-        //     poseMetersBuffer.addSample(Timer.getFPGATimestamp(), poseMeters);
-        // }
+            poseMeters = odometry.getPoseMeters();
+            poseMetersBuffer.addSample(Timer.getFPGATimestamp(), poseMeters);
+        }
     }
     //#endregion
 }

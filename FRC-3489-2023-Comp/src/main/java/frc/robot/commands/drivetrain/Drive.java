@@ -2,6 +2,7 @@ package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -10,10 +11,15 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.Cat5Utils;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.commands.DriveToRelativePose;
+import frc.robot.commands.automation.HighConeNode;
+import frc.robot.commands.automation.HighCubeNode;
 import frc.robot.commands.automation.MidConeNode;
 import frc.robot.commands.automation.MidCubeNode;
 import frc.robot.subsystems.Arm;
@@ -25,6 +31,8 @@ import static frc.robot.Constants.DrivetrainConstants.*;
 import static frc.robot.Constants.OperatorConstants.*;
 
 import java.util.function.DoubleSupplier;
+
+import com.revrobotics.CANSparkMax.IdleMode;
 
 public class Drive extends CommandBase {
     private double frontLeftSteerAngleRadians = 0;
@@ -140,7 +148,7 @@ public class Drive extends CommandBase {
         boolean isNotBeingTeleoperated = xMetersPerSecond == 0 && yMetersPerSecond == 0 && omegaRadiansPerSecond == 0;
         
         if (DriverStation.isTeleop()) {
-            if (!isNotBeingTeleoperated && automateTrigger.getAsBoolean() && !isAutomating) {
+            if (isNotBeingTeleoperated && automateTrigger.getAsBoolean() && !isAutomating) {
                 isAutomating = true;
 
                 enableTeleopAutomation();
@@ -249,29 +257,77 @@ public class Drive extends CommandBase {
         // Have individual commands use limelight more directly
         // Less abstraction
 
+        // Pose Estimator turn right = minus
+        // -Y = right
+        // +X = forward
+
         switch (Arm.get().getGridPosition()) {
             case Low:
+                Commands.sequence(
+                    // new HighConeNode()
+                    new DriveToRelativePose(new Pose2d(1, 1, Rotation2d.fromDegrees(0)), 0.6),
+                    Commands.print("45679874")
+                    // 1, 0, half meter forward stop x, y
+                    // 0, 1 left, x y
+
+                ).schedule();
                 break;
             case Mid:
                 switch (Gripper.get().getHeldGamePiece()) {
                     case Cone:
                         System.out.println("start cone mid place");
-                        new MidConeNode()
-                            .andThen(Commands.runOnce(() -> {
-
-                            }))
-                            .until(() -> isAutomating)
-                            .schedule();
+                        Commands.sequence(
+                            new MidConeNode(),
+                            Commands.waitSeconds(1),
+                            Commands.runOnce(() -> {
+                                Arm.get().setTargetAngleDegrees(ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
+                            }),
+                            Commands.waitSeconds(0.5),
+                            Commands.runOnce(() -> {
+                                Gripper.get().midOuttakeConeCommand.schedule();
+                            }),
+                            Commands.waitSeconds(0.5)
+                        ).schedule();
                         break;
                     case Cube:
                         System.out.println("start cube mid place");
-                        new MidCubeNode().schedule();
+                        Commands.sequence(
+                            new MidCubeNode(),
+                            Commands.runOnce(() -> {
+                                Gripper.get().midOuttakeCubeCommand.schedule();
+                            })
+                        ).schedule();
                         break;
                     default:
                         break;
                 }
                 break;
             case High:
+                switch (Gripper.get().getHeldGamePiece()) {
+                    case Cone:
+                        System.out.println("start cone high place");
+                        Commands.sequence(
+                            new HighConeNode(),
+                            Commands.waitSeconds(1),
+                            Commands.runOnce(() -> {
+                                Gripper.get().highOuttakeConeCommand.schedule();
+                            })
+                            // new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 0.4)
+                        ).schedule();
+                        break;
+                    case Cube:
+                        System.out.println("start cube high place");
+                        Commands.sequence(
+                            new HighCubeNode(),
+                            new WaitCommand(1),
+                            Commands.runOnce(() -> {
+                                Gripper.get().highOuttakeCubeCommand.schedule();
+                            })
+                        ).schedule();
+                        break;
+                    default:
+                        break;
+                }
                 break;
         }
     }

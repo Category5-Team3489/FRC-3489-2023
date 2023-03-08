@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -21,7 +25,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     // Devices
     private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
 
-    // private final DoubleArraySubscriber botposeSubscriber = limelight.getDoubleArrayTopic("botpose").subscribe(new double[] {});
+    private final DoubleArraySubscriber botposeSubscriber = limelight.getDoubleArrayTopic("botpose").subscribe(new double[] {});
     
     private final NetworkTableEntry getpipeEntry = limelight.getEntry("getpipe");
     private final NetworkTableEntry pipelineEntry = limelight.getEntry("pipeline");
@@ -38,7 +42,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     private double targetX = Double.NaN;
     private double targetY = Double.NaN;
     private double targetArea = 0;
-    // private long lastBotposeTimestamp = 0;
+    private long lastBotposeTimestamp = 0;
 
     private Limelight() {
         super((i) -> instance = i);
@@ -85,27 +89,28 @@ public class Limelight extends Cat5Subsystem<Limelight> {
             setPipeline(desiredPipeline);
         }
 
-        // if (isBotposeValid()) {
-        //     var botpose = botposeSubscriber.getAtomic();
-        //     if (botpose.timestamp != lastBotposeTimestamp && botpose.value.length == 7) {
-        //         lastBotposeTimestamp = botpose.timestamp;
-        //         botposeTimer.restart();
+        if (isBotposeValid()) {
+            var botpose = botposeSubscriber.getAtomic();
+            if (botpose.timestamp != lastBotposeTimestamp && botpose.value.length == 7) {
+                lastBotposeTimestamp = botpose.timestamp;
+                botposeTimer.restart();
 
-        //         Translation3d translation = new Translation3d(botpose.value[0], botpose.value[1], botpose.value[2]);
-        //         Rotation3d rotation = new Rotation3d(botpose.value[3], botpose.value[4], botpose.value[5]);
-        //         Pose3d botposeMeters = new Pose3d(translation, rotation);
-        //         double latencySeconds = botpose.value[6] / 1000.0;
-        //         PoseEstimator.get().notifyLimelightBotpose(botposeMeters, latencySeconds);
-        //     }
-        // }
+                Translation3d translation = new Translation3d(botpose.value[0], botpose.value[1], botpose.value[2]);
+                Rotation3d rotation = new Rotation3d(botpose.value[3], botpose.value[4], botpose.value[5]);
+                Pose3d botposeMeters = new Pose3d(translation, rotation);
+                double latencySeconds = botpose.value[6] / 1000.0;
+                PoseEstimator.get().notifyLimelightBotpose(botposeMeters, latencySeconds);
+                System.out.println(botposeMeters.toString());
+            }
+        }
     }
 
-    // private boolean isBotposeValid() {
-    //     return activePipeline == LimelightConstants.FiducialPipeline &&
-    //         activePipelineTimer.get() > LimelightConstants.BotposeValidActivePipelineSeconds &&
-    //         targetArea > LimelightConstants.BotposeValidTargetArea &&
-    //         Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.BotposeValidAverageDriveVelocityLimitMetersPerSecond;
-    // }
+    private boolean isBotposeValid() {
+        return activePipeline == LimelightConstants.FiducialPipeline &&
+            activePipelineTimer.get() > LimelightConstants.BotposeValidActivePipelineSeconds &&
+            targetArea > LimelightConstants.BotposeValidTargetArea &&
+            Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.BotposeValidAverageDriveVelocityLimitMetersPerSecond;
+    }
 
     //#region Public
     public long getActivePipeline() {

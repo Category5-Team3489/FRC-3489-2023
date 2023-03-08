@@ -14,8 +14,8 @@ public class DriveToRelativePose extends CommandBase {
     private double maxAxialSpeedMetersPerSecond;
     
     private SwerveDriveOdometry odometry;
-    private PIDController xController = new PIDController(1, 0, 0);
-    private PIDController yController = new PIDController(1, 0, 0);
+    private PIDController xController = new PIDController(6, 0, 0);
+    private PIDController yController = new PIDController(6, 0, 0);
     private SlewRateLimiter xLimiter = new SlewRateLimiter(10);
     private SlewRateLimiter yLimiter = new SlewRateLimiter(10);
     private double xMetersPerSecond = 0;
@@ -49,13 +49,15 @@ public class DriveToRelativePose extends CommandBase {
 
         Pose2d poseMeters = odometry.getPoseMeters();
 
-        xMetersPerSecond = xController.calculate(poseMeters.getX(), relativePoseMeters.getX());
+        xMetersPerSecond = xController.calculate(poseMeters.getX(), relativePoseMeters.getY());
         xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -maxAxialSpeedMetersPerSecond, maxAxialSpeedMetersPerSecond);
         xMetersPerSecond = xLimiter.calculate(xMetersPerSecond);
 
-        yMetersPerSecond = yController.calculate(poseMeters.getY(), relativePoseMeters.getY());
+        yMetersPerSecond = yController.calculate(poseMeters.getY(), -relativePoseMeters.getX());
         yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -maxAxialSpeedMetersPerSecond, maxAxialSpeedMetersPerSecond);
         yMetersPerSecond = yLimiter.calculate(yMetersPerSecond);
+
+        System.out.println(odometry.getPoseMeters());
     }
 
     @Override
@@ -65,6 +67,8 @@ public class DriveToRelativePose extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        System.out.println(odometry.getPoseMeters());
+
         PoseEstimator.get().deleteOdometry(odometry);
 
         xMetersPerSecond = 0;

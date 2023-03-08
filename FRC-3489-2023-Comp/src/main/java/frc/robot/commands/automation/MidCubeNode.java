@@ -9,15 +9,15 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
 public class MidCubeNode extends CommandBase {
-    private PIDController strafeController = new PIDController(0.12, 0, 0);
-    private PIDController distanceController = new PIDController(0.12, 0, 0);
+    private PIDController strafeController = new PIDController(0.18, 0, 0);
+    private PIDController distanceController = new PIDController(0.18, 0, 0);
 
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
     
     public MidCubeNode() {
-        strafeController.setTolerance(1);
-        distanceController.setTolerance(1);
+        strafeController.setTolerance(1.5);
+        distanceController.setTolerance(1.5);
     }
 
     @Override

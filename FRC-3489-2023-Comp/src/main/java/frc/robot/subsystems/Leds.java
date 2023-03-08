@@ -117,10 +117,10 @@ public class Leds extends Cat5Subsystem<Leds> {
                 setSolidColor(0.89);
                 break;
             case PlaceCone: // Light Chase Grey
-                setSolidColor(0.27);
+                setSolidColor(-.05);
                 break;
             case PlaceCube: // Light Chase Grey
-                setSolidColor(0.27);
+                setSolidColor(-.05);
                 break;
             case DarkRed:
                 setSolidColor(0.59);
