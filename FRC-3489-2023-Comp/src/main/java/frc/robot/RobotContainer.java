@@ -82,7 +82,7 @@ public class RobotContainer {
         Gripper.get();
         Arm.get();
 
-        DriverCamera.get();
+        //DriverCamera.get();
         
         Leds.get();
         

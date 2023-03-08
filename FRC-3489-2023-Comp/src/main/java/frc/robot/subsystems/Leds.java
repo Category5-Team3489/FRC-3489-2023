@@ -97,7 +97,8 @@ public class Leds extends Cat5Subsystem<Leds> {
         Red,
         DisabledPatternBlue,
         DisabledPatternRed,
-        ErrorPattern
+        ErrorPattern,
+        NavXResetYaw
     }
 
     public void setLeds(LedState ledState) {
@@ -116,10 +117,10 @@ public class Leds extends Cat5Subsystem<Leds> {
             case NeedCube: // Violet
                 setSolidColor(0.89);
                 break;
-            case PlaceCone: // Light Chase Grey
+            case PlaceCone: // Strobe White
                 setSolidColor(-.05);
                 break;
-            case PlaceCube: // Light Chase Grey
+            case PlaceCube: // Strobe White
                 setSolidColor(-.05);
                 break;
             case DarkRed:
@@ -136,6 +137,9 @@ public class Leds extends Cat5Subsystem<Leds> {
                 break;
             case ErrorPattern: //Strobe Red
                 setSolidColor( -0.11);
+                break;
+            case NavXResetYaw: //Dark Blue
+                setSolidColor( 0.85);
                 break;
             default:
                 break;
@@ -180,7 +184,7 @@ public class Leds extends Cat5Subsystem<Leds> {
         if (!DriverStation.isTeleop() || haveTeleopLedsFlashedThisEnable) {
             return;
         }
-        Commands.runOnce(() -> setLeds(LedState.TeleopBlink), this)
+        Commands.runOnce(() -> getSolidColorForSecondsCommand(LedState.TeleopBlink, 3, true), this)
                 .withTimeout(1)
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
                 .schedule();
@@ -191,9 +195,9 @@ public class Leds extends Cat5Subsystem<Leds> {
         haveTeleopLedsFlashedThisEnable = true;
     }
 
-    public Command getSolidColorForSecondsCommand(double color, double seconds, boolean isInterruptible) {
+    public Command getSolidColorForSecondsCommand(LedState color, double seconds, boolean isInterruptible) {
         Runnable start = () -> {
-            setSolidColor(color);
+            setLeds(color);
         };
         Runnable end = () -> {
             stopLeds();

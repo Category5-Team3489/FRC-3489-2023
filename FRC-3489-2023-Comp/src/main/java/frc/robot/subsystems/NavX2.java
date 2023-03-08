@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
+import frc.robot.subsystems.Leds.LedState;
 
 public class NavX2 extends Cat5Subsystem<NavX2> {
     //#region Singleton
@@ -56,6 +57,8 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
             Rotation2d rotation = getRotation();
             Drivetrain.get().driveCommand.setTargetAngle(rotation);
             PoseEstimator.get().notifyNavxZeroYaw(rotation);
+
+            Leds.get().getSolidColorForSecondsCommand(LedState.NavXResetYaw, 2, true);
         })
             .ignoringDisable(true)
             .withName("Zero Yaw");

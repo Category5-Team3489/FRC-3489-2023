@@ -85,11 +85,11 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         switch (heldGamePiece) {
                             case Cone:
                                 lowOuttakeConeCommand.schedule();
-                                Leds.get().setLeds(LedState.PlaceCone);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCone,2,true);
                                 break;
                             case Cube:
                                 lowOuttakeCubeCommand.schedule();                              
-                                Leds.get().setLeds(LedState.PlaceCube);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCube,2,true);
                                 break;
                             case Unknown:
                                 lowOuttakeUnknownCommand.schedule();
@@ -100,11 +100,11 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         switch (heldGamePiece) {
                             case Cone:
                                 midOuttakeConeCommand.schedule();
-                                Leds.get().setLeds(LedState.PlaceCone);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCone,2,true);
                                 break;
                             case Cube:
                                 midOuttakeCubeCommand.schedule();
-                                Leds.get().setLeds(LedState.PlaceCube);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCube,2,true);
                                 break;
                             case Unknown:
                                 midOuttakeUnknownCommand.schedule();
@@ -115,11 +115,11 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         switch (heldGamePiece) {
                             case Cone:
                                 highOuttakeConeCommand.schedule();
-                                Leds.get().setLeds(LedState.PlaceCone);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCone,2,true);
                                 break;
                             case Cube:
                                 highOuttakeCubeCommand.schedule();
-                                Leds.get().setLeds(LedState.PlaceCube);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCube,2,true);
                                 break;
                             case Unknown:
                                 highOuttakeUnknownCommand.schedule();
