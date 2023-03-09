@@ -30,8 +30,8 @@ public class DriveToRelativePose extends CommandBase {
     public void initialize() {
         odometry = PoseEstimator.get().createOdometry(new Pose2d());
         
-        xController.setTolerance(0.1);
-        yController.setTolerance(0.1);
+        xController.setTolerance(0.05);
+        yController.setTolerance(0.05);
 
         Drivetrain.get().driveCommand.setAutomationXSupplier(() -> xMetersPerSecond);
         Drivetrain.get().driveCommand.setAutomationYSupplier(() -> yMetersPerSecond);
@@ -56,8 +56,6 @@ public class DriveToRelativePose extends CommandBase {
         yMetersPerSecond = yController.calculate(poseMeters.getY(), -relativePoseMeters.getX());
         yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -maxAxialSpeedMetersPerSecond, maxAxialSpeedMetersPerSecond);
         yMetersPerSecond = yLimiter.calculate(yMetersPerSecond);
-
-        System.out.println(odometry.getPoseMeters());
     }
 
     @Override
@@ -67,8 +65,6 @@ public class DriveToRelativePose extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println(odometry.getPoseMeters());
-
         PoseEstimator.get().deleteOdometry(odometry);
 
         xMetersPerSecond = 0;

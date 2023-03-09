@@ -11,6 +11,9 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -22,6 +25,7 @@ import frc.robot.commands.DriveToRelativePose;
 import frc.robot.commands.automation.MidConeNode;
 import frc.robot.commands.automation.MidCubeNode;
 import frc.robot.enums.GridPosition;
+import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
@@ -87,19 +91,23 @@ public class RobotContainer {
         Leds.get();
         
         configureBindings();
+
+        // ShuffleboardLayout layout = Cat5ShuffleboardTab.Auto.get().getLayout("Auto", BuiltInLayouts.kList);
+        
+        // layout.add("Auto 1", Commands.runOnce(() -> getAutonomousCommand()));
+        // layout.add("Place Cone Auto", Commands.runOnce(() -> getPlaceConeAutoCommand()));
     }
+
 
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
-        // return Commands.sequence(
-        //     Commands.runOnce(() -> {
-        //         Drivetrain.get().driveCommand.setTargetAngle(Rotation2d.fromDegrees(0));
-        //     }),
-        //     new PursuePose(new Pose2d(2.0, 2.0, Rotation2d.fromDegrees(0)))
-        // );
-        
-        // return Commands.print("No autonomous command set");
+        return Commands.sequence(
+            new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(180)), 0.5)
+        );
+    }
+
+    public Command getPlaceConeAutoCommand() {
         return Commands.sequence(
             // Commands.runOnce(() -> {
             //     Gripper.get().lowOuttakeConeCommand.schedule();

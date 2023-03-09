@@ -2,6 +2,7 @@ package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -40,6 +41,9 @@ public class Drive extends CommandBase {
     private double backLeftSteerAngleRadians = 0;
     private double backRightSteerAngleRadians = 0;
 
+    private SlewRateLimiter xRateLimiter = new SlewRateLimiter(XYRateLimiterPercentPerSecond);
+    private SlewRateLimiter yRateLimiter = new SlewRateLimiter(XYRateLimiterPercentPerSecond);
+
     private Rotation2d targetAngle = null;
     private PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
@@ -64,6 +68,9 @@ public class Drive extends CommandBase {
                 frontRightSteerAngleRadians = 0;
                 backLeftSteerAngleRadians= 0;
                 backRightSteerAngleRadians = 0;
+
+                xRateLimiter.reset(0);
+                yRateLimiter.reset(0);
 
                 targetAngle = null;
                 omegaController.reset();
@@ -92,21 +99,50 @@ public class Drive extends CommandBase {
         double corLeft = 0;
         double corRight = 0;
 
+        double speedLimiter = 1.0 / 2.0;
+
         if (DriverStation.isTeleop()) {
+            if (RobotContainer.get().xbox.leftBumper().getAsBoolean()) {
+                speedLimiter = 1.0 / 3.0;
+            }
+            else if (RobotContainer.get().xbox.rightBumper().getAsBoolean()) {
+                speedLimiter = 1.0;
+            }
+
             xMetersPerSecond = -RobotContainer.get().xbox.getLeftY();
             xMetersPerSecond = Cat5Utils.quadraticAxis(xMetersPerSecond, XboxAxisDeadband);
+            if (speedLimiter == 1.0) {
+                xMetersPerSecond = xRateLimiter.calculate(xMetersPerSecond);
+            }
+            else {
+                xRateLimiter.reset(0);
+            }
             xMetersPerSecond *= maxVelocityMetersPerSecond;
 
             yMetersPerSecond = -RobotContainer.get().xbox.getLeftX();
             yMetersPerSecond = Cat5Utils.quadraticAxis(yMetersPerSecond, XboxAxisDeadband);
+            if (speedLimiter == 1.0) {
+                yMetersPerSecond = yRateLimiter.calculate(yMetersPerSecond);
+            }
+            else {
+                yRateLimiter.reset(0);
+            }
             yMetersPerSecond *= maxVelocityMetersPerSecond;
 
             if (xMetersPerSecond == 0 && yMetersPerSecond == 0) {
                 int pov = RobotContainer.get().xbox.getHID().getPOV();
                 if (pov != -1) {
                     pov += 90;
-                    xMetersPerSecond += Math.sin(Math.toRadians(pov)) * PovSpeedMetersPerSecond;
-                    yMetersPerSecond += Math.cos(Math.toRadians(pov)) * PovSpeedMetersPerSecond;
+                    
+                    xMetersPerSecond += Math.sin(Math.toRadians(pov));
+                    yMetersPerSecond += Math.cos(Math.toRadians(pov));
+
+                    double speedMetersPerSecond = Math.sqrt((xMetersPerSecond * xMetersPerSecond) + (yMetersPerSecond * yMetersPerSecond));
+                    xMetersPerSecond /= speedMetersPerSecond;
+                    yMetersPerSecond /= speedMetersPerSecond;
+
+                    xMetersPerSecond *= PovSpeedMetersPerSecond;
+                    yMetersPerSecond *= PovSpeedMetersPerSecond;
                 }
             }
 
@@ -136,13 +172,9 @@ public class Drive extends CommandBase {
                 corRight = 1 + ((CenterOfRotationMaxScale - 1) * Cat5Utils.inverseLerpUnclamped(corRight, 0.15, 1.0));
             }
         }
-
-        double speedLimiter = 1.0 / 2.0;
-        if (RobotContainer.get().xbox.leftBumper().getAsBoolean()) {
-            speedLimiter = 1.0 / 3.0;
-        }
-        else if (RobotContainer.get().xbox.rightBumper().getAsBoolean()) {
-            speedLimiter = 1.0;
+        else {
+            xRateLimiter.reset(0);
+            yRateLimiter.reset(0);
         }
 
         boolean isNotBeingTeleoperated = xMetersPerSecond == 0 && yMetersPerSecond == 0 && omegaRadiansPerSecond == 0;
@@ -223,6 +255,9 @@ public class Drive extends CommandBase {
         backLeftSteerAngleRadians= 0;
         backRightSteerAngleRadians = 0;
 
+        xRateLimiter.reset(0);
+        yRateLimiter.reset(0);
+
         targetAngle = null;
         omegaController.reset();
 
@@ -264,12 +299,9 @@ public class Drive extends CommandBase {
         switch (Arm.get().getGridPosition()) {
             case Low:
                 Commands.sequence(
-                    // new HighConeNode()
-                    new DriveToRelativePose(new Pose2d(1, 1, Rotation2d.fromDegrees(0)), 0.6),
-                    Commands.print("45679874")
-                    // 1, 0, half meter forward stop x, y
-                    // 0, 1 left, x y
-
+                    Commands.print("Test drive to relative pose start"),
+                    new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 1.0),
+                    Commands.print("Test drive to relative pose end")
                 ).schedule();
                 break;
             case Mid:
