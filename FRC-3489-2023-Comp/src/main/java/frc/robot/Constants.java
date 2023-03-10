@@ -25,9 +25,9 @@ public final class Constants {
 
         public static final long DefaultPipeline = FiducialPipeline;
 
-        public static final double BotposeValidActivePipelineSeconds = 0.5;
+        public static final double CamposeValidActivePipelineSeconds = 0.5;
         public static final double BotposeValidTargetArea = 0.005;
-        public static final double BotposeValidAverageDriveVelocityLimitMetersPerSecond = 0.25;
+        public static final double CamposeValidAverageDriveVelocityLimitMetersPerSecond = 0.25;
     }
 
     public static class DrivetrainConstants {

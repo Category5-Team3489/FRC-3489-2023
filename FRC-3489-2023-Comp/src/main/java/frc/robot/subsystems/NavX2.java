@@ -3,14 +3,12 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
-import frc.robot.subsystems.Leds.LedState;
 
 public class NavX2 extends Cat5Subsystem<NavX2> {
     //#region Singleton
@@ -22,13 +20,14 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     //#endregion
 
     // Devices
-    private final AHRS navx = new AHRS(Port.kMXP,(byte) 66);
+    private final AHRS navx = new AHRS(Port.kMXP, (byte)66);
 
     // Commands
     private final CommandBase zeroYawCommand = getZeroYawCommand();
 
     // State
     private Rotation2d heading = new Rotation2d();
+    private Rotation2d offset = new Rotation2d();
 
     private NavX2() {
         super((i) -> instance = i);
@@ -39,9 +38,8 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         //#endregion
 
         //#region Shuffleboard
-        // Main
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-            .withSize(2, 3);
+            .withSize(2, 1);
 
         layout.addDouble("Heading (deg)", () -> heading.getDegrees());
 
@@ -54,11 +52,11 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         return Commands.runOnce(() -> {
             navx.zeroYaw();
 
+            offset = new Rotation2d();
+
             Rotation2d rotation = getRotation();
             Drivetrain.get().driveCommand.setTargetAngle(rotation);
-            PoseEstimator.get().notifyNavxZeroYaw(rotation);
-
-            Leds.get().getSolidColorForSecondsCommand(LedState.NavXResetYaw, 2, true);
+            PoseEstimator.get().notifyNavxJump(rotation);
         })
             .ignoringDisable(true)
             .withName("Zero Yaw");
@@ -67,17 +65,24 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
 
     //#region Public
     public Rotation2d getRotation() {
-        // if (navx.isMagnetometerCalibrated()) {
-        //     return Rotation2d.fromDegrees(navx.getFusedHeading());
-        // }
-
-        heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
+        heading = Rotation2d.fromDegrees(360.0 - navx.getYaw())
+            .plus(offset);
 
         return heading;
     }
 
     public boolean isCalibrating() {
         return navx.isCalibrating();
+    }
+
+    public void setOffset(Rotation2d offset) {
+        navx.zeroYaw();
+
+        this.offset = offset;
+
+        Rotation2d rotation = getRotation();
+        Drivetrain.get().driveCommand.setTargetAngle(rotation);
+        PoseEstimator.get().notifyNavxJump(rotation);
     }
     //#endregion Public
 }

@@ -28,7 +28,7 @@ public class DriveToRelativePose extends CommandBase {
 
     @Override
     public void initialize() {
-        odometry = PoseEstimator.get().createOdometry(new Pose2d());
+        odometry = PoseEstimator.get().createOdometry();
         
         xController.setTolerance(0.05);
         yController.setTolerance(0.05);

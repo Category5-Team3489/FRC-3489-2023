@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.Cat5Utils;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
@@ -127,7 +128,7 @@ public class Arm extends Cat5Subsystem<Arm> {
             }));
 
         RobotContainer.get().man.button(ArmConstants.MidManButton)
-            .debounce(0.1, DebounceType.kBoth) // May not be needed
+            .debounce(0.1, DebounceType.kBoth)
             .onTrue(Commands.runOnce(() -> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
                 switch (heldGamePiece) {

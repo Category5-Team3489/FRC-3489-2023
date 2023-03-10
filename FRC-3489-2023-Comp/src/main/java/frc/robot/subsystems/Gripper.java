@@ -16,7 +16,6 @@ import frc.robot.enums.GridPosition;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.GripperConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
-import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.Leds.LedState;
 
 public class Gripper extends Cat5Subsystem<Gripper> {
@@ -132,9 +131,8 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         //#endregion
 
         //#region Shuffleboard
-        // Main
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-            .withSize(2, 3);
+            .withSize(2, 1);
 
         layout.add("Subsystem Info", this);
         layout.addString("Held Game Piece", () -> heldGamePiece.toString());
@@ -146,7 +144,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             .getEntry();
         isColorSensorDisabled = () -> isColorSensorDisabledEntry.getBoolean(false);
 
-        // Subsystem
         var subsystemLayout = getLayout(Cat5ShuffleboardTab.Gripper, BuiltInLayouts.kList)
             .withSize(2, 3);
 
