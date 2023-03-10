@@ -7,20 +7,15 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.revrobotics.CANSparkMax.IdleMode;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.ArmConstants;
+
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.DriveToRelativePose;
-import frc.robot.commands.automation.MidConeNode;
-import frc.robot.enums.GridPosition;
+import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
@@ -59,16 +54,12 @@ public class RobotContainer {
     public final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
     public final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
 
+    // Shuffleboard
+    private final SendableChooser<String> autoChooser = new SendableChooser<String>();
+
     private RobotContainer() {
         instance = this;
         cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
-
-        // Look here for fixes to common problems:
-        // If shuffleboard layout doesn't show up, check size
-        // If subsystem isn't working, call Subsystem.get() here
-        // Check type if layout.add, or tab.add fails
-        // If command doesnt run when disabled, set ignore disabled true
-        // When building commands, always put .withName last
 
         // Initialize subsystems
         NavX2.get();
@@ -79,59 +70,27 @@ public class RobotContainer {
         ColorSensor.get();
         Gripper.get();
         Arm.get();
-
-        //DriverCamera.get();
         
         Leds.get();
         
         configureBindings();
 
-        // ShuffleboardLayout layout = Cat5ShuffleboardTab.Auto.get().getLayout("Auto", BuiltInLayouts.kList);
-        
-        // layout.add("Auto 1", Commands.runOnce(() -> getAutonomousCommand()));
-        // layout.add("Place Cone Auto", Commands.runOnce(() -> getPlaceConeAutoCommand()));
+        var autoTab = Cat5ShuffleboardTab.Auto.get();
+        autoChooser.setDefaultOption(AutoConstants.ConeThenTaxiAuto, AutoConstants.ConeThenTaxiAuto);
+        autoChooser.addOption(AutoConstants.ConeThenBalanceAuto, AutoConstants.ConeThenBalanceAuto);
+        autoTab.add(autoChooser);
     }
 
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
-        return Commands.sequence(
-            new DriveToRelativePose(new Pose2d(0, 3, Rotation2d.fromDegrees(0)), 0.6)
-        );
-    }
-
-    public Command getPlaceConeAutoCommand() {
-        return Commands.sequence(
-            // Commands.runOnce(() -> {
-            //     Gripper.get().lowOuttakeConeCommand.schedule();
-            // }),
-            Commands.runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
-            }),
-            Commands.waitSeconds(1),
-            Commands.runOnce(() -> {
-                Gripper.get().intakeCommand.schedule();
-            }),
-            Commands.waitSeconds(1.0),
-            Commands.runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
-            }),
-            Commands.waitSeconds(3),
-            new MidConeNode(),
-            new WaitCommand(1),
-            Commands.runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
-            }),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(() -> {
-                Gripper.get().midOuttakeConeCommand.schedule();
-            })
-            // new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 1),
-            // Commands.runOnce(() -> {
-            //     Arm.get().setTargetAngleDegrees(ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
-            // }),
-            // Commands.waitSeconds(2),
-            // new DriveToRelativePose(new Pose2d(-3, 0, Rotation2d.fromDegrees(0)), 2)
-        );
+        switch (autoChooser.getSelected()) {
+            case AutoConstants.ConeThenTaxiAuto:
+                return Autos.getConeThenTaxiAuto();
+            case AutoConstants.ConeThenBalanceAuto:
+                return Autos.getConeThenBalanceAuto();
+        }
+        
+        return Commands.print("No autonomous command selected");
     }
 }
