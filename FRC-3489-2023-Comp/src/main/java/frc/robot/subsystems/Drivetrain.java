@@ -144,6 +144,8 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         layout.addDouble("Back Left (m per s)", () -> backLeftModule.getDriveVelocity());
         layout.addDouble("Back Right (m per s)", () -> backRightModule.getDriveVelocity());
 
+        layout.addDouble("Average (m per s)", () -> getAverageDriveVelocityMetersPerSecond());
+
         // layout.addDouble("Front Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
         // layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
         // layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());

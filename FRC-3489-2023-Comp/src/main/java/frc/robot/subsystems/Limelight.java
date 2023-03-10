@@ -70,6 +70,11 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         subsystemLayout.addDouble("Target Y", () -> targetY);
         subsystemLayout.addDouble("Target Area", () -> targetArea);
         subsystemLayout.addBoolean("Is Campose Valid", () -> isCamposeValid());
+        
+        // Temp
+        subsystemLayout.addString("Campose", () -> getCampose().toString());
+        subsystemLayout.addInteger("Tag Id", () -> getTagId());
+        subsystemLayout.addDouble("Latency Seconds", () -> getLatencySeconds());
         //#endregion
     }
 

@@ -153,8 +153,9 @@ public class Leds extends Cat5Subsystem<Leds> {
     
 
     public void stopLeds() {
-        rightLeds.set(0.99);
-        leftLeds.set(0.99);
+        // rightLeds.set(0.99);
+        // leftLeds.set(0.99);
+        setSolidColor(-0.49);
     }
 
     // public void setSolidColor(LedColor color) {

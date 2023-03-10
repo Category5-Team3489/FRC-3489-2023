@@ -1,5 +1,9 @@
 package frc.robot.commands.drivetrain;
 
+import java.util.function.DoubleSupplier;
+
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -12,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -31,10 +36,7 @@ import frc.robot.subsystems.NavX2;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
 import static frc.robot.Constants.OperatorConstants.*;
-
-import java.util.function.DoubleSupplier;
-
-import com.revrobotics.CANSparkMax.IdleMode;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class Drive extends CommandBase {
     private double frontLeftSteerAngleRadians = 0;
@@ -52,6 +54,7 @@ public class Drive extends CommandBase {
     private DoubleSupplier automationXSupplier = null;
     private DoubleSupplier automationYSupplier = null;
     private DoubleSupplier automationSpeedLimiterSupplier = null;
+    private DoubleSupplier automationMaxOmegaSupplier = null;
 
     private Trigger automateTrigger = RobotContainer.get().man.button(AutomateManButton);
     private Trigger stopAutomationTrigger = RobotContainer.get().man.button(StopAutomationManButton);
@@ -80,6 +83,7 @@ public class Drive extends CommandBase {
                 automationXSupplier = null;
                 automationYSupplier = null;
                 automationSpeedLimiterSupplier = null;
+                automationMaxOmegaSupplier = null;
             }));
             
         //#endregion
@@ -214,7 +218,11 @@ public class Drive extends CommandBase {
 
             if (!omegaController.atSetpoint()) {
                 omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
-                omegaRadiansPerSecond = MathUtil.clamp(omegaRadiansPerSecond, -maxAngularVelocityRadiansPerSecond, maxAngularVelocityRadiansPerSecond);
+                double maxOmegaRadiansPerSecond = maxAngularVelocityRadiansPerSecond;
+                if (isAutomationAllowed() && automationMaxOmegaSupplier != null) {
+                    maxOmegaRadiansPerSecond = Math.toRadians(automationMaxOmegaSupplier.getAsDouble());
+                }
+                omegaRadiansPerSecond = MathUtil.clamp(omegaRadiansPerSecond, -maxOmegaRadiansPerSecond, maxOmegaRadiansPerSecond);
             }
         }
         else {
@@ -266,6 +274,7 @@ public class Drive extends CommandBase {
         automationXSupplier = null;
         automationYSupplier = null;
         automationSpeedLimiterSupplier = null;
+        automationMaxOmegaSupplier = null;
     }
 
     //#region Public
@@ -276,6 +285,9 @@ public class Drive extends CommandBase {
     public boolean isAutomationAllowed() {
         return DriverStation.isAutonomous() || isAutomating;
     }
+    public void stopAutomation() {
+        isAutomating = false;
+    }
     public void setAutomationXSupplier(DoubleSupplier automationXSupplier) {
         this.automationXSupplier = automationXSupplier;
     }
@@ -285,26 +297,20 @@ public class Drive extends CommandBase {
     public void setAutomationSpeedLimiterSupplier(DoubleSupplier automationSpeedLimiterSupplier) {
         this.automationSpeedLimiterSupplier = automationSpeedLimiterSupplier;
     }
+    public void setAutomationMaxOmegaSupplier(DoubleSupplier automationMaxOmegaSupplier) {
+        this.automationMaxOmegaSupplier = automationMaxOmegaSupplier;
+    }
     //#endregion
 
     private void enableTeleopAutomation() {
-        // Use down, mid, up pov and automation button
-        // Get camerapose_targetspace,
-        // Have individual commands use limelight more directly
-        // Less abstraction
-
-        // Pose Estimator turn right = minus
-        // -Y = right
-        // +X = forward
-
         switch (Arm.get().getGridPosition()) {
             case Low:
                 Commands.sequence(
                     Commands.print("Test drive to relative pose start"),
-                    new DriveToRelativePose(new Pose2d(0, 2, Rotation2d.fromDegrees(0)), 1.0),
-                    new DriveToRelativePose(new Pose2d(-2, 0, Rotation2d.fromDegrees(0)), 1.0),
-                    new DriveToRelativePose(new Pose2d(0, -2, Rotation2d.fromDegrees(0)), 1.0),
-                    new DriveToRelativePose(new Pose2d(2, 0, Rotation2d.fromDegrees(0)), 1.0),
+                    // new DriveToRelativePose(new Pose2d(0, 2, Rotation2d.fromDegrees(0)), 1.0),
+                    // new DriveToRelativePose(new Pose2d(-2, 0, Rotation2d.fromDegrees(0)), 1.0),
+                    // new DriveToRelativePose(new Pose2d(0, -2, Rotation2d.fromDegrees(0)), 1.0),
+                    // new DriveToRelativePose(new Pose2d(2, 0, Rotation2d.fromDegrees(0)), 1.0),
                     Commands.print("Test drive to relative pose end")
                 ).schedule();
                 break;
@@ -366,5 +372,13 @@ public class Drive extends CommandBase {
                 }
                 break;
         }
+    }
+
+    private CommandBase automation(CommandBase... commands) {
+        var sequence = new SequentialCommandGroup(commands);
+        sequence.addCommands(runOnce(() -> {
+            stopAutomation();
+        }));
+        return sequence;
     }
 }

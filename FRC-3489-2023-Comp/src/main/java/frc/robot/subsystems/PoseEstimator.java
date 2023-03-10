@@ -39,12 +39,17 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
         subsystemLayout.addDouble("X (m)", () -> getXMeters());
         subsystemLayout.addDouble("Y (m)", () -> getYMeters());
         subsystemLayout.addDouble("Angle (deg)", () -> getDegrees());
+        // Temp
+        subsystemLayout.addBoolean("Is Init", () -> odometry != null);
         //#endregion
     }
 
     @Override
     public void periodic() {
-        if (odometry == null && !NavX2.get().isCalibrating() && Limelight.get().isCamposeValid()) {
+        if (odometry == null &&
+            !NavX2.get().isCalibrating() &&
+            Limelight.get().isCamposeValid() &&
+            (DriverStation.isAutonomousEnabled() || DriverStation.isTeleopEnabled())) {
             Pose3d campose = Limelight.get().getCampose();
             if (campose != null) {
                 boolean isValid = false;

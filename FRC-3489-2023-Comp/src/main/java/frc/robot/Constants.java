@@ -95,7 +95,7 @@ public final class Constants {
         // public static final int ReintakeConeProximityThreshold = 300;
         public static final int ReintakeCubeProximityThreshold = 150; // 200
         // public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
-        public static final double ReintakeAntiCubeEatTimeout = 0.75; // 0.25
+        public static final double ReintakeAntiCubeEatTimeout = 0.75; // TODO Hieher needed?
 
         public static final double IntakePercent = -0.5;
 
