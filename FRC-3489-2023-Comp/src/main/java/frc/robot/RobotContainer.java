@@ -98,12 +98,11 @@ public class RobotContainer {
         // layout.add("Place Cone Auto", Commands.runOnce(() -> getPlaceConeAutoCommand()));
     }
 
-
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
         return Commands.sequence(
-            new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(180)), 0.5)
+            new DriveToRelativePose(new Pose2d(0, 3, Rotation2d.fromDegrees(0)), 0.6)
         );
     }
 

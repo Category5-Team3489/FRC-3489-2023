@@ -133,7 +133,7 @@ public class Drive extends CommandBase {
                 int pov = RobotContainer.get().xbox.getHID().getPOV();
                 if (pov != -1) {
                     pov += 90;
-                    
+
                     xMetersPerSecond += Math.sin(Math.toRadians(pov));
                     yMetersPerSecond += Math.cos(Math.toRadians(pov));
 
@@ -300,7 +300,10 @@ public class Drive extends CommandBase {
             case Low:
                 Commands.sequence(
                     Commands.print("Test drive to relative pose start"),
-                    new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 1.0),
+                    new DriveToRelativePose(new Pose2d(0, 2, Rotation2d.fromDegrees(0)), 1.0),
+                    new DriveToRelativePose(new Pose2d(-2, 0, Rotation2d.fromDegrees(0)), 1.0),
+                    new DriveToRelativePose(new Pose2d(0, -2, Rotation2d.fromDegrees(0)), 1.0),
+                    new DriveToRelativePose(new Pose2d(2, 0, Rotation2d.fromDegrees(0)), 1.0),
                     Commands.print("Test drive to relative pose end")
                 ).schedule();
                 break;

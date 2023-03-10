@@ -137,7 +137,7 @@ public final class Constants {
 
         public static final double XYRateLimiterPercentPerSecond = 3;
 
-        public static final double OmegaProportionalGainDegreesPerSecondPerDegreeOfError = 180.0 / 30.0;
+        public static final double OmegaProportionalGainDegreesPerSecondPerDegreeOfError = 180.0 / 30.0; // 180 30
         public static final double OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError = 0;
         public static final double OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError = 0;
         public static final double OmegaToleranceDegrees = 0.0;
