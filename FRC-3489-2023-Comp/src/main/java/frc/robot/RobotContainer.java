@@ -11,9 +11,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -23,13 +20,10 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveToRelativePose;
 import frc.robot.commands.automation.MidConeNode;
-import frc.robot.commands.automation.MidCubeNode;
 import frc.robot.enums.GridPosition;
-import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
-import frc.robot.subsystems.DriverCamera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Leds;
@@ -112,7 +106,7 @@ public class RobotContainer {
             //     Gripper.get().lowOuttakeConeCommand.schedule();
             // }),
             Commands.runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
+                Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
             }),
             Commands.waitSeconds(1),
             Commands.runOnce(() -> {
@@ -120,14 +114,13 @@ public class RobotContainer {
             }),
             Commands.waitSeconds(1.0),
             Commands.runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
-                Arm.get().setGridPosition(GridPosition.Mid);
+                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
             }),
             Commands.waitSeconds(3),
             new MidConeNode(),
             new WaitCommand(1),
             Commands.runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
+                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
             }),
             Commands.waitSeconds(0.5),
             Commands.runOnce(() -> {

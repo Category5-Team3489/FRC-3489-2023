@@ -23,6 +23,7 @@ import frc.robot.commands.automation.HighConeNode;
 import frc.robot.commands.automation.HighCubeNode;
 import frc.robot.commands.automation.MidConeNode;
 import frc.robot.commands.automation.MidCubeNode;
+import frc.robot.enums.GridPosition;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
@@ -315,7 +316,7 @@ public class Drive extends CommandBase {
                             new MidConeNode(),
                             Commands.waitSeconds(1),
                             Commands.runOnce(() -> {
-                                Arm.get().setTargetAngleDegrees(ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
+                                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
                             }),
                             Commands.waitSeconds(0.5),
                             Commands.runOnce(() -> {
