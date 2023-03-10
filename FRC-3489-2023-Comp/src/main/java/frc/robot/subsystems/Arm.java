@@ -92,26 +92,22 @@ public class Arm extends Cat5Subsystem<Arm> {
         //#region Bindings
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(Commands.runOnce(() -> {
-                setTargetAngleDegrees(ArmConstants.MinAngleDegrees, IdleMode.kCoast);
-                setGridPosition(GridPosition.Low);
+                setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
             }));
 
         RobotContainer.get().man.button(ArmConstants.HomeManButton)
             .onTrue(Commands.runOnce(() -> {
-                setTargetAngleDegrees(MinAngleDegrees, IdleMode.kCoast);
-                setGridPosition(GridPosition.Low);
+                setTargetAngleDegrees(GridPosition.Low, MinAngleDegrees, IdleMode.kCoast);
             }));
 
         RobotContainer.get().man.button(ArmConstants.DoubleSubstationButton)
             .onTrue(Commands.runOnce(() -> {
-                setTargetAngleDegrees(DoubleSubstationDegrees, IdleMode.kBrake);
-                setGridPosition(GridPosition.High);
+                setTargetAngleDegrees(GridPosition.High, DoubleSubstationDegrees, IdleMode.kBrake);
             }));
 
         RobotContainer.get().man.button(ArmConstants.FloorManButton)
             .onTrue(Commands.runOnce(() -> {
-                setTargetAngleDegrees(FloorAngleDegrees, IdleMode.kBrake);
-                setGridPosition(GridPosition.Low);
+                setTargetAngleDegrees(GridPosition.Low, FloorAngleDegrees, IdleMode.kBrake);
             }));
         
         RobotContainer.get().man.button(ArmConstants.LowManButton)
@@ -119,16 +115,15 @@ public class Arm extends Cat5Subsystem<Arm> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
                 switch (heldGamePiece) {
                     case Cone:
-                        setTargetAngleDegrees(LowConeAngleDegrees, IdleMode.kBrake);
+                        setTargetAngleDegrees(GridPosition.Low, LowConeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Cube:
-                        setTargetAngleDegrees(LowCubeAngleDegrees, IdleMode.kBrake);
+                        setTargetAngleDegrees(GridPosition.Low, LowCubeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Unknown:
-                        setTargetAngleDegrees(LowUnknownAngleDegrees, IdleMode.kBrake);
+                        setTargetAngleDegrees(GridPosition.Low, LowUnknownAngleDegrees, IdleMode.kBrake);
                         break;
                 }
-                setGridPosition(GridPosition.Low);
             }));
 
         RobotContainer.get().man.button(ArmConstants.MidManButton)
@@ -138,25 +133,24 @@ public class Arm extends Cat5Subsystem<Arm> {
                 switch (heldGamePiece) {
                     case Cone:
                         if (getGridPosition() != GridPosition.Mid) {
-                            setTargetAngleDegrees(AboveMidConeAngleDegrees, IdleMode.kBrake);
+                            setTargetAngleDegrees(GridPosition.Mid, AboveMidConeAngleDegrees, IdleMode.kBrake);
                         }
                         else {
                             if (targetAngleDegrees != OnMidConeAngleDegrees) {
-                                setTargetAngleDegrees(OnMidConeAngleDegrees, IdleMode.kBrake);
+                                setTargetAngleDegrees(GridPosition.Mid, OnMidConeAngleDegrees, IdleMode.kBrake);
                             }
                             else {
-                                setTargetAngleDegrees(AboveMidConeAngleDegrees, IdleMode.kBrake);
+                                setTargetAngleDegrees(GridPosition.Mid, AboveMidConeAngleDegrees, IdleMode.kBrake);
                             }
                         }
                         break;
                     case Cube:
-                        setTargetAngleDegrees(MidCubeAngleDegrees, IdleMode.kBrake);
+                        setTargetAngleDegrees(GridPosition.Mid, MidCubeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Unknown:
-                        setTargetAngleDegrees(MidUnknownAngleDegrees, IdleMode.kBrake);
+                        setTargetAngleDegrees(GridPosition.Mid, MidUnknownAngleDegrees, IdleMode.kBrake);
                         break;
                 }
-                setGridPosition(GridPosition.Mid);
             }));
 
         RobotContainer.get().man.button(ArmConstants.HighManButton)
@@ -164,16 +158,15 @@ public class Arm extends Cat5Subsystem<Arm> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
                 switch (heldGamePiece) {
                     case Cone:
-                        setTargetAngleDegrees(HighConeAngleDegrees, IdleMode.kBrake);
+                        setTargetAngleDegrees(GridPosition.High, HighConeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Cube:
-                        setTargetAngleDegrees(HighCubeAngleDegrees, IdleMode.kBrake);
+                        setTargetAngleDegrees(GridPosition.High, HighCubeAngleDegrees, IdleMode.kBrake);
                         break;
                     case Unknown:
-                        setTargetAngleDegrees(HighUnknownAngleDegrees, IdleMode.kBrake);
+                        setTargetAngleDegrees(GridPosition.High, HighUnknownAngleDegrees, IdleMode.kBrake);
                         break;
                 }
-                setGridPosition(GridPosition.High);
             }));
         //#endregion
 
@@ -237,7 +230,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         else {
             if (isHomed) {
                 if (debugIsTrackingTarget.getAsBoolean()) {
-                    setTargetAngleDegrees(debugTargetAngleDegrees.getAsDouble(), IdleMode.kBrake);
+                    setTargetAngleDegrees(GridPosition.Mid, debugTargetAngleDegrees.getAsDouble(), IdleMode.kBrake);
                 }
 
                 gotoTargetCommand.schedule();
@@ -327,7 +320,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     //#endregion
 
     //#region Public
-    public void setTargetAngleDegrees(double angleDegrees, IdleMode idleMode) {
+    public void setTargetAngleDegrees(GridPosition gridPosition, double angleDegrees, IdleMode idleMode) {
         angleDegrees = MathUtil.clamp(angleDegrees, MinAngleDegrees, MaxAngleDegrees);
         targetAngleDegrees = angleDegrees;
 
@@ -335,10 +328,6 @@ public class Arm extends Cat5Subsystem<Arm> {
             this.idleMode = idleMode;
             motor.setIdleMode(idleMode);
         }
-    }
-
-    public void setGridPosition(GridPosition gridPosition) {
-        this.gridPosition = gridPosition;
     }
 
     public GridPosition getGridPosition() {
