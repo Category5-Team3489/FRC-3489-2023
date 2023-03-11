@@ -18,6 +18,7 @@ public final class Constants {
     public static class AutoConstants {
         public static final String TaxiAuto = "Taxi";
         public static final String BalanceAuto = "Balance";
+        public static final String NothingAuto = "Nothing";
         // public static final String SidewaysThenTaxiAuto = "Sideways, Taxi";
         // public static final String ConeThenTaxiAuto = "Cone, Taxi";
         // public static final String ConeThenBalanceAuto = "Cone, Balance";

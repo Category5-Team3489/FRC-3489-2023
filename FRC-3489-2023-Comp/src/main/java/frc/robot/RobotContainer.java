@@ -10,7 +10,6 @@ import java.util.List;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,8 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AutoDrive;
-import frc.robot.commands.DriveToRelativePose;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Cat5Subsystem;
@@ -96,6 +93,7 @@ public class RobotContainer {
         var autoTab = Cat5ShuffleboardTab.Auto.get();
         autoChooser.setDefaultOption(AutoConstants.TaxiAuto, AutoConstants.TaxiAuto);
         autoChooser.addOption(AutoConstants.BalanceAuto, AutoConstants.BalanceAuto);
+        autoChooser.addOption(AutoConstants.NothingAuto, AutoConstants.NothingAuto);
         // autoChooser.addOption(AutoConstants.SidewaysThenTaxiAuto, AutoConstants.SidewaysThenTaxiAuto);
         // autoChooser.addOption(AutoConstants.ConeThenTaxiAuto, AutoConstants.ConeThenTaxiAuto);
         // autoChooser.addOption(AutoConstants.ConeThenBalanceAuto, AutoConstants.ConeThenBalanceAuto);
@@ -144,26 +142,12 @@ public class RobotContainer {
                     return false;
                 })
                     .withTimeout(6.75); //5
+            case AutoConstants.NothingAuto:
+                return Commands.print("Nothing auto selected, doing nothing");
         }
 
-        return new FunctionalCommand(() -> {
-            // onInit
-            Drivetrain.get().driveCommand.setDisabled();
-        }, () -> {
-            // onExecute
-            Drivetrain.get().setFrontLeftPercentAngle(0.12, 0);
-            Drivetrain.get().setFrontRightPercentAngle(0.12, 0);
-            Drivetrain.get().setBackLeftPercentAngle(0.12, 0);
-            Drivetrain.get().setBackRightPercentAngle(0.12, 0);
-        }, (interrupted) -> {
-            Drivetrain.get().setFrontLeftPercentAngle(0, 0);
-            Drivetrain.get().setFrontRightPercentAngle(0, 0);
-            Drivetrain.get().setBackLeftPercentAngle(0, 0);
-            Drivetrain.get().setBackRightPercentAngle(0, 0);
-        }, () -> {
-            return false;
-        })
-            .withTimeout(5);
+        return Commands.print("Unknown auto selected, doing nothing");
+
         // return new AutoDrive(0, 3, 0, 0.6, 0.5, 90);
 
         // switch (autoChooser.getSelected()) {
