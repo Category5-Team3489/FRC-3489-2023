@@ -1,9 +1,9 @@
 Pit Testing:
-	Make sure code changes don't crash anything
-	SET FORCE HOME BUTTON BINDING
-	Just try driving
-		Make sure steering offsets are good
-	Test arm at preset heights
+	Make sure code changes don't crash anything /////////////////
+	SET FORCE HOME BUTTON BINDING ///////////////////
+	Just try driving/////////
+		Make sure steering offsets are good//////////
+	Test arm at preset heights////////////
 	Intake speed presets, low outtake too fast //////////////
 	Intake stops and recognizes game pieces correctly with color sensor
     Do we need a higher anti eat timeout? ////////////

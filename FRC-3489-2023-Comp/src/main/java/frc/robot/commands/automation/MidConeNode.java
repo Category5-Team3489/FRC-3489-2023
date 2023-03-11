@@ -17,8 +17,8 @@ public class MidConeNode extends CommandBase {
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
     private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -4.4;
-    private static double TargetYSetpointDegrees = -6.06;
+    private static double TargetXSetpointDegrees = -4.84;
+    private static double TargetYSetpointDegrees = -5.4;
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
     private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);

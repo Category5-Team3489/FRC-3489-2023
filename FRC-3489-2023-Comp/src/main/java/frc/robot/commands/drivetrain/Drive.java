@@ -7,7 +7,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -17,13 +16,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.Cat5Utils;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.commands.DriveToRelativePose;
 import frc.robot.commands.automation.HighConeNode;
 import frc.robot.commands.automation.HighCubeNode;
 import frc.robot.commands.automation.MidConeNode;
@@ -287,6 +284,8 @@ public class Drive extends CommandBase {
     }
     public void stopAutomation() {
         isAutomating = false;
+
+        System.out.println("Automation completed");
     }
     public void setAutomationXSupplier(DoubleSupplier automationXSupplier) {
         this.automationXSupplier = automationXSupplier;
@@ -305,19 +304,24 @@ public class Drive extends CommandBase {
     private void enableTeleopAutomation() {
         switch (Arm.get().getGridPosition()) {
             case Low:
-                Commands.sequence(
-                    Commands.print("Test drive to relative pose start"),
-                    // new DriveToRelativePose(new Pose2d(0, 2, Rotation2d.fromDegrees(0)), 1.0),
-                    // new DriveToRelativePose(new Pose2d(-2, 0, Rotation2d.fromDegrees(0)), 1.0),
-                    // new DriveToRelativePose(new Pose2d(0, -2, Rotation2d.fromDegrees(0)), 1.0),
-                    // new DriveToRelativePose(new Pose2d(2, 0, Rotation2d.fromDegrees(0)), 1.0),
-                    Commands.print("Test drive to relative pose end")
-                ).schedule();
+                switch (Gripper.get().getHeldGamePiece()) {
+                    case Cone:
+                        Commands.sequence(
+
+                        );
+                        break;
+                    case Cube:
+                        Commands.sequence(
+
+                        );
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case Mid:
                 switch (Gripper.get().getHeldGamePiece()) {
                     case Cone:
-                        System.out.println("start cone mid place");
                         Commands.sequence(
                             new MidConeNode(),
                             Commands.waitSeconds(1),
@@ -327,12 +331,10 @@ public class Drive extends CommandBase {
                             Commands.waitSeconds(0.5),
                             Commands.runOnce(() -> {
                                 Gripper.get().midOuttakeConeCommand.schedule();
-                            }),
-                            Commands.waitSeconds(0.5)
+                            })
                         ).schedule();
                         break;
                     case Cube:
-                        System.out.println("start cube mid place");
                         Commands.sequence(
                             new MidCubeNode(),
                             Commands.runOnce(() -> {
@@ -343,25 +345,47 @@ public class Drive extends CommandBase {
                     default:
                         break;
                 }
+                // switch (Gripper.get().getHeldGamePiece()) {
+                //     case Cone:
+                //         System.out.println("start cone mid place");
+                //         Commands.sequence(
+                //             new MidConeNode(),
+                //             Commands.waitSeconds(1),
+                //             Commands.runOnce(() -> {
+                //                 Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
+                //             }),
+                //             Commands.waitSeconds(0.5),
+                //             Commands.runOnce(() -> {
+                //                 Gripper.get().midOuttakeConeCommand.schedule();
+                //             })
+                //         ).schedule();
+                //         break;
+                //     case Cube:
+                //         System.out.println("start cube mid place");
+                //         Commands.sequence(
+                //             new MidCubeNode(),
+                //             Commands.runOnce(() -> {
+                //                 Gripper.get().midOuttakeCubeCommand.schedule();
+                //             })
+                //         ).schedule();
+                //         break;
+                //     default:
+                //         break;
+                // }
                 break;
             case High:
                 switch (Gripper.get().getHeldGamePiece()) {
                     case Cone:
-                        System.out.println("start cone high place");
                         Commands.sequence(
                             new HighConeNode(),
-                            Commands.waitSeconds(1),
                             Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeConeCommand.schedule();
                             })
-                            // new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 0.4)
                         ).schedule();
                         break;
                     case Cube:
-                        System.out.println("start cube high place");
                         Commands.sequence(
                             new HighCubeNode(),
-                            new WaitCommand(1),
                             Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeCubeCommand.schedule();
                             })
@@ -370,15 +394,32 @@ public class Drive extends CommandBase {
                     default:
                         break;
                 }
+                // switch (Gripper.get().getHeldGamePiece()) {
+                //     case Cone:
+                //         System.out.println("start cone high place");
+                //         Commands.sequence(
+                //             new HighConeNode(),
+                //             Commands.waitSeconds(1),
+                //             Commands.runOnce(() -> {
+                //                 Gripper.get().highOuttakeConeCommand.schedule();
+                //             })
+                //             // new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 0.4)
+                //         ).schedule();
+                //         break;
+                //     case Cube:
+                //         System.out.println("start cube high place");
+                //         Commands.sequence(
+                //             new HighCubeNode(),
+                //             new WaitCommand(1),
+                //             Commands.runOnce(() -> {
+                //                 Gripper.get().highOuttakeCubeCommand.schedule();
+                //             })
+                //         ).schedule();
+                //         break;
+                //     default:
+                //         break;
+                // }
                 break;
         }
-    }
-
-    private CommandBase automation(CommandBase... commands) {
-        var sequence = new SequentialCommandGroup(commands);
-        sequence.addCommands(runOnce(() -> {
-            stopAutomation();
-        }));
-        return sequence;
     }
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DriveToRelativePose;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Cat5Subsystem;
@@ -76,7 +77,9 @@ public class RobotContainer {
         configureBindings();
 
         var autoTab = Cat5ShuffleboardTab.Auto.get();
-        autoChooser.setDefaultOption(AutoConstants.ConeThenTaxiAuto, AutoConstants.ConeThenTaxiAuto);
+        autoChooser.setDefaultOption(AutoConstants.TaxiAuto, AutoConstants.TaxiAuto);
+        autoChooser.addOption(AutoConstants.SidewaysThenTaxiAuto, AutoConstants.SidewaysThenTaxiAuto);
+        autoChooser.addOption(AutoConstants.ConeThenTaxiAuto, AutoConstants.ConeThenTaxiAuto);
         autoChooser.addOption(AutoConstants.ConeThenBalanceAuto, AutoConstants.ConeThenBalanceAuto);
         autoTab.add(autoChooser);
     }
@@ -84,17 +87,19 @@ public class RobotContainer {
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
-        switch (autoChooser.getSelected()) {
-            case AutoConstants.TaxiAuto:
-                return Autos.getTaxiAuto();
-            case AutoConstants.SidewaysThenTaxiAuto:
-                return Autos.getSidewaysThenTaxiAuto();
-            case AutoConstants.ConeThenTaxiAuto:
-                return Autos.getConeThenTaxiAuto();
-            case AutoConstants.ConeThenBalanceAuto:
-                return Autos.getConeThenBalanceAuto();
-        }
+        return new DriveToRelativePose(0, 3, 0, 0.6, 0.5, 90);
+
+        // switch (autoChooser.getSelected()) {
+        //     case AutoConstants.TaxiAuto:
+        //         return Autos.getTaxiAuto();
+        //     case AutoConstants.SidewaysThenTaxiAuto:
+        //         return Autos.getSidewaysThenTaxiAuto();
+        //     case AutoConstants.ConeThenTaxiAuto:
+        //         return Autos.getConeThenTaxiAuto();
+        //     case AutoConstants.ConeThenBalanceAuto:
+        //         return Autos.getConeThenBalanceAuto();
+        // }
         
-        return Commands.print("No autonomous command selected");
+        // return Commands.print("No autonomous command selected");
     }
 }

@@ -128,7 +128,7 @@ public final class Constants {
     }
 
     public static class ArmConstants {
-        public static final int ForceHomeManButton = 1010203;
+        public static final int ForceHomeManButton = 8;
         public static final int HomeManButton = 10;
         public static final int DoubleSubstationButton = 6;
         public static final int FloorManButton = 12;
@@ -147,7 +147,7 @@ public final class Constants {
         public static final double ManualControlMaxDownPercent = -0.3;
         public static final double ManualControlMaxUpPercent = 0.3;
 
-        public static final double DoubleSubstationDegrees = 8.9;
+        public static final double DoubleSubstationDegrees = 5; // 4.5, 8.9, 3
 
         public static final double FloorAngleDegrees = -94;
 
@@ -160,7 +160,7 @@ public final class Constants {
         public static final double MidCubeAngleDegrees = 11;
         public static final double MidUnknownAngleDegrees = (AboveMidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
-        public static final double HighConeAngleDegrees = 36;
+        public static final double HighConeAngleDegrees = 27; // 36
         public static final double HighCubeAngleDegrees = 25;
         public static final double HighUnknownAngleDegrees = (HighConeAngleDegrees + HighCubeAngleDegrees) / 2.0;
 
