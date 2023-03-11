@@ -3,9 +3,9 @@ Pit Testing:
 	Just try driving
 		Make sure steering offsets are good
 	Test arm at preset heights
-	Intake presets
+	Intake speed presets, low outtake too fast //////////////
 	Intake stops and recognizes game pieces correctly with color sensor
-    Do we need a higher anti eat timeout?
+    Do we need a higher anti eat timeout? ////////////
 	Spin robot on the cart to test NavX2
 		See how heading angle changes with clockwise rotation and record
 	Does navx zeroing behave correctly?
