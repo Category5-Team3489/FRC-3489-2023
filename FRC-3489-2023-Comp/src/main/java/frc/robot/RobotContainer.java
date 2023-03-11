@@ -95,15 +95,57 @@ public class RobotContainer {
 
         var autoTab = Cat5ShuffleboardTab.Auto.get();
         autoChooser.setDefaultOption(AutoConstants.TaxiAuto, AutoConstants.TaxiAuto);
-        autoChooser.addOption(AutoConstants.SidewaysThenTaxiAuto, AutoConstants.SidewaysThenTaxiAuto);
-        autoChooser.addOption(AutoConstants.ConeThenTaxiAuto, AutoConstants.ConeThenTaxiAuto);
-        autoChooser.addOption(AutoConstants.ConeThenBalanceAuto, AutoConstants.ConeThenBalanceAuto);
+        autoChooser.addOption(AutoConstants.BalanceAuto, AutoConstants.BalanceAuto);
+        // autoChooser.addOption(AutoConstants.SidewaysThenTaxiAuto, AutoConstants.SidewaysThenTaxiAuto);
+        // autoChooser.addOption(AutoConstants.ConeThenTaxiAuto, AutoConstants.ConeThenTaxiAuto);
+        // autoChooser.addOption(AutoConstants.ConeThenBalanceAuto, AutoConstants.ConeThenBalanceAuto);
         autoTab.add(autoChooser);
     }
 
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
+        switch (autoChooser.getSelected()) {
+            case AutoConstants.TaxiAuto:
+                return new FunctionalCommand(() -> {
+                    // onInit
+                    Drivetrain.get().driveCommand.setDisabled();
+                }, () -> {
+                    // onExecute
+                    Drivetrain.get().setFrontLeftPercentAngle(0.12, 0);
+                    Drivetrain.get().setFrontRightPercentAngle(0.12, 0);
+                    Drivetrain.get().setBackLeftPercentAngle(0.12, 0);
+                    Drivetrain.get().setBackRightPercentAngle(0.12, 0);
+                }, (interrupted) -> {
+                    Drivetrain.get().setFrontLeftPercentAngle(0, 0);
+                    Drivetrain.get().setFrontRightPercentAngle(0, 0);
+                    Drivetrain.get().setBackLeftPercentAngle(0, 0);
+                    Drivetrain.get().setBackRightPercentAngle(0, 0);
+                }, () -> {
+                    return false;
+                })
+                    .withTimeout(5);
+            case AutoConstants.BalanceAuto:
+                return new FunctionalCommand(() -> {
+                    // onInit
+                    Drivetrain.get().driveCommand.setDisabled();
+                }, () -> {
+                    // onExecute
+                    Drivetrain.get().setFrontLeftPercentAngle(0.12, 0);
+                    Drivetrain.get().setFrontRightPercentAngle(0.12, 0);
+                    Drivetrain.get().setBackLeftPercentAngle(0.12, 0);
+                    Drivetrain.get().setBackRightPercentAngle(0.12, 0);
+                }, (interrupted) -> {
+                    Drivetrain.get().setFrontLeftPercentAngle(0, Math.toRadians(90));
+                    Drivetrain.get().setFrontRightPercentAngle(0, Math.toRadians(180));
+                    Drivetrain.get().setBackLeftPercentAngle(0, Math.toRadians(270));
+                    Drivetrain.get().setBackRightPercentAngle(0, Math.toRadians(0));
+                }, () -> {
+                    return false;
+                })
+                    .withTimeout(6.75); //5
+        }
+
         return new FunctionalCommand(() -> {
             // onInit
             Drivetrain.get().driveCommand.setDisabled();
