@@ -49,11 +49,6 @@ public class LowFiducialNode extends CommandBase {
 
     @Override
     public void execute() {
-        if (!Drivetrain.get().driveCommand.isAutomationAllowed()) {
-            cancel();
-            return;
-        }
-
         if (!Limelight.get().isActivePipeline(LimelightConstants.FiducialPipeline)) {
             return;
         }
@@ -84,10 +79,6 @@ public class LowFiducialNode extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if (interrupted) {
-            Drivetrain.get().driveCommand.stopAutomation();
-        }
-
         Drivetrain.get().driveCommand.setAutomationXSupplier(null);
         Drivetrain.get().driveCommand.setAutomationYSupplier(null);
         Drivetrain.get().driveCommand.setAutomationSpeedLimiterSupplier(null);

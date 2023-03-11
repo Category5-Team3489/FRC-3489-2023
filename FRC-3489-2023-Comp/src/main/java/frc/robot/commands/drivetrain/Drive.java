@@ -47,7 +47,7 @@ public class Drive extends CommandBase {
     private Rotation2d targetAngle = null;
     private PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
-    private boolean isAutomating = false;
+    private CommandBase automationCommand = null;
     private DoubleSupplier automationXSupplier = null;
     private DoubleSupplier automationYSupplier = null;
     private DoubleSupplier automationSpeedLimiterSupplier = null;
@@ -63,26 +63,25 @@ public class Drive extends CommandBase {
         omegaController.setTolerance(OmegaToleranceDegrees / 2.0);
 
         //#region Bindings
-        new Trigger(() -> isAutomating)
-            .onFalse(Commands.runOnce(() -> {
-                frontLeftSteerAngleRadians = 0;
-                frontRightSteerAngleRadians = 0;
-                backLeftSteerAngleRadians= 0;
-                backRightSteerAngleRadians = 0;
+        // new Trigger(() -> isAutomating)
+        //     .onFalse(Commands.runOnce(() -> {
+        //         frontLeftSteerAngleRadians = 0;
+        //         frontRightSteerAngleRadians = 0;
+        //         backLeftSteerAngleRadians= 0;
+        //         backRightSteerAngleRadians = 0;
 
-                xRateLimiter.reset(0);
-                yRateLimiter.reset(0);
+        //         xRateLimiter.reset(0);
+        //         yRateLimiter.reset(0);
 
-                targetAngle = null;
-                omegaController.reset();
+        //         targetAngle = null;
+        //         omegaController.reset();
 
-                isAutomating = false;
-                automationXSupplier = null;
-                automationYSupplier = null;
-                automationSpeedLimiterSupplier = null;
-                automationMaxOmegaSupplier = null;
-            }));
-            
+        //         isAutomating = false;
+        //         automationXSupplier = null;
+        //         automationYSupplier = null;
+        //         automationSpeedLimiterSupplier = null;
+        //         automationMaxOmegaSupplier = null;
+        //     }));
         //#endregion
     }
 
@@ -182,20 +181,23 @@ public class Drive extends CommandBase {
         boolean isNotBeingTeleoperated = xMetersPerSecond == 0 && yMetersPerSecond == 0 && omegaRadiansPerSecond == 0;
         
         if (DriverStation.isTeleop()) {
-            if (isNotBeingTeleoperated && automateTrigger.getAsBoolean() && !isAutomating) {
-                isAutomating = true;
-
-                enableTeleopAutomation();
+            if (isNotBeingTeleoperated && automateTrigger.getAsBoolean() && (automationCommand == null || automationCommand.isFinished())) {
+                tryEnableTeleopAutomation();
             }
 
             if (stopAutomationTrigger.getAsBoolean() || !isNotBeingTeleoperated) {
-                isAutomating = false;
+                if (automationCommand != null) {
+                    automationCommand.cancel();
+                    automationCommand = null;
+                }
             }
         }
 
-        if (isAutomationAllowed()) {
-            
+        if (automationCommand != null && !automationCommand.isScheduled()) {
+            automationCommand.schedule();
+        }
 
+        if (automationCommand != null && !automationCommand.isFinished()) {
             if (automationXSupplier != null) {
                 xMetersPerSecond = automationXSupplier.getAsDouble();
             }
@@ -204,6 +206,12 @@ public class Drive extends CommandBase {
             }
             if (automationSpeedLimiterSupplier != null) {
                 speedLimiter = automationSpeedLimiterSupplier.getAsDouble();
+            }
+        }
+        else {
+            if (automationCommand != null) {
+                automationCommand.cancel();
+                automationCommand = null;
             }
         }
 
@@ -218,7 +226,7 @@ public class Drive extends CommandBase {
             if (!omegaController.atSetpoint()) {
                 omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
                 double maxOmegaRadiansPerSecond = maxAngularVelocityRadiansPerSecond;
-                if (isAutomationAllowed() && automationMaxOmegaSupplier != null) {
+                if ((automationCommand != null && !automationCommand.isFinished()) && automationMaxOmegaSupplier != null) {
                     maxOmegaRadiansPerSecond = Math.toRadians(automationMaxOmegaSupplier.getAsDouble());
                 }
                 omegaRadiansPerSecond = MathUtil.clamp(omegaRadiansPerSecond, -maxOmegaRadiansPerSecond, maxOmegaRadiansPerSecond);
@@ -269,7 +277,10 @@ public class Drive extends CommandBase {
         targetAngle = null;
         omegaController.reset();
 
-        isAutomating = false;
+        if (automationCommand != null) {
+            automationCommand.cancel();
+            automationCommand = null;
+        }
         automationXSupplier = null;
         automationYSupplier = null;
         automationSpeedLimiterSupplier = null;
@@ -281,14 +292,6 @@ public class Drive extends CommandBase {
         this.targetAngle = targetAngle;
     }
 
-    public boolean isAutomationAllowed() {
-        return DriverStation.isAutonomousEnabled() || isAutomating;
-    }
-    public void stopAutomation() {
-        isAutomating = false;
-
-        System.out.println("Automation completed");
-    }
     public void setAutomationXSupplier(DoubleSupplier automationXSupplier) {
         this.automationXSupplier = automationXSupplier;
     }
@@ -303,7 +306,12 @@ public class Drive extends CommandBase {
     }
     //#endregion
 
-    private void enableTeleopAutomation() {
+    private void tryEnableTeleopAutomation() {
+        if (automationCommand != null) {
+            automationCommand.cancel();
+            automationCommand = null;
+        }
+
         switch (Arm.get().getGridPosition()) {
             case Low:
                 switch (Gripper.get().getHeldGamePiece()) {

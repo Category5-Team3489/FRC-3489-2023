@@ -51,11 +51,6 @@ public class DriveToRelativePose extends CommandBase {
 
     @Override
     public void execute() {
-        if (!Drivetrain.get().driveCommand.isAutomationAllowed()) {
-            cancel();
-            return;
-        }
-
         Pose2d poseMeters = odometry.getPoseMeters();
 
         xMetersPerSecond = xController.calculate(poseMeters.getX(), relativePoseMeters.getY());
@@ -74,10 +69,6 @@ public class DriveToRelativePose extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if (interrupted) {
-            Drivetrain.get().driveCommand.stopAutomation();
-        }
-
         PoseEstimator.get().deleteOdometry(odometry);
 
         Drivetrain.get().driveCommand.setAutomationXSupplier(null);
