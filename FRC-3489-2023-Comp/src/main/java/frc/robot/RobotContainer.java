@@ -10,9 +10,11 @@ import java.util.List;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -102,7 +104,25 @@ public class RobotContainer {
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
-        return new AutoDrive(0, 3, 0, 0.6, 0.5, 90);
+        return new FunctionalCommand(() -> {
+            // onInit
+            Drivetrain.get().driveCommand.setDisabled();
+        }, () -> {
+            // onExecute
+            Drivetrain.get().setFrontLeftPercentAngle(0.12, 0);
+            Drivetrain.get().setFrontRightPercentAngle(0.12, 0);
+            Drivetrain.get().setBackLeftPercentAngle(0.12, 0);
+            Drivetrain.get().setBackRightPercentAngle(0.12, 0);
+        }, (interrupted) -> {
+            Drivetrain.get().setFrontLeftPercentAngle(0, 0);
+            Drivetrain.get().setFrontRightPercentAngle(0, 0);
+            Drivetrain.get().setBackLeftPercentAngle(0, 0);
+            Drivetrain.get().setBackRightPercentAngle(0, 0);
+        }, () -> {
+            return false;
+        })
+            .withTimeout(5);
+        // return new AutoDrive(0, 3, 0, 0.6, 0.5, 90);
 
         // switch (autoChooser.getSelected()) {
         //     case AutoConstants.TaxiAuto:

@@ -56,6 +56,8 @@ public class Drive extends CommandBase {
     private Trigger automateTrigger = RobotContainer.get().man.button(AutomateManButton);
     private Trigger stopAutomationTrigger = RobotContainer.get().man.button(StopAutomationManButton);
 
+    private boolean disabled = false;
+
     public Drive() {
         addRequirements(Drivetrain.get());
 
@@ -85,8 +87,20 @@ public class Drive extends CommandBase {
         //#endregion
     }
 
+    public void setDisabled() {
+        disabled = true;
+    }
+
     @Override
     public void execute() {
+        if (DriverStation.isTeleopEnabled()) {
+            disabled = false;
+        }
+
+        if (disabled) {
+            return;
+        }
+
         double maxVelocityMetersPerSecond = Drivetrain.get().maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble();
         double maxAngularVelocityRadiansPerSecond = Drivetrain.get().maxVelocityConfig.getMaxAngularVelocityRadiansPerSecond.getAsDouble();
     
@@ -285,6 +299,8 @@ public class Drive extends CommandBase {
         automationYSupplier = null;
         automationSpeedLimiterSupplier = null;
         automationMaxOmegaSupplier = null;
+
+        disabled = false;
     }
 
     //#region Public
