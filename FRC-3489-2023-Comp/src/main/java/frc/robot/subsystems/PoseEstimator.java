@@ -46,33 +46,34 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
 
     @Override
     public void periodic() {
-        if (odometry == null &&
-            !NavX2.get().isCalibrating() &&
-            Limelight.get().isCamposeValid() &&
-            (DriverStation.isAutonomousEnabled() || DriverStation.isTeleopEnabled())) {
-            Pose3d campose = Limelight.get().getCampose();
-            if (campose != null) {
-                boolean isValid = false;
-                Alliance alliance = DriverStation.getAlliance();
-                long tagId = Limelight.get().getTagId();
-                if (alliance == Alliance.Blue) {
-                    if (tagId == 6 || tagId == 7 || tagId == 8) {
-                        isValid = true;
-                    }
-                }
-                else if (alliance == Alliance.Red) {
-                    if (tagId == 1 || tagId == 2 || tagId == 3) {
-                        isValid = true;
-                    }
-                }
-                if (isValid) {
-                    double yaw = campose.getRotation().getZ();
-                    NavX2.get().setOffset(Rotation2d.fromRadians(yaw));
-                    Rotation2d rotation = NavX2.get().getRotation();
-                    odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, rotation, Drivetrain.get().getModulePositions(), new Pose2d(0, 0, rotation));
-                }
-            }
-        }
+        // TODO Uncomment
+        // if (odometry == null &&
+        //     !NavX2.get().isCalibrating() &&
+        //     Limelight.get().isCamposeValid() &&
+        //     (DriverStation.isAutonomousEnabled() || DriverStation.isTeleopEnabled())) {
+        //     Pose3d campose = Limelight.get().getCampose();
+        //     if (campose != null) {
+        //         boolean isValid = false;
+        //         Alliance alliance = DriverStation.getAlliance();
+        //         long tagId = Limelight.get().getTagId();
+        //         if (alliance == Alliance.Blue) {
+        //             if (tagId == 6 || tagId == 7 || tagId == 8) {
+        //                 isValid = true;
+        //             }
+        //         }
+        //         else if (alliance == Alliance.Red) {
+        //             if (tagId == 1 || tagId == 2 || tagId == 3) {
+        //                 isValid = true;
+        //             }
+        //         }
+        //         if (isValid) {
+        //             double yaw = campose.getRotation().getZ();
+        //             NavX2.get().setOffset(Rotation2d.fromRadians(yaw));
+        //             Rotation2d rotation = NavX2.get().getRotation();
+        //             odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, rotation, Drivetrain.get().getModulePositions(), new Pose2d(0, 0, rotation));
+        //         }
+        //     }
+        // }
 
         Rotation2d rotation = NavX2.get().getRotation();
         var modulePositions = Drivetrain.get().getModulePositions();
