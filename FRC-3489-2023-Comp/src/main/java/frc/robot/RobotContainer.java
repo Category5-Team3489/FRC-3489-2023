@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveToRelativePose;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Arm;
@@ -100,7 +101,7 @@ public class RobotContainer {
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
-        return new DriveToRelativePose(0, 3, 0, 0.6, 0.5, 90);
+        return new AutoDrive(0, 3, 0, 0.6, 0.5, 90);
 
         // switch (autoChooser.getSelected()) {
         //     case AutoConstants.TaxiAuto:

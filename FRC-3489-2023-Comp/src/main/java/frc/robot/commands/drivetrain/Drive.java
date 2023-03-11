@@ -194,6 +194,8 @@ public class Drive extends CommandBase {
         }
 
         if (isAutomationAllowed()) {
+            
+
             if (automationXSupplier != null) {
                 xMetersPerSecond = automationXSupplier.getAsDouble();
             }
@@ -280,7 +282,7 @@ public class Drive extends CommandBase {
     }
 
     public boolean isAutomationAllowed() {
-        return DriverStation.isAutonomous() || isAutomating;
+        return DriverStation.isAutonomousEnabled() || isAutomating;
     }
     public void stopAutomation() {
         isAutomating = false;
