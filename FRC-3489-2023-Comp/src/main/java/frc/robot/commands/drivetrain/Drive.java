@@ -332,7 +332,7 @@ public class Drive extends CommandBase {
             case Mid:
                 switch (Gripper.get().getHeldGamePiece()) {
                     case Cone:
-                        Commands.sequence(
+                        automationCommand = Commands.sequence(
                             new MidConeNode(),
                             Commands.waitSeconds(1),
                             Commands.runOnce(() -> {
@@ -342,15 +342,15 @@ public class Drive extends CommandBase {
                             Commands.runOnce(() -> {
                                 Gripper.get().midOuttakeConeCommand.schedule();
                             })
-                        ).schedule();
+                        );
                         break;
                     case Cube:
-                        Commands.sequence(
+                        automationCommand = Commands.sequence(
                             new MidCubeNode(),
                             Commands.runOnce(() -> {
                                 Gripper.get().midOuttakeCubeCommand.schedule();
                             })
-                        ).schedule();
+                        );
                         break;
                     default:
                         break;
@@ -386,20 +386,20 @@ public class Drive extends CommandBase {
             case High:
                 switch (Gripper.get().getHeldGamePiece()) {
                     case Cone:
-                        Commands.sequence(
+                        automationCommand = Commands.sequence(
                             new HighConeNode(),
                             Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeConeCommand.schedule();
                             })
-                        ).schedule();
+                        );
                         break;
                     case Cube:
-                        Commands.sequence(
+                        automationCommand = Commands.sequence(
                             new HighCubeNode(),
                             Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeCubeCommand.schedule();
                             })
-                        ).schedule();
+                        );
                         break;
                     default:
                         break;
@@ -430,6 +430,10 @@ public class Drive extends CommandBase {
                 //         break;
                 // }
                 break;
+        }
+
+        if (automationCommand != null) {
+            automationCommand.schedule();
         }
     }
 }
