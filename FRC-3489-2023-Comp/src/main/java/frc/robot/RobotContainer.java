@@ -7,13 +7,16 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.CameraConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveToRelativePose;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -61,6 +64,16 @@ public class RobotContainer {
     private RobotContainer() {
         instance = this;
         cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
+
+        try {
+            UsbCamera camera = CameraServer.startAutomaticCapture(0);
+            
+            camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+            camera.setResolution(CameraConstants.PixelWidth, CameraConstants.PixelHeight);
+            camera.setFPS(CameraConstants.FPS);
+        } catch (Exception e) {
+            System.out.println("Error while initializing camera");
+        }
 
         // Initialize subsystems
         NavX2.get();

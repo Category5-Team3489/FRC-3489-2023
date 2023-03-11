@@ -22,6 +22,13 @@ public final class Constants {
         public static final String ConeThenBalanceAuto = "Cone, Balance";
     }
 
+    public static class CameraConstants {
+        public static final int PixelWidth = 160;
+        public static final int PixelHeight = 120;
+
+        public static final int FPS = 10;
+    }
+
     public static class LimelightConstants {
         public static final long FiducialPipeline = 0;
         public static final long MidRetroreflectivePipeline = 1;
