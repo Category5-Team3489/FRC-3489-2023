@@ -142,6 +142,8 @@ public final class Constants {
         public static final int LowManButton = 11;
         public static final int MidManButton = 9;
         public static final int HighManButton = 7;
+
+        public static final double CorrectionMaxDegreesPerSecond = 2;
     
         public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (44.0 / 12.0);
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;

@@ -244,6 +244,11 @@ public class Arm extends Cat5Subsystem<Arm> {
                     setTargetAngleDegrees(GridPosition.Mid, debugTargetAngleDegrees.getAsDouble(), IdleMode.kBrake);
                 }
 
+                double y = -RobotContainer.get().man.getY();
+                y = Cat5Utils.linearAxis(y, 0.5);
+                targetAngleDegrees += y * CorrectionMaxDegreesPerSecond;
+                targetAngleDegrees = MathUtil.clamp(targetAngleDegrees, MinAngleDegrees, MaxAngleDegrees);
+
                 gotoTargetCommand.schedule();
             }
             else {
