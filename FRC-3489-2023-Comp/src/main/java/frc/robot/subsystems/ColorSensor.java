@@ -5,8 +5,12 @@ import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.util.Color;
+
 import frc.robot.enums.GamePiece;
+import frc.robot.shuffleboard.Cat5ShuffleboardTab;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.configs.colorsensor.ColorAndProximityConfig;
 import frc.robot.subsystems.Leds.LedState;
 
@@ -42,14 +46,16 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         errorPrintTimer.restart();
 
         // #region Shuffleboard
-        // var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-        //         .withSize(2, 3);
+        if (OperatorConstants.DebugShuffleboard) {
+            var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
+                    .withSize(2, 3);
 
-        // layout.addDouble("Red", () -> color.red);
-        // layout.addDouble("Green", () -> color.green);
-        // layout.addDouble("Blue", () -> color.blue);
-        // layout.addString("Proximity", () -> Integer.toString(proximity));
-        // layout.addString("Detected Game Piece", () -> detectedGamePiece.toString());
+            layout.addDouble("Red", () -> color.red);
+            layout.addDouble("Green", () -> color.green);
+            layout.addDouble("Blue", () -> color.blue);
+            layout.addString("Proximity", () -> Integer.toString(proximity));
+            layout.addString("Detected Game Piece", () -> detectedGamePiece.toString());
+        }
         // #endregion
     }
 

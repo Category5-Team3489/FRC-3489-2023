@@ -7,6 +7,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 public final class Constants {
     public static class OperatorConstants {
+        public static boolean DebugShuffleboard = false;
+
         public static final int XboxPort = 0;
         public static final int ManPort = 1;
 
@@ -14,6 +16,8 @@ public final class Constants {
     }
 
     public static class AutoConstants {
+        public static final String TaxiAuto = "Taxi";
+        public static final String SidewaysThenTaxiAuto = "Sideways, Taxi";
         public static final String ConeThenTaxiAuto = "Cone, Taxi";
         public static final String ConeThenBalanceAuto = "Cone, Balance";
     }
@@ -95,7 +99,7 @@ public final class Constants {
         // public static final int ReintakeConeProximityThreshold = 300;
         public static final int ReintakeCubeProximityThreshold = 150; // 200
         // public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
-        public static final double ReintakeAntiCubeEatTimeout = 0.75; // TODO Hieher needed?
+        public static final double ReintakeAntiCubeEatTimeout = 0.75;
 
         public static final double IntakePercent = -0.5;
 
@@ -124,6 +128,7 @@ public final class Constants {
     }
 
     public static class ArmConstants {
+        public static final int ForceHomeManButton = 1010203;
         public static final int HomeManButton = 10;
         public static final int DoubleSubstationButton = 6;
         public static final int FloorManButton = 12;

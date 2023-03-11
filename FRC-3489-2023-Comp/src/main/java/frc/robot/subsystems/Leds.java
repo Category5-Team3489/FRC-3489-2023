@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.LedConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 public class Leds extends Cat5Subsystem<Leds> {
@@ -67,11 +68,12 @@ public class Leds extends Cat5Subsystem<Leds> {
             setLeds(LedState.Off);
 
         //#region Shuffleboard
-        var layout = getLayout(Cat5ShuffleboardTab.Leds, BuiltInLayouts.kList)
+        if (OperatorConstants.DebugShuffleboard) {
+            var layout = getLayout(Cat5ShuffleboardTab.Leds, BuiltInLayouts.kList)
                 .withSize(2, 1);
 
-        layout.addString("LED", () -> ledState.toString());
-        layout.addString("LED State", () -> ledState.toString());
+            layout.addString("LED State", () -> ledState.toString());
+        }
         //#endregion
     }
 

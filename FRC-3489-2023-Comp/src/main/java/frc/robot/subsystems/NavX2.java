@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 public class NavX2 extends Cat5Subsystem<NavX2> {
@@ -27,7 +28,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
 
     // State
     private Rotation2d heading = new Rotation2d();
-    private Rotation2d offset = new Rotation2d();
+    // private Rotation2d offset = new Rotation2d();
 
     private NavX2() {
         super((i) -> instance = i);
@@ -42,11 +43,12 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
             .withSize(2, 1);
 
         layout.addDouble("Heading (deg)", () -> heading.getDegrees());
+        
+        if (OperatorConstants.DebugShuffleboard) {
+            layout.add(zeroYawCommand);
 
-        layout.add(zeroYawCommand);
-
-        // Temp
-        layout.addBoolean("Is Calibrating", () -> isCalibrating());
+            layout.addBoolean("Is Calibrating", () -> isCalibrating());
+        }
         //#endregion
     }
 
@@ -55,11 +57,11 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         return Commands.runOnce(() -> {
             navx.zeroYaw();
 
-            offset = new Rotation2d();
+            // offset = new Rotation2d();
 
             Rotation2d rotation = getRotation();
             Drivetrain.get().driveCommand.setTargetAngle(rotation);
-            PoseEstimator.get().notifyNavxJump(rotation);
+            // PoseEstimator.get().notifyNavxJump(rotation);
         })
             .ignoringDisable(true)
             .withName("Zero Yaw");
@@ -68,8 +70,8 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
 
     //#region Public
     public Rotation2d getRotation() {
-        heading = Rotation2d.fromDegrees(360.0 - navx.getYaw())
-            .plus(offset);
+        heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
+            // .plus(offset);
 
         return heading;
     }
@@ -78,14 +80,14 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         return navx.isCalibrating();
     }
 
-    public void setOffset(Rotation2d offset) {
-        navx.zeroYaw();
+    // public void setOffset(Rotation2d offset) {
+    //     navx.zeroYaw();
 
-        this.offset = offset;
+    //     this.offset = offset;
 
-        Rotation2d rotation = getRotation();
-        Drivetrain.get().driveCommand.setTargetAngle(rotation);
-        PoseEstimator.get().notifyNavxJump(rotation);
-    }
+    //     Rotation2d rotation = getRotation();
+    //     Drivetrain.get().driveCommand.setTargetAngle(rotation);
+    //     PoseEstimator.get().notifyNavxJump(rotation);
+    // }
     //#endregion Public
 }

@@ -6,6 +6,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +24,7 @@ import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.ArmConstants.*;
@@ -82,6 +84,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         motor.setIdleMode(idleMode);
         motor.enableVoltageCompensation(12.0);
         motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
+        motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
         pidController.setP(ProportionalGainPercentPerRevolutionOfError);
         pidController.setD(DerivativeGainPercentPerRevolutionPerMillisecondOfError);
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
@@ -94,6 +97,12 @@ public class Arm extends Cat5Subsystem<Arm> {
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(Commands.runOnce(() -> {
                 setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
+            }));
+
+        RobotContainer.get().man.button(ArmConstants.ForceHomeManButton)
+            .debounce(0.1, DebounceType.kBoth)
+            .onTrue(Commands.runOnce(() -> {
+                isHomed = false;
             }));
 
         RobotContainer.get().man.button(ArmConstants.HomeManButton)
@@ -172,10 +181,9 @@ public class Arm extends Cat5Subsystem<Arm> {
         //#endregion
 
         //#region Shuffleboard
-        // Main
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-        .withSize(2, 3);
-
+            .withSize(2, 1);
+        
         layout.add("Subsystem Info", this);
 
         layout.addBoolean("Is Homed", () -> isHomed);
@@ -187,23 +195,13 @@ public class Arm extends Cat5Subsystem<Arm> {
 
         layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 
-        layout.add("Force Home", Commands.runOnce(() -> {
-            isHomed = false;
-        })
-            .withName("Force Home")
-        );
+        var subsystemLayout = getLayout(Cat5ShuffleboardTab.Arm, BuiltInLayouts.kList)
+            .withSize(2, 1);
 
         var isManualControlEnabledEntry = layout.add("Enable Manual Control", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .getEntry();
         isManualControlEnabled = () -> isManualControlEnabledEntry.getBoolean(false);
-
-        // Subsystem
-        var subsystemLayout = getLayout(Cat5ShuffleboardTab.Arm, BuiltInLayouts.kList)
-            .withSize(2, 3);
-
-        subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
-        subsystemLayout.addDouble("Motor Temperature (deg F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
 
         var debugIsTrackingTargetEntry = subsystemLayout.add("Debug Track Target", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
@@ -215,6 +213,18 @@ public class Arm extends Cat5Subsystem<Arm> {
             .withProperties(Map.of("min", MinAngleDegrees, "max", MaxAngleDegrees, "block increment", 1.0))
             .getEntry();
         debugTargetAngleDegrees = () -> debugTargetAngleDegreesEntry.getDouble(MinAngleDegrees);
+
+        if (OperatorConstants.DebugShuffleboard) {
+    
+            layout.add("Force Home", Commands.runOnce(() -> {
+                isHomed = false;
+            })
+                .withName("Force Home")
+            );
+    
+            // subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
+            // subsystemLayout.addDouble("Motor Temperature (deg F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
+        }
         //#endregion
     }
 

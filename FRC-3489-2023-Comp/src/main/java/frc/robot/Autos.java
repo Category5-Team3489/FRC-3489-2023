@@ -6,10 +6,22 @@ import frc.robot.commands.DriveToRelativePose;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class Autos {
-    public static Command getConeThenTaxiAuto() {
+    public static Command getTaxiAuto() {
+        return sequence(
+            new DriveToRelativePose(0, 3, 0, 0.6, 0.5, 90)
+        );
+    }
+
+    public static Command getSidewaysThenTaxiAuto() {
         return sequence(
             new DriveToRelativePose(0, 0, 90, 1, 0.05, 90),
+            waitSeconds(3),
             new DriveToRelativePose(0, 5, 90, 1, 0.05, 90)
+        );
+    }
+
+    public static Command getConeThenTaxiAuto() {
+        return sequence(
             // print("Started auto: Cone, Taxi"),
             // runOnce(() -> {
             //     Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);

@@ -4,13 +4,8 @@ import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Cat5Utils;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
     //#region Singleton
@@ -22,28 +17,26 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
     //#endregion
 
     // State
-    private SwerveDriveOdometry odometry = null;
-    private TimeInterpolatableBuffer<Pose2d> poseBuffer = TimeInterpolatableBuffer.createBuffer(Cat5Utils::lerpUnclamped, 4);
+    // private SwerveDriveOdometry odometry = null;
+    // private TimeInterpolatableBuffer<Pose2d> poseBuffer = TimeInterpolatableBuffer.createBuffer(Cat5Utils::lerpUnclamped, 4);
     private ArrayList<SwerveDriveOdometry> odometries = new ArrayList<SwerveDriveOdometry>();
 
     private PoseEstimator() {
         super((i) -> instance = i);
 
         //#region Shuffleboard
-        var subsystemLayout = getLayout(Cat5ShuffleboardTab.PoseEstimator, BuiltInLayouts.kList)
-            .withSize(2, 1);
+        // var subsystemLayout = getLayout(Cat5ShuffleboardTab.PoseEstimator, BuiltInLayouts.kList)
+        //     .withSize(2, 1);
 
-        subsystemLayout.addDouble("X (m)", () -> getXMeters());
-        subsystemLayout.addDouble("Y (m)", () -> getYMeters());
-        subsystemLayout.addDouble("Angle (deg)", () -> getDegrees());
-        // Temp
-        subsystemLayout.addBoolean("Is Init", () -> odometry != null);
+        // subsystemLayout.addDouble("X (m)", () -> getXMeters());
+        // subsystemLayout.addDouble("Y (m)", () -> getYMeters());
+        // subsystemLayout.addDouble("Angle (deg)", () -> getDegrees());
+        // subsystemLayout.addBoolean("Is Init", () -> odometry != null);
         //#endregion
     }
 
     @Override
     public void periodic() {
-        // TODO Uncomment
         // if (odometry == null &&
         //     !NavX2.get().isCalibrating() &&
         //     Limelight.get().isCamposeValid() &&
@@ -75,10 +68,10 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
         Rotation2d rotation = NavX2.get().getRotation();
         var modulePositions = Drivetrain.get().getModulePositions();
 
-        if (odometry != null) {
-            Pose2d poseMeters = odometry.update(rotation, modulePositions);
-            poseBuffer.addSample(Timer.getFPGATimestamp(), poseMeters);
-        }
+        // if (odometry != null) {
+        //     Pose2d poseMeters = odometry.update(rotation, modulePositions);
+        //     poseBuffer.addSample(Timer.getFPGATimestamp(), poseMeters);
+        // }
 
         for (var odometry : odometries) {
             odometry.update(rotation, modulePositions);
@@ -86,27 +79,39 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
     }
 
     //#region Pose
-    private double getXMeters() {
-        Pose2d poseMeters = odometry.getPoseMeters();
-        if (poseMeters == null) {
-            return Double.NaN;
-        }
-        return poseMeters.getX();
-    }
-    private double getYMeters() {
-        Pose2d poseMeters = odometry.getPoseMeters();
-        if (poseMeters == null) {
-            return Double.NaN;
-        }
-        return poseMeters.getY();
-    }
-    private double getDegrees() {
-        Pose2d poseMeters = odometry.getPoseMeters();
-        if (poseMeters == null) {
-            return Double.NaN;
-        }
-        return poseMeters.getRotation().getDegrees();
-    }
+    // private double getXMeters() {
+    //     if (odometry == null) {
+    //         return Double.NaN;
+    //     }
+
+    //     Pose2d poseMeters = odometry.getPoseMeters();
+    //     if (poseMeters == null) {
+    //         return Double.NaN;
+    //     }
+    //     return poseMeters.getX();
+    // }
+    // private double getYMeters() {
+    //     if (odometry == null) {
+    //         return Double.NaN;
+    //     }
+
+    //     Pose2d poseMeters = odometry.getPoseMeters();
+    //     if (poseMeters == null) {
+    //         return Double.NaN;
+    //     }
+    //     return poseMeters.getY();
+    // }
+    // private double getDegrees() {
+    //     if (odometry == null) {
+    //         return Double.NaN;
+    //     }
+
+    //     Pose2d poseMeters = odometry.getPoseMeters();
+    //     if (poseMeters == null) {
+    //         return Double.NaN;
+    //     }
+    //     return poseMeters.getRotation().getDegrees();
+    // }
     //#endregion
 
     //#region Public
@@ -127,10 +132,10 @@ public class PoseEstimator extends Cat5Subsystem<PoseEstimator> {
     //     return poseBuffer.getSample(Timer.getFPGATimestamp() - latencySeconds);
     // }
 
-    public void notifyNavxJump(Rotation2d rotation) {
-        var modulePositions = Drivetrain.get().getModulePositions();
-        odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, rotation, modulePositions, new Pose2d(0, 0, rotation));
-        poseBuffer.clear();
-    }
+    // public void notifyNavxJump(Rotation2d rotation) {
+    //     var modulePositions = Drivetrain.get().getModulePositions();
+    //     odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, rotation, modulePositions, new Pose2d(0, 0, rotation));
+    //     poseBuffer.clear();
+    // }
     //#endregion
 }

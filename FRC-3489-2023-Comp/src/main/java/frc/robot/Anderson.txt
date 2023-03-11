@@ -1,5 +1,6 @@
 Pit Testing:
 	Make sure code changes don't crash anything
+	SET FORCE HOME BUTTON BINDING
 	Just try driving
 		Make sure steering offsets are good
 	Test arm at preset heights
@@ -25,7 +26,7 @@ Practice Field Testing:
 		Place, Balance
 
 Field Testing:
-
+	Is Low Outake speed good for repositioning a piece
 	
 
 Tune limelight, do you want 6hz again, or faster better?

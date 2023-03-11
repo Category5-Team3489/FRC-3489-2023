@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 public class Limelight extends Cat5Subsystem<Limelight> {
@@ -27,8 +28,8 @@ public class Limelight extends Cat5Subsystem<Limelight> {
 
     private final DoubleArraySubscriber camerapose_targetspaceSubscriber = limelight.getDoubleArrayTopic("camerapose_targetspace").subscribe(new double[] {});
 
-    private final NetworkTableEntry pipelineLatencyEntry = limelight.getEntry("tl");
-    private final NetworkTableEntry captureLatencyEntry = limelight.getEntry("cl");
+    // private final NetworkTableEntry pipelineLatencyEntry = limelight.getEntry("tl");
+    // private final NetworkTableEntry captureLatencyEntry = limelight.getEntry("cl");
 
     private final NetworkTableEntry tagIdEntry = limelight.getEntry("tid");
     
@@ -60,21 +61,22 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         activePipelineTimer.restart();
 
         //#region Shuffleboard
-        var subsystemLayout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
-            .withSize(2, 1);
-        
-        subsystemLayout.addDouble("Active Pipeline Timer", () -> activePipelineTimer.get());
-        subsystemLayout.addInteger("Desired Pipeline", () -> desiredPipeline);
-        subsystemLayout.addInteger("Active Pipeline", () -> activePipeline);
-        subsystemLayout.addDouble("Target X", () -> targetX);
-        subsystemLayout.addDouble("Target Y", () -> targetY);
-        subsystemLayout.addDouble("Target Area", () -> targetArea);
-        subsystemLayout.addBoolean("Is Campose Valid", () -> isCamposeValid());
-        
-        // Temp
-        subsystemLayout.addString("Campose", () -> getCampose().toString());
-        subsystemLayout.addInteger("Tag Id", () -> getTagId());
-        subsystemLayout.addDouble("Latency Seconds", () -> getLatencySeconds());
+        if (OperatorConstants.DebugShuffleboard) {
+            var subsystemLayout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
+                .withSize(2, 1);
+            
+            subsystemLayout.addDouble("Active Pipeline Timer", () -> activePipelineTimer.get());
+            subsystemLayout.addInteger("Desired Pipeline", () -> desiredPipeline);
+            subsystemLayout.addInteger("Active Pipeline", () -> activePipeline);
+            subsystemLayout.addDouble("Target X", () -> targetX);
+            subsystemLayout.addDouble("Target Y", () -> targetY);
+            subsystemLayout.addDouble("Target Area", () -> targetArea);
+            subsystemLayout.addBoolean("Is Campose Valid", () -> isCamposeValid());
+            
+            subsystemLayout.addString("Campose", () -> getCamposeString());
+            subsystemLayout.addInteger("Tag Id", () -> getTagId());
+            // subsystemLayout.addDouble("Latency Seconds", () -> getLatencySeconds());
+        }
         //#endregion
     }
 
@@ -106,6 +108,16 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         pipelineEntry.setNumber(pipeline);
     }
 
+    //#region Shuffleboard
+    private String getCamposeString() {
+        var campose = getCampose();
+        if (campose != null) {
+            return campose.toString();
+        }
+        return "null";
+    }
+    //#endregion
+
     //#region Public
     public boolean isCamposeValid() {
         return activePipeline == LimelightConstants.FiducialPipeline &&
@@ -126,9 +138,9 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         }
     }
 
-    public double getLatencySeconds() {
-        return (pipelineLatencyEntry.getDouble(0) / 1000.0) + (captureLatencyEntry.getDouble(0) / 1000.0);
-    }
+    // public double getLatencySeconds() {
+    //     return (pipelineLatencyEntry.getDouble(0) / 1000.0) + (captureLatencyEntry.getDouble(0) / 1000.0);
+    // }
 
     public long getTagId() {
         return tagIdEntry.getInteger(0);

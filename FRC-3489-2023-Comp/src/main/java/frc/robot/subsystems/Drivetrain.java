@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 import frc.robot.Cat5Utils;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.drivetrain.BrakeRotation;
 import frc.robot.commands.drivetrain.BrakeTranslation;
 import frc.robot.commands.drivetrain.Drive;
@@ -133,32 +134,31 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         //#endregion
 
         //#region Shufflboard
-        // Main
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-            .withSize(2, 3);
+            .withSize(2, 1);
 
         layout.add("Subsystem Info", this);
-
-        layout.addDouble("Front Left (m per s)", () -> frontLeftModule.getDriveVelocity());
-        layout.addDouble("Front Right (m per s)", () -> frontRightModule.getDriveVelocity());
-        layout.addDouble("Back Left (m per s)", () -> backLeftModule.getDriveVelocity());
-        layout.addDouble("Back Right (m per s)", () -> backRightModule.getDriveVelocity());
-
         layout.addDouble("Average (m per s)", () -> getAverageDriveVelocityMetersPerSecond());
 
-        // layout.addDouble("Front Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
-        // layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
-        // layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
-        // layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());
+        if (OperatorConstants.DebugShuffleboard) {
+            layout.addDouble("Front Left (m per s)", () -> frontLeftModule.getDriveVelocity());
+            layout.addDouble("Front Right (m per s)", () -> frontRightModule.getDriveVelocity());
+            layout.addDouble("Back Left (m per s)", () -> backLeftModule.getDriveVelocity());
+            layout.addDouble("Back Right (m per s)", () -> backRightModule.getDriveVelocity());
 
-        // Subsytem
-        var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
-            .withSize(2, 3);
+            // layout.addDouble("Front Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
+            // layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
+            // layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
+            // layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());
 
-        subsystemLayout.add(driveCommand);
-        subsystemLayout.add(brakeTranslationCommand);
-        subsystemLayout.add(brakeRotationCommand);
-        subsystemLayout.add(maxSpeedCommand);
+            var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
+                .withSize(2, 1);
+
+            subsystemLayout.add(driveCommand);
+            subsystemLayout.add(brakeTranslationCommand);
+            subsystemLayout.add(brakeRotationCommand);
+            subsystemLayout.add(maxSpeedCommand);
+        }
         //#endregion
     }
 
