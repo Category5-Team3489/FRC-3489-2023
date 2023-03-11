@@ -9,8 +9,19 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
 public class MidConeNode extends CommandBase {
-    private PIDController strafeController = new PIDController(0.18, 0, 0); // 0.16, 12
-    private PIDController distanceController = new PIDController(0.18, 0, 0); // 0.12
+    private static double ProportionalGain = 0.18;
+    private static double MaxStrafeMetersPerSecond = 0.5;
+    private static double MaxDistanceMetersPerSecond = 0.75;
+    private static double StrafeToleranceDegrees = 1.25;
+    private static double DistanceToleranceDegrees = 1.25;
+    private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
+    private static double SpeedLimiter = 0.5;
+    private static double MaxOmegaDegreesPerSecond = 90;
+    private static double TargetXSetpointDegrees = -4.4;
+    private static double TargetYSetpointDegrees = -6.06;
+
+    private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
+    private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
 
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
@@ -29,18 +40,22 @@ public class MidConeNode extends CommandBase {
 
         // https://docs.limelightvision.io/en/latest/networktables_api.html#advanced-usage-with-raw-contours
 
-        strafeController.setTolerance(1.25);
-        distanceController.setTolerance(1.25);
+        // TODO May want timer for how long robot has been at setpoint for and only finish after 0.25 sec or so
     }
 
     @Override
     public void initialize() {
         Limelight.get().setDesiredPipeline(LimelightConstants.MidRetroreflectivePipeline);
 
-        Drivetrain.get().driveCommand.setTargetAngle(Rotation2d.fromDegrees(180));
+        strafeController.setTolerance(StrafeToleranceDegrees);
+        distanceController.setTolerance(DistanceToleranceDegrees);
+
         Drivetrain.get().driveCommand.setAutomationXSupplier(() -> xMetersPerSecond);
         Drivetrain.get().driveCommand.setAutomationYSupplier(() -> yMetersPerSecond);
-        Drivetrain.get().driveCommand.setAutomationSpeedLimiterSupplier(() -> 0.5);
+        Drivetrain.get().driveCommand.setAutomationSpeedLimiterSupplier(() -> SpeedLimiter);
+        Drivetrain.get().driveCommand.setAutomationMaxOmegaSupplier(() -> MaxOmegaDegreesPerSecond);
+
+        Drivetrain.get().driveCommand.setTargetAngle(TargetAngle);
 
         System.out.println("Mid cone node init");
     }
@@ -58,8 +73,8 @@ public class MidConeNode extends CommandBase {
 
         double targetX = Limelight.get().getTargetX();
         if (!Double.isNaN(targetX)) {
-            yMetersPerSecond = -strafeController.calculate(targetX, -4.4); //-3.9
-            yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -0.5, 0.5);
+            yMetersPerSecond = -strafeController.calculate(targetX, TargetXSetpointDegrees);
+            yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -MaxStrafeMetersPerSecond, MaxStrafeMetersPerSecond);
         }
         else {
             yMetersPerSecond = 0;
@@ -67,8 +82,8 @@ public class MidConeNode extends CommandBase {
 
         double targetY = Limelight.get().getTargetY();
         if (!Double.isNaN(targetY)) {
-            xMetersPerSecond = distanceController.calculate(targetY, -6.06); // -6.6
-            xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -0.75, 0.75);
+            xMetersPerSecond = distanceController.calculate(targetY, TargetYSetpointDegrees);
+            xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -MaxDistanceMetersPerSecond, MaxDistanceMetersPerSecond);
         }
         else {
             xMetersPerSecond = 0;
@@ -82,9 +97,15 @@ public class MidConeNode extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("Mid cone node end");
+        if (interrupted) {
+            Drivetrain.get().driveCommand.stopAutomation();
+        }
 
-        xMetersPerSecond = 0;
-        yMetersPerSecond = 0;
+        Drivetrain.get().driveCommand.setAutomationXSupplier(null);
+        Drivetrain.get().driveCommand.setAutomationYSupplier(null);
+        Drivetrain.get().driveCommand.setAutomationSpeedLimiterSupplier(null);
+        Drivetrain.get().driveCommand.setAutomationMaxOmegaSupplier(null);
+
+        System.out.println("Mid cone node end");
     }
 }
