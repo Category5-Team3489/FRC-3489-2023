@@ -105,27 +105,27 @@ public class RobotContainer {
             // Commands.runOnce(() -> {
             //     Gripper.get().lowOuttakeConeCommand.schedule();
             // }),
-            Commands.runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
-            }),
-            Commands.waitSeconds(1),
-            Commands.runOnce(() -> {
-                Gripper.get().intakeCommand.schedule();
-            }),
-            Commands.waitSeconds(1.0),
-            Commands.runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
-            }),
-            Commands.waitSeconds(3),
-            new MidConeNode(),
-            new WaitCommand(1),
-            Commands.runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
-            }),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(() -> {
-                Gripper.get().midOuttakeConeCommand.schedule();
-            })
+            // Commands.runOnce(() -> {
+            //     Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
+            // }),
+            // Commands.waitSeconds(1),
+            // Commands.runOnce(() -> {
+            //     Gripper.get().intakeCommand.schedule();
+            // }),
+            // Commands.waitSeconds(1.0),
+            // Commands.runOnce(() -> {
+            //     Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
+            // }),
+            // Commands.waitSeconds(3),
+            // new MidConeNode(),
+            // new WaitCommand(1),
+            // Commands.runOnce(() -> {
+            //     Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
+            // }),
+            // Commands.waitSeconds(0.5),
+            // Commands.runOnce(() -> {
+            //     Gripper.get().midOuttakeConeCommand.schedule();
+            // })
             // new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 1),
             // Commands.runOnce(() -> {
             //     Arm.get().setTargetAngleDegrees(ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
