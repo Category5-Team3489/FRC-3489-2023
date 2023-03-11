@@ -321,6 +321,7 @@ public class Arm extends Cat5Subsystem<Arm> {
 
     //#region Public
     public void setTargetAngleDegrees(GridPosition gridPosition, double angleDegrees, IdleMode idleMode) {
+        this.gridPosition = gridPosition;
         angleDegrees = MathUtil.clamp(angleDegrees, MinAngleDegrees, MaxAngleDegrees);
         targetAngleDegrees = angleDegrees;
 
