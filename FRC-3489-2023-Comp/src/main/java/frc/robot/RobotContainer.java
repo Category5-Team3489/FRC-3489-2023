@@ -134,10 +134,10 @@ public class RobotContainer {
                     Drivetrain.get().setBackLeftPercentAngle(0.12, 0);
                     Drivetrain.get().setBackRightPercentAngle(0.12, 0);
                 }, (interrupted) -> {
-                    Drivetrain.get().setFrontLeftPercentAngle(0, Math.toRadians(90));
-                    Drivetrain.get().setFrontRightPercentAngle(0, Math.toRadians(180));
-                    Drivetrain.get().setBackLeftPercentAngle(0, Math.toRadians(270));
-                    Drivetrain.get().setBackRightPercentAngle(0, Math.toRadians(0));
+                    Drivetrain.get().setFrontLeftPercentAngle(0, Math.toRadians(-45));
+                    Drivetrain.get().setFrontRightPercentAngle(0, Math.toRadians(45));
+                    Drivetrain.get().setBackLeftPercentAngle(0, Math.toRadians(45));
+                    Drivetrain.get().setBackRightPercentAngle(0, Math.toRadians(-45));
                 }, () -> {
                     return false;
                 })
