@@ -19,18 +19,18 @@ public class HighConeNode extends CommandBase {
     // private static double DistanceToleranceDegrees = 1;
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
-    private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -3.64;
+    private static double MaxOmegaDegreesPerSecond = 180; // 90
+    private static double TargetXSetpointDegrees = -3.857;
     // private static double TargetYSetpointDegrees = 21.49;
-    private static double WallAccelThresholdG = 1;
-    private static double WallSpeedMetersPerSecond = -1.25;
-    private static double WallTimeoutSeconds = 30;
+    private static double WallAccelThresholdG = 1;//0.5 
+    private static double WallSpeedMetersPerSecond = -1.5;//1.65
+    private static double WallTimeoutSeconds = 5; //TODO 5
 
     private Timer wallTimer = new Timer();
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
     // private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
-    private SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(1);
+    private SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(5);
 
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;

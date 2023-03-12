@@ -404,7 +404,10 @@ public class Drive extends CommandBase {
                     case Cone:
                         automationCommand = Commands.sequence(
                             new HighConeNode(),
-                            Commands.waitSeconds(0.75),
+                            Commands.runOnce(() -> {
+                                Gripper.get().intakeCommand.schedule();
+                            }),
+                            Commands.waitSeconds(1.5),
                             Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeConeCommand.schedule();
                             }),
