@@ -9,6 +9,7 @@ import java.util.List;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSink;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,10 +69,13 @@ public class RobotContainer {
 
         try {
             UsbCamera camera = CameraServer.startAutomaticCapture(0);
+            VideoSink server = CameraServer.getServer();
             
             camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
             camera.setResolution(CameraConstants.PixelWidth, CameraConstants.PixelHeight);
             camera.setFPS(CameraConstants.FPS);
+
+            Cat5ShuffleboardTab.Main.get().add(server.getSource());
         } catch (Exception e) {
             System.out.println("Error while initializing camera");
         }
@@ -141,7 +145,7 @@ public class RobotContainer {
                 }, () -> {
                     return false;
                 })
-                    .withTimeout(6.75); //5
+                    .withTimeout(6.75); // 5
             case AutoConstants.NothingAuto:
                 return Commands.print("Nothing auto selected, doing nothing");
         }
