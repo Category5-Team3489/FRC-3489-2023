@@ -22,9 +22,9 @@ public class HighConeNode extends CommandBase {
     private static double MaxOmegaDegreesPerSecond = 90;
     private static double TargetXSetpointDegrees = -3.64;
     // private static double TargetYSetpointDegrees = 21.49;
-    private static double WallAccelThresholdG = 0.1;
-    private static double WallSpeedMetersPerSecond = 0.15;
-    private static double WallTimeoutSeconds = 3;
+    private static double WallAccelThresholdG = 1;
+    private static double WallSpeedMetersPerSecond = -1.25;
+    private static double WallTimeoutSeconds = 30;
 
     private Timer wallTimer = new Timer();
 
@@ -44,7 +44,7 @@ public class HighConeNode extends CommandBase {
 
     @Override
     public void initialize() {
-        Limelight.get().setDesiredPipeline(LimelightConstants.MidRetroreflectivePipeline);
+        Limelight.get().setDesiredPipeline(LimelightConstants.HighRetroreflectivePipeline);
 
         strafeController.setTolerance(StrafeToleranceDegrees);
         // distanceController.setTolerance(DistanceToleranceDegrees);
@@ -61,7 +61,7 @@ public class HighConeNode extends CommandBase {
 
     @Override
     public void execute() {
-        if (!Limelight.get().isActivePipeline(LimelightConstants.MidRetroreflectivePipeline)) {
+        if (!Limelight.get().isActivePipeline(LimelightConstants.HighRetroreflectivePipeline)) {
             return;
         }
 
@@ -101,7 +101,7 @@ public class HighConeNode extends CommandBase {
     @Override
     public boolean isFinished() {
         // return strafeController.atSetpoint() && distanceController.atSetpoint();
-        return (hasHitStrafeSetpoint && hasHitWall) || wallTimer.hasElapsed(WallTimeoutSeconds);
+        return hasHitWall || wallTimer.hasElapsed(WallTimeoutSeconds);
     }
 
     @Override
