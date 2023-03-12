@@ -25,6 +25,7 @@ import frc.robot.commands.automation.HighConeNode;
 import frc.robot.commands.automation.HighCubeNode;
 import frc.robot.commands.automation.MidConeNode;
 import frc.robot.commands.automation.MidCubeNode;
+import frc.robot.commands.automation.NewHighConeNode;
 import frc.robot.enums.GridPosition;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
@@ -403,11 +404,22 @@ public class Drive extends CommandBase {
                 switch (Gripper.get().getHeldGamePiece()) {
                     case Cone:
                         automationCommand = Commands.sequence(
-                            new HighConeNode(),
-                            Commands.runOnce(() -> {
-                                Gripper.get().intakeCommand.schedule();
-                            }),
-                            Commands.waitSeconds(1.5),
+                            // new HighConeNode(),
+                            // Commands.runOnce(() -> {
+                            //     Gripper.get().intakeCommand.schedule();
+                            // }),
+                            // Commands.waitSeconds(1.5),
+                            // Commands.runOnce(() -> {
+                            //     Gripper.get().highOuttakeConeCommand.schedule();
+                            // }),
+                            // Commands.runOnce(() -> {
+                            //     if (automationCommand != null) {
+                            //         automationCommand.cancel();
+                            //         automationCommand = null;
+                            //     }
+                            // })
+                            new NewHighConeNode(),
+                            Commands.waitSeconds(1),
                             Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeConeCommand.schedule();
                             }),
@@ -422,6 +434,7 @@ public class Drive extends CommandBase {
                     case Cube:
                         automationCommand = Commands.sequence(
                             new HighCubeNode(),
+                            Commands.waitSeconds(1),
                             Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeCubeCommand.schedule();
                             })
