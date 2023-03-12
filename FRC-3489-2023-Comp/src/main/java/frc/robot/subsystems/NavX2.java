@@ -70,15 +70,6 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     }
     //#endregion
 
-    @Override
-    public void periodic() {
-        if (DriverStation.isDisabled()) {
-            return;
-        }
- 
-        // System.out.println(getLongitudinalAccelG());
-    }
-
     //#region Public
     public Rotation2d getRotation() {
         heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());

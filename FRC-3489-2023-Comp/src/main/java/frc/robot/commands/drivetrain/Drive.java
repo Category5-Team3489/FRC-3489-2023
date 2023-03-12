@@ -416,8 +416,6 @@ public class Drive extends CommandBase {
                                     automationCommand.cancel();
                                     automationCommand = null;
                                 }
-                                
-                                System.out.println("RAN");
                             })
                         );
                         break;

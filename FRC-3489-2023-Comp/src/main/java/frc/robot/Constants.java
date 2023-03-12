@@ -7,7 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 public final class Constants {
     public static class OperatorConstants {
-        public static boolean DebugShuffleboard = true;
+        public static boolean DebugShuffleboard = false;
 
         public static final int XboxPort = 0;
         public static final int ManPort = 1;
