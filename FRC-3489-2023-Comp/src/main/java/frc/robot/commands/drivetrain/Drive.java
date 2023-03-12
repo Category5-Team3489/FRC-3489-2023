@@ -405,7 +405,19 @@ public class Drive extends CommandBase {
                         automationCommand = Commands.sequence(
                             new HighConeNode(),
                             Commands.runOnce(() -> {
+                                Gripper.get().intakeCommand.schedule();
+                            }),
+                            Commands.waitSeconds(1.5),
+                            Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeConeCommand.schedule();
+                            }),
+                            Commands.runOnce(() -> {
+                                if (automationCommand != null) {
+                                    automationCommand.cancel();
+                                    automationCommand = null;
+                                }
+                                
+                                System.out.println("RAN");
                             })
                         );
                         break;

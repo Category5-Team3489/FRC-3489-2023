@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -43,6 +44,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
             .withSize(2, 1);
 
         layout.addDouble("Heading (deg)", () -> heading.getDegrees());
+        // layout.addDouble("Longitudinal Accel (G)", () -> getLongitudinalAccelG());
         
         if (OperatorConstants.DebugShuffleboard) {
             layout.add(zeroYawCommand);
@@ -68,6 +70,15 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     }
     //#endregion
 
+    @Override
+    public void periodic() {
+        if (DriverStation.isDisabled()) {
+            return;
+        }
+ 
+        // System.out.println(getLongitudinalAccelG());
+    }
+
     //#region Public
     public Rotation2d getRotation() {
         heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
@@ -78,6 +89,10 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
 
     public boolean isCalibrating() {
         return navx.isCalibrating();
+    }
+
+    public double getLongitudinalAccelG() {
+        return navx.getWorldLinearAccelX();
     }
 
     // public void setOffset(Rotation2d offset) {
