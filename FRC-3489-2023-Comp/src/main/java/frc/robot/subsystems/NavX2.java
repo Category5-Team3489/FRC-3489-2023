@@ -43,6 +43,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
             .withSize(2, 1);
 
         layout.addDouble("Heading (deg)", () -> heading.getDegrees());
+        layout.addDouble("Longitudinal Accel (G)", () -> getLongitudinalAccelG());
         
         if (OperatorConstants.DebugShuffleboard) {
             layout.add(zeroYawCommand);
@@ -78,6 +79,10 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
 
     public boolean isCalibrating() {
         return navx.isCalibrating();
+    }
+
+    public double getLongitudinalAccelG() {
+        return navx.getWorldLinearAccelX();
     }
 
     // public void setOffset(Rotation2d offset) {
