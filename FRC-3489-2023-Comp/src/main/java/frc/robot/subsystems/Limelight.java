@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 public class Limelight extends Cat5Subsystem<Limelight> {
@@ -25,7 +26,12 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     // Devices
     private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
 
-    private final DoubleArraySubscriber botposeSubscriber = limelight.getDoubleArrayTopic("botpose").subscribe(new double[] {});
+    private final DoubleArraySubscriber camerapose_targetspaceSubscriber = limelight.getDoubleArrayTopic("camerapose_targetspace").subscribe(new double[] {});
+
+    // private final NetworkTableEntry pipelineLatencyEntry = limelight.getEntry("tl");
+    // private final NetworkTableEntry captureLatencyEntry = limelight.getEntry("cl");
+
+    private final NetworkTableEntry tagIdEntry = limelight.getEntry("tid");
     
     private final NetworkTableEntry getpipeEntry = limelight.getEntry("getpipe");
     private final NetworkTableEntry pipelineEntry = limelight.getEntry("pipeline");
@@ -35,14 +41,12 @@ public class Limelight extends Cat5Subsystem<Limelight> {
 
     // State
     private Timer activePipelineTimer = new Timer();
-    private Timer botposeTimer = new Timer();
 
     private long desiredPipeline = LimelightConstants.DefaultPipeline;
     private long activePipeline = -1;
     private double targetX = Double.NaN;
     private double targetY = Double.NaN;
     private double targetArea = 0;
-    private long lastBotposeTimestamp = 0;
 
     private Limelight() {
         super((i) -> instance = i);
@@ -57,16 +61,22 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         activePipelineTimer.restart();
 
         //#region Shuffleboard
-        var layout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
-            .withSize(2, 1);
-        
-        layout.addDouble("Active Pipeline Timer", () -> activePipelineTimer.get());
-        layout.addDouble("Botpose Timer", () -> botposeTimer.get());
-        layout.addInteger("Desired Pipeline", () -> desiredPipeline);
-        layout.addInteger("Active Pipeline", () -> activePipeline);
-        layout.addDouble("Target X", () -> targetX);
-        layout.addDouble("Target Y", () -> targetY);
-        layout.addDouble("Target Area", () -> targetArea);
+        if (OperatorConstants.DebugShuffleboard) {
+            var subsystemLayout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
+                .withSize(2, 1);
+            
+            subsystemLayout.addDouble("Active Pipeline Timer", () -> activePipelineTimer.get());
+            subsystemLayout.addInteger("Desired Pipeline", () -> desiredPipeline);
+            subsystemLayout.addInteger("Active Pipeline", () -> activePipeline);
+            subsystemLayout.addDouble("Target X", () -> targetX);
+            subsystemLayout.addDouble("Target Y", () -> targetY);
+            subsystemLayout.addDouble("Target Area", () -> targetArea);
+            subsystemLayout.addBoolean("Is Campose Valid", () -> isCamposeValid());
+            
+            subsystemLayout.addString("Campose", () -> getCamposeString());
+            subsystemLayout.addInteger("Tag Id", () -> getTagId());
+            // subsystemLayout.addDouble("Latency Seconds", () -> getLatencySeconds());
+        }
         //#endregion
     }
 
@@ -88,31 +98,54 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         if (desiredPipeline != activePipeline) {
             setPipeline(desiredPipeline);
         }
+    }
 
-        if (isBotposeValid()) {
-            var botpose = botposeSubscriber.getAtomic();
-            if (botpose.timestamp != lastBotposeTimestamp && botpose.value.length == 7) {
-                lastBotposeTimestamp = botpose.timestamp;
-                botposeTimer.restart();
+    private void setPipeline(long pipeline) {
+        if (isActivePipeline(pipeline)) {
+            return;
+        }
 
-                Translation3d translation = new Translation3d(botpose.value[0], botpose.value[1], botpose.value[2]);
-                Rotation3d rotation = new Rotation3d(botpose.value[3], botpose.value[4], botpose.value[5]);
-                Pose3d botposeMeters = new Pose3d(translation, rotation);
-                double latencySeconds = botpose.value[6] / 1000.0;
-                PoseEstimator.get().notifyLimelightBotpose(botposeMeters, latencySeconds);
-                System.out.println(botposeMeters.toString());
-            }
+        pipelineEntry.setNumber(pipeline);
+    }
+
+    //#region Shuffleboard
+    private String getCamposeString() {
+        var campose = getCampose();
+        if (campose != null) {
+            return campose.toString();
+        }
+        return "null";
+    }
+    //#endregion
+
+    //#region Public
+    public boolean isCamposeValid() {
+        return activePipeline == LimelightConstants.FiducialPipeline &&
+            activePipelineTimer.get() > LimelightConstants.CamposeValidActivePipelineSeconds &&
+            targetArea > LimelightConstants.BotposeValidTargetArea &&
+            Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.CamposeValidAverageDriveVelocityLimitMetersPerSecond;
+    }
+
+    public Pose3d getCampose() {
+        double[] campose = camerapose_targetspaceSubscriber.get();
+        if (campose.length != 0) {
+            Translation3d translationMeters = new Translation3d(campose[0], campose[1], campose[2]);
+            Rotation3d rotation = new Rotation3d(campose[3], campose[4], campose[5]);
+            return new Pose3d(translationMeters, rotation);
+        }
+        else {
+            return null;
         }
     }
 
-    private boolean isBotposeValid() {
-        return activePipeline == LimelightConstants.FiducialPipeline &&
-            activePipelineTimer.get() > LimelightConstants.BotposeValidActivePipelineSeconds &&
-            targetArea > LimelightConstants.BotposeValidTargetArea &&
-            Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.BotposeValidAverageDriveVelocityLimitMetersPerSecond;
+    // public double getLatencySeconds() {
+    //     return (pipelineLatencyEntry.getDouble(0) / 1000.0) + (captureLatencyEntry.getDouble(0) / 1000.0);
+    // }
+
+    public long getTagId() {
+        return tagIdEntry.getInteger(0);
     }
 
-    //#region Public
     public long getActivePipeline() {
         return activePipeline;
     }
@@ -131,13 +164,6 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     }
     public boolean isActivePipeline(long pipeline) {
         return activePipeline == pipeline;
-    }
-    private void setPipeline(long pipeline) {
-        if (isActivePipeline(pipeline)) {
-            return;
-        }
-
-        pipelineEntry.setNumber(pipeline);
     }
     //#endregion
 }

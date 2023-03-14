@@ -12,7 +12,8 @@ public enum Cat5ShuffleboardTab {
     PoseEstimator,
     DriveCamera,
     Limelight,
-    Auto;
+    Auto,
+    Leds;
 
     public ShuffleboardTab get() {
         return Shuffleboard.getTab(toString());

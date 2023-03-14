@@ -11,12 +11,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.GripperConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
-import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.Leds.LedState;
 
 public class Gripper extends Cat5Subsystem<Gripper> {
@@ -85,11 +86,13 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         switch (heldGamePiece) {
                             case Cone:
                                 lowOuttakeConeCommand.schedule();
-                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCone,2,true);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCone,2,true)
+                                    .schedule();
                                 break;
                             case Cube:
                                 lowOuttakeCubeCommand.schedule();                              
-                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCube,2,true);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCube,2,true)
+                                    .schedule();
                                 break;
                             case Unknown:
                                 lowOuttakeUnknownCommand.schedule();
@@ -100,11 +103,13 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         switch (heldGamePiece) {
                             case Cone:
                                 midOuttakeConeCommand.schedule();
-                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCone,2,true);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCone,2,true)
+                                    .schedule();
                                 break;
                             case Cube:
                                 midOuttakeCubeCommand.schedule();
-                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCube,2,true);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCube,2,true)
+                                    .schedule();
                                 break;
                             case Unknown:
                                 midOuttakeUnknownCommand.schedule();
@@ -115,11 +120,13 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                         switch (heldGamePiece) {
                             case Cone:
                                 highOuttakeConeCommand.schedule();
-                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCone,2,true);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCone,2,true)
+                                    .schedule();
                                 break;
                             case Cube:
                                 highOuttakeCubeCommand.schedule();
-                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCube,2,true);
+                                Leds.get().getSolidColorForSecondsCommand(LedState.PlaceCube,2,true)
+                                    .schedule();
                                 break;
                             case Unknown:
                                 highOuttakeUnknownCommand.schedule();
@@ -132,13 +139,11 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         //#endregion
 
         //#region Shuffleboard
-        // Main
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-            .withSize(2, 3);
+            .withSize(2, 1);
 
         layout.add("Subsystem Info", this);
         layout.addString("Held Game Piece", () -> heldGamePiece.toString());
-        layout.addDouble("Motor (%)", () -> motorPercent);
         layout.addBoolean("Can Reintake Again", () -> canReintakeAgain);
 
         var isColorSensorDisabledEntry = layout.add("Disable Color Sensor", false)
@@ -146,21 +151,24 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             .getEntry();
         isColorSensorDisabled = () -> isColorSensorDisabledEntry.getBoolean(false);
 
-        // Subsystem
-        var subsystemLayout = getLayout(Cat5ShuffleboardTab.Gripper, BuiltInLayouts.kList)
-            .withSize(2, 3);
+        if (OperatorConstants.DebugShuffleboard) {
+            layout.addDouble("Motor (%)", () -> motorPercent);
 
-        subsystemLayout.add(stopCommand);
-        subsystemLayout.add(intakeCommand);
-        subsystemLayout.add(lowOuttakeConeCommand);
-        subsystemLayout.add(lowOuttakeCubeCommand);
-        subsystemLayout.add(lowOuttakeUnknownCommand);
-        subsystemLayout.add(midOuttakeConeCommand);
-        subsystemLayout.add(midOuttakeCubeCommand);
-        subsystemLayout.add(midOuttakeUnknownCommand);
-        subsystemLayout.add(highOuttakeConeCommand);
-        subsystemLayout.add(highOuttakeCubeCommand);
-        subsystemLayout.add(highOuttakeUnknownCommand);
+            var subsystemLayout = getLayout(Cat5ShuffleboardTab.Gripper, BuiltInLayouts.kList)
+                .withSize(2, 1);
+
+            subsystemLayout.add(stopCommand);
+            subsystemLayout.add(intakeCommand);
+            subsystemLayout.add(lowOuttakeConeCommand);
+            subsystemLayout.add(lowOuttakeCubeCommand);
+            subsystemLayout.add(lowOuttakeUnknownCommand);
+            subsystemLayout.add(midOuttakeConeCommand);
+            subsystemLayout.add(midOuttakeCubeCommand);
+            subsystemLayout.add(midOuttakeUnknownCommand);
+            subsystemLayout.add(highOuttakeConeCommand);
+            subsystemLayout.add(highOuttakeCubeCommand);
+            subsystemLayout.add(highOuttakeUnknownCommand);
+        }
         //#endregion
     }
 

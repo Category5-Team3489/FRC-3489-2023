@@ -1,0 +1,47 @@
+Pit Testing:
+	Make sure code changes don't crash anything /////////////////
+	SET FORCE HOME BUTTON BINDING ///////////////////
+	Just try driving/////////
+		Make sure steering offsets are good//////////
+	Test arm at preset heights////////////
+	Intake speed presets, low outtake too fast //////////////
+	Intake stops and recognizes game pieces correctly with color sensor
+    Do we need a higher anti eat timeout? ////////////
+	Spin robot on the cart to test NavX2
+		See how heading angle changes with clockwise rotation and record
+	Does navx zeroing behave correctly?
+    Test Campose, how does it behave?
+	Does pose estimator initialize correctly when april tag is visible
+		Does navx get setup correctly?
+	Test pose estimator with navx reset
+
+Practice Field Testing:
+    Human player station arm angle constants good?
+	Tune autoplacement at all scoring positions
+    Test arm heights
+    Test placement speeeds, cube
+    Does limelight campose set up navx correctly?
+	Auto:
+		Place, Taxi
+		Place, Balance
+
+Field Testing:
+	Is Low Outake speed good for repositioning a piece
+	
+
+Tune limelight, do you want 6hz again, or faster better?
+
+hybrid nodes with april tags
+cubes with april tags
+change limelight stream settings for good bandwidth
+low arm position outake speed is too high piece gets launched when repositioning
+Max angular velocity degrees per second for heading keeping for automation
+DriveCommandBase
+	Set isautomating false on command cancel/interrupt or complete of whole sequence
+Auto leveling for charging station
+
+Forward: -X
+Right: +Y
+
+Cone flipping toggle button, use last one of 6 on manipulator stick
+Lift slightly above tipped cone, press again bring down onto ground, lifting cone up?

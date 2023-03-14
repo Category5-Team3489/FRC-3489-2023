@@ -7,10 +7,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.PoseEstimator;
+import frc.robot.subsystems.NavX2;
 
-public class DriveToRelativePose extends CommandBase {
+public class AutoDrive extends CommandBase {
     private Pose2d relativePoseMeters;
     private double maxAxialSpeedMetersPerSecond;
     private double axialToleranceMeters;
@@ -26,7 +27,7 @@ public class DriveToRelativePose extends CommandBase {
     private double speedLimiter = 0;
     private double maxOmegaDegreesPerSecond = 0;
 
-    public DriveToRelativePose(double xMeters, double yMeters, double targetAngleDegrees, double maxAxialMetersPerSecond, double axialToleranceMeters, double maxOmegaDegreesPerSecond) {
+    public AutoDrive(double xMeters, double yMeters, double targetAngleDegrees, double maxAxialMetersPerSecond, double axialToleranceMeters, double maxOmegaDegreesPerSecond) {
         this.relativePoseMeters = new Pose2d(xMeters, yMeters, Rotation2d.fromDegrees(targetAngleDegrees));
         this.maxAxialSpeedMetersPerSecond = maxAxialMetersPerSecond;
         this.axialToleranceMeters = axialToleranceMeters;
@@ -36,7 +37,8 @@ public class DriveToRelativePose extends CommandBase {
 
     @Override
     public void initialize() {
-        odometry = PoseEstimator.get().createOdometry();
+        Rotation2d rotation = NavX2.get().getRotation();
+        odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, rotation, Drivetrain.get().getModulePositions(), new Pose2d(0, 0, rotation));
         
         xController.setTolerance(axialToleranceMeters);
         yController.setTolerance(axialToleranceMeters);
@@ -51,6 +53,10 @@ public class DriveToRelativePose extends CommandBase {
 
     @Override
     public void execute() {
+        Rotation2d rotation = NavX2.get().getRotation();
+        var modulePositions = Drivetrain.get().getModulePositions();
+        odometry.update(rotation, modulePositions);
+
         Pose2d poseMeters = odometry.getPoseMeters();
 
         xMetersPerSecond = xController.calculate(poseMeters.getX(), relativePoseMeters.getY());
@@ -69,8 +75,6 @@ public class DriveToRelativePose extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        PoseEstimator.get().deleteOdometry(odometry);
-
         Drivetrain.get().driveCommand.setAutomationXSupplier(null);
         Drivetrain.get().driveCommand.setAutomationYSupplier(null);
         Drivetrain.get().driveCommand.setAutomationSpeedLimiterSupplier(null);

@@ -7,20 +7,21 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.revrobotics.CANSparkMax.IdleMode;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSink;
+import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.ArmConstants;
+
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.CameraConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.DriveToRelativePose;
-import frc.robot.commands.automation.MidConeNode;
-import frc.robot.enums.GridPosition;
+import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
@@ -59,16 +60,25 @@ public class RobotContainer {
     public final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
     public final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
 
+    // Shuffleboard
+    private final SendableChooser<String> autoChooser = new SendableChooser<String>();
+
     private RobotContainer() {
         instance = this;
         cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
 
-        // Look here for fixes to common problems:
-        // If shuffleboard layout doesn't show up, check size
-        // If subsystem isn't working, call Subsystem.get() here
-        // Check type if layout.add, or tab.add fails
-        // If command doesnt run when disabled, set ignore disabled true
-        // When building commands, always put .withName last
+        try {
+            UsbCamera camera = CameraServer.startAutomaticCapture(0);
+            VideoSink server = CameraServer.getServer();
+            
+            camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+            camera.setResolution(CameraConstants.PixelWidth, CameraConstants.PixelHeight);
+            camera.setFPS(CameraConstants.FPS);
+
+            Cat5ShuffleboardTab.Main.get().add(server.getSource());
+        } catch (Exception e) {
+            System.out.println("Error while initializing camera");
+        }
 
         // Initialize subsystems
         NavX2.get();
@@ -79,59 +89,134 @@ public class RobotContainer {
         ColorSensor.get();
         Gripper.get();
         Arm.get();
-
-        //DriverCamera.get();
         
         Leds.get();
         
         configureBindings();
 
-        // ShuffleboardLayout layout = Cat5ShuffleboardTab.Auto.get().getLayout("Auto", BuiltInLayouts.kList);
-        
-        // layout.add("Auto 1", Commands.runOnce(() -> getAutonomousCommand()));
-        // layout.add("Place Cone Auto", Commands.runOnce(() -> getPlaceConeAutoCommand()));
+        var autoTab = Cat5ShuffleboardTab.Auto.get();
+        autoChooser.setDefaultOption(AutoConstants.TaxiAuto, AutoConstants.TaxiAuto);
+        autoChooser.addOption(AutoConstants.BalanceAuto, AutoConstants.BalanceAuto);
+        autoChooser.addOption(AutoConstants.BumpBalanceAuto, AutoConstants.BumpBalanceAuto);
+        autoChooser.addOption(AutoConstants.NothingAuto, AutoConstants.NothingAuto);
+        // autoChooser.addOption(AutoConstants.SidewaysThenTaxiAuto, AutoConstants.SidewaysThenTaxiAuto);
+        // autoChooser.addOption(AutoConstants.ConeThenTaxiAuto, AutoConstants.ConeThenTaxiAuto);
+        // autoChooser.addOption(AutoConstants.ConeThenBalanceAuto, AutoConstants.ConeThenBalanceAuto);
+        autoTab.add(autoChooser);
     }
 
     private void configureBindings() {}
 
     public Command getAutonomousCommand() {
-        return Commands.sequence(
-            new DriveToRelativePose(new Pose2d(0, 3, Rotation2d.fromDegrees(0)), 0.6)
-        );
-    }
+        switch (autoChooser.getSelected()) {
+            case AutoConstants.TaxiAuto:
+                return new FunctionalCommand(() -> {
+                    // onInit
+                    Drivetrain.get().driveCommand.setDisabled();
+                }, () -> {
+                    // onExecute
+                    Drivetrain.get().setFrontLeftPercentAngle(0.12, 0);
+                    Drivetrain.get().setFrontRightPercentAngle(0.12, 0);
+                    Drivetrain.get().setBackLeftPercentAngle(0.12, 0);
+                    Drivetrain.get().setBackRightPercentAngle(0.12, 0);
+                }, (interrupted) -> {
+                    Drivetrain.get().setFrontLeftPercentAngle(0, 0);
+                    Drivetrain.get().setFrontRightPercentAngle(0, 0);
+                    Drivetrain.get().setBackLeftPercentAngle(0, 0);
+                    Drivetrain.get().setBackRightPercentAngle(0, 0);
+                }, () -> {
+                    return false;
+                })
+                    .withTimeout(5);
+            case AutoConstants.BalanceAuto:
+                return new FunctionalCommand(() -> {
+                    // onInit
+                    Drivetrain.get().driveCommand.setDisabled();
+                }, () -> {
+                    // onExecute
+                    Drivetrain.get().setFrontLeftPercentAngle(0.12, 0);
+                    Drivetrain.get().setFrontRightPercentAngle(0.12, 0);
+                    Drivetrain.get().setBackLeftPercentAngle(0.12, 0);
+                    Drivetrain.get().setBackRightPercentAngle(0.12, 0);
+                }, (interrupted) -> {
+                    Drivetrain.get().setFrontLeftPercentAngle(0, Math.toRadians(-45));
+                    Drivetrain.get().setFrontRightPercentAngle(0, Math.toRadians(45));
+                    Drivetrain.get().setBackLeftPercentAngle(0, Math.toRadians(45));
+                    Drivetrain.get().setBackRightPercentAngle(0, Math.toRadians(-45));
+                }, () -> {
+                    return false;
+                })
+                    .withTimeout(6.75); // 5
+            case AutoConstants.BumpBalanceAuto:
+                return Commands.sequence(
+                    new FunctionalCommand(() -> {
+                        // onInit
+                        Drivetrain.get().driveCommand.setDisabled();
+                    }, () -> {
+                        // onExecute
+                        Drivetrain.get().setFrontLeftPercentAngle(-0.4, 0);
+                        Drivetrain.get().setFrontRightPercentAngle(-0.4, 0);
+                        Drivetrain.get().setBackLeftPercentAngle(-0.4, 0);
+                        Drivetrain.get().setBackRightPercentAngle(-0.4, 0);
+                    }, (interrupted) -> {
+                        Drivetrain.get().setFrontLeftPercentAngle(0.4, 0);
+                        Drivetrain.get().setFrontRightPercentAngle(0.4, 0);
+                        Drivetrain.get().setBackLeftPercentAngle(0.4, 0);
+                        Drivetrain.get().setBackRightPercentAngle(0.4, 0);
+                    }, () -> {
+                        return false;
+                    })
+                        .withTimeout(0.125),
+                    
+                    Commands.waitSeconds(0.125),
 
-    public Command getPlaceConeAutoCommand() {
-        return Commands.sequence(
-            // Commands.runOnce(() -> {
-            //     Gripper.get().lowOuttakeConeCommand.schedule();
-            // }),
-            // Commands.runOnce(() -> {
-            //     Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
-            // }),
-            // Commands.waitSeconds(1),
-            // Commands.runOnce(() -> {
-            //     Gripper.get().intakeCommand.schedule();
-            // }),
-            // Commands.waitSeconds(1.0),
-            // Commands.runOnce(() -> {
-            //     Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
-            // }),
-            // Commands.waitSeconds(3),
-            // new MidConeNode(),
-            // new WaitCommand(1),
-            // Commands.runOnce(() -> {
-            //     Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
-            // }),
-            // Commands.waitSeconds(0.5),
-            // Commands.runOnce(() -> {
-            //     Gripper.get().midOuttakeConeCommand.schedule();
-            // })
-            // new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 1),
-            // Commands.runOnce(() -> {
-            //     Arm.get().setTargetAngleDegrees(ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
-            // }),
-            // Commands.waitSeconds(2),
-            // new DriveToRelativePose(new Pose2d(-3, 0, Rotation2d.fromDegrees(0)), 2)
-        );
+                    Commands.runOnce(() -> {
+                        Drivetrain.get().setFrontLeftPercentAngle(0, 0);
+                        Drivetrain.get().setFrontRightPercentAngle(0, 0);
+                        Drivetrain.get().setBackLeftPercentAngle(0, 0);
+                        Drivetrain.get().setBackRightPercentAngle(0, 0);
+                    }),
+
+                    Commands.waitSeconds(4),
+                    
+                    new FunctionalCommand(() -> {
+                        // onInit
+                        Drivetrain.get().driveCommand.setDisabled();
+                    }, () -> {
+                        // onExecute
+                        Drivetrain.get().setFrontLeftPercentAngle(0.12, 0);
+                        Drivetrain.get().setFrontRightPercentAngle(0.12, 0);
+                        Drivetrain.get().setBackLeftPercentAngle(0.12, 0);
+                        Drivetrain.get().setBackRightPercentAngle(0.12, 0);
+                    }, (interrupted) -> {
+                        Drivetrain.get().setFrontLeftPercentAngle(0, Math.toRadians(-45));
+                        Drivetrain.get().setFrontRightPercentAngle(0, Math.toRadians(45));
+                        Drivetrain.get().setBackLeftPercentAngle(0, Math.toRadians(45));
+                        Drivetrain.get().setBackRightPercentAngle(0, Math.toRadians(-45));
+                    }, () -> {
+                        return false;
+                    })
+                        .withTimeout(6.75)
+                );
+            case AutoConstants.NothingAuto:
+                return Commands.print("Nothing auto selected, doing nothing");
+        }
+
+        return Commands.print("Unknown auto selected, doing nothing");
+
+        // return new AutoDrive(0, 3, 0, 0.6, 0.5, 90);
+
+        // switch (autoChooser.getSelected()) {
+        //     case AutoConstants.TaxiAuto:
+        //         return Autos.getTaxiAuto();
+        //     case AutoConstants.SidewaysThenTaxiAuto:
+        //         return Autos.getSidewaysThenTaxiAuto();
+        //     case AutoConstants.ConeThenTaxiAuto:
+        //         return Autos.getConeThenTaxiAuto();
+        //     case AutoConstants.ConeThenBalanceAuto:
+        //         return Autos.getConeThenBalanceAuto();
+        // }
+        
+        // return Commands.print("No autonomous command selected");
     }
 }

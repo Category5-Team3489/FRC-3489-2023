@@ -2,53 +2,49 @@ package frc.robot.commands.automation;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
-public class MidConeNode extends CommandBase {
+public class NewHighConeNode extends CommandBase {
     private static double ProportionalGain = 0.18;
     private static double MaxStrafeMetersPerSecond = 0.5;
-    private static double MaxDistanceMetersPerSecond = 0.75;
-    private static double StrafeToleranceDegrees = 1.25;
-    private static double DistanceToleranceDegrees = 1.25;
+    // private static double MaxDistanceMetersPerSecond = 0.75;
+    private static double StrafeToleranceDegrees = 1;
+    // private static double DistanceToleranceDegrees = 1;
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
-    private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -4.84;
-    private static double TargetYSetpointDegrees = -5.4;
+    private static double MaxOmegaDegreesPerSecond = 180; // 90
+    private static double TargetXSetpointDegrees = -3.857;
+    // private static double TargetYSetpointDegrees = 21.49;
+    private static double WallSpeedMetersPerSecond = -0.5;
+    private static double WallTimeoutSeconds = 2;
+
+    private Timer wallTimer = new Timer();
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
-    private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
+    // private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
+    private SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(5);
 
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
-    
-    public MidConeNode() {
-        // keep tx on target with x movements
-        // find good z position with deadreckoning from april tags
 
-        // could try to extract z position and cone node state info from limelight data, but would be complicated
-        // target area?, then would have to worry about partially covered tape on cone nodes
-        // go with simpler deadreckoning from april tags first
+    private boolean hasHitStrafeSetpoint = false;
 
-        // you can figure out cone node availablilityy with target area and ty
+    public NewHighConeNode() {
 
-        // different pipelines with different cropping for top and bottom cone nodes??????!!??!?! YES
-
-        // https://docs.limelightvision.io/en/latest/networktables_api.html#advanced-usage-with-raw-contours
-
-        // TODO May want timer for how long robot has been at setpoint for and only finish after 0.25 sec or so
     }
 
     @Override
     public void initialize() {
-        Limelight.get().setDesiredPipeline(LimelightConstants.MidRetroreflectivePipeline);
+        Limelight.get().setDesiredPipeline(LimelightConstants.HighRetroreflectivePipeline);
 
         strafeController.setTolerance(StrafeToleranceDegrees);
-        distanceController.setTolerance(DistanceToleranceDegrees);
+        // distanceController.setTolerance(DistanceToleranceDegrees);
 
         Drivetrain.get().driveCommand.setAutomationXSupplier(() -> xMetersPerSecond);
         Drivetrain.get().driveCommand.setAutomationYSupplier(() -> yMetersPerSecond);
@@ -57,12 +53,12 @@ public class MidConeNode extends CommandBase {
 
         Drivetrain.get().driveCommand.setTargetAngle(TargetAngle);
 
-        System.out.println("Mid cone node init");
+        System.out.println("New high cone node init");
     }
 
     @Override
     public void execute() {
-        if (!Limelight.get().isActivePipeline(LimelightConstants.MidRetroreflectivePipeline)) {
+        if (!Limelight.get().isActivePipeline(LimelightConstants.HighRetroreflectivePipeline)) {
             return;
         }
 
@@ -75,19 +71,30 @@ public class MidConeNode extends CommandBase {
             yMetersPerSecond = 0;
         }
 
-        double targetY = Limelight.get().getTargetY();
-        if (!Double.isNaN(targetY)) {
-            xMetersPerSecond = distanceController.calculate(targetY, TargetYSetpointDegrees);
-            xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -MaxDistanceMetersPerSecond, MaxDistanceMetersPerSecond);
+        if (strafeController.atSetpoint() && !hasHitStrafeSetpoint) {
+            hasHitStrafeSetpoint = true;
+
+            wallTimer.restart();
         }
-        else {
-            xMetersPerSecond = 0;
+
+        if (hasHitStrafeSetpoint) {
+            xMetersPerSecond = distanceRateLimiter.calculate(WallSpeedMetersPerSecond);
         }
+
+        // double targetY = Limelight.get().getTargetY();
+        // if (!Double.isNaN(targetY)) {
+        //     xMetersPerSecond = -distanceController.calculate(targetY, TargetYSetpointDegrees);
+        //     xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -MaxDistanceMetersPerSecond, MaxDistanceMetersPerSecond);
+        // }
+        // else {
+        //     xMetersPerSecond = 0;
+        // }
     }
 
     @Override
     public boolean isFinished() {
-        return strafeController.atSetpoint() && distanceController.atSetpoint();
+        // return strafeController.atSetpoint() && distanceController.atSetpoint();
+        return wallTimer.hasElapsed(WallTimeoutSeconds);
     }
 
     @Override
@@ -97,6 +104,6 @@ public class MidConeNode extends CommandBase {
         Drivetrain.get().driveCommand.setAutomationSpeedLimiterSupplier(null);
         Drivetrain.get().driveCommand.setAutomationMaxOmegaSupplier(null);
 
-        System.out.println("Mid cone node end");
+        System.out.println("New high cone node end");
     }
 }

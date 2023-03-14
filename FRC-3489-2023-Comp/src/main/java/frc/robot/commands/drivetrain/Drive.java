@@ -1,9 +1,12 @@
 package frc.robot.commands.drivetrain;
 
+import java.util.function.DoubleSupplier;
+
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -12,17 +15,17 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.Cat5Utils;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.commands.DriveToRelativePose;
 import frc.robot.commands.automation.HighConeNode;
 import frc.robot.commands.automation.HighCubeNode;
 import frc.robot.commands.automation.MidConeNode;
 import frc.robot.commands.automation.MidCubeNode;
+import frc.robot.commands.automation.NewHighConeNode;
 import frc.robot.enums.GridPosition;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
@@ -31,10 +34,7 @@ import frc.robot.subsystems.NavX2;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
 import static frc.robot.Constants.OperatorConstants.*;
-
-import java.util.function.DoubleSupplier;
-
-import com.revrobotics.CANSparkMax.IdleMode;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class Drive extends CommandBase {
     private double frontLeftSteerAngleRadians = 0;
@@ -48,13 +48,16 @@ public class Drive extends CommandBase {
     private Rotation2d targetAngle = null;
     private PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
-    private boolean isAutomating = false;
+    private CommandBase automationCommand = null;
     private DoubleSupplier automationXSupplier = null;
     private DoubleSupplier automationYSupplier = null;
     private DoubleSupplier automationSpeedLimiterSupplier = null;
+    private DoubleSupplier automationMaxOmegaSupplier = null;
 
     private Trigger automateTrigger = RobotContainer.get().man.button(AutomateManButton);
     private Trigger stopAutomationTrigger = RobotContainer.get().man.button(StopAutomationManButton);
+
+    private boolean disabled = false;
 
     public Drive() {
         addRequirements(Drivetrain.get());
@@ -63,30 +66,42 @@ public class Drive extends CommandBase {
         omegaController.setTolerance(OmegaToleranceDegrees / 2.0);
 
         //#region Bindings
-        new Trigger(() -> isAutomating)
-            .onFalse(Commands.runOnce(() -> {
-                frontLeftSteerAngleRadians = 0;
-                frontRightSteerAngleRadians = 0;
-                backLeftSteerAngleRadians= 0;
-                backRightSteerAngleRadians = 0;
+        // new Trigger(() -> isAutomating)
+        //     .onFalse(Commands.runOnce(() -> {
+        //         frontLeftSteerAngleRadians = 0;
+        //         frontRightSteerAngleRadians = 0;
+        //         backLeftSteerAngleRadians= 0;
+        //         backRightSteerAngleRadians = 0;
 
-                xRateLimiter.reset(0);
-                yRateLimiter.reset(0);
+        //         xRateLimiter.reset(0);
+        //         yRateLimiter.reset(0);
 
-                targetAngle = null;
-                omegaController.reset();
+        //         targetAngle = null;
+        //         omegaController.reset();
 
-                isAutomating = false;
-                automationXSupplier = null;
-                automationYSupplier = null;
-                automationSpeedLimiterSupplier = null;
-            }));
-            
+        //         isAutomating = false;
+        //         automationXSupplier = null;
+        //         automationYSupplier = null;
+        //         automationSpeedLimiterSupplier = null;
+        //         automationMaxOmegaSupplier = null;
+        //     }));
         //#endregion
+    }
+
+    public void setDisabled() {
+        disabled = true;
     }
 
     @Override
     public void execute() {
+        if (DriverStation.isTeleopEnabled()) {
+            disabled = false;
+        }
+
+        if (disabled) {
+            return;
+        }
+
         double maxVelocityMetersPerSecond = Drivetrain.get().maxVelocityConfig.getMaxVelocityMetersPerSecond.getAsDouble();
         double maxAngularVelocityRadiansPerSecond = Drivetrain.get().maxVelocityConfig.getMaxAngularVelocityRadiansPerSecond.getAsDouble();
     
@@ -181,18 +196,23 @@ public class Drive extends CommandBase {
         boolean isNotBeingTeleoperated = xMetersPerSecond == 0 && yMetersPerSecond == 0 && omegaRadiansPerSecond == 0;
         
         if (DriverStation.isTeleop()) {
-            if (isNotBeingTeleoperated && automateTrigger.getAsBoolean() && !isAutomating) {
-                isAutomating = true;
-
-                enableTeleopAutomation();
+            if (isNotBeingTeleoperated && automateTrigger.getAsBoolean() && (automationCommand == null || automationCommand.isFinished())) {
+                tryEnableTeleopAutomation();
             }
 
             if (stopAutomationTrigger.getAsBoolean() || !isNotBeingTeleoperated) {
-                isAutomating = false;
+                if (automationCommand != null) {
+                    automationCommand.cancel();
+                    automationCommand = null;
+                }
             }
         }
 
-        if (isAutomationAllowed()) {
+        if (automationCommand != null && !automationCommand.isScheduled()) {
+            automationCommand.schedule();
+        }
+
+        if (automationCommand != null && !automationCommand.isFinished()) {
             if (automationXSupplier != null) {
                 xMetersPerSecond = automationXSupplier.getAsDouble();
             }
@@ -201,6 +221,12 @@ public class Drive extends CommandBase {
             }
             if (automationSpeedLimiterSupplier != null) {
                 speedLimiter = automationSpeedLimiterSupplier.getAsDouble();
+            }
+        }
+        else {
+            if (automationCommand != null) {
+                automationCommand.cancel();
+                automationCommand = null;
             }
         }
 
@@ -214,7 +240,11 @@ public class Drive extends CommandBase {
 
             if (!omegaController.atSetpoint()) {
                 omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
-                omegaRadiansPerSecond = MathUtil.clamp(omegaRadiansPerSecond, -maxAngularVelocityRadiansPerSecond, maxAngularVelocityRadiansPerSecond);
+                double maxOmegaRadiansPerSecond = maxAngularVelocityRadiansPerSecond;
+                if ((automationCommand != null && !automationCommand.isFinished()) && automationMaxOmegaSupplier != null) {
+                    maxOmegaRadiansPerSecond = Math.toRadians(automationMaxOmegaSupplier.getAsDouble());
+                }
+                omegaRadiansPerSecond = MathUtil.clamp(omegaRadiansPerSecond, -maxOmegaRadiansPerSecond, maxOmegaRadiansPerSecond);
             }
         }
         else {
@@ -262,10 +292,16 @@ public class Drive extends CommandBase {
         targetAngle = null;
         omegaController.reset();
 
-        isAutomating = false;
+        if (automationCommand != null) {
+            automationCommand.cancel();
+            automationCommand = null;
+        }
         automationXSupplier = null;
         automationYSupplier = null;
         automationSpeedLimiterSupplier = null;
+        automationMaxOmegaSupplier = null;
+
+        disabled = false;
     }
 
     //#region Public
@@ -273,9 +309,6 @@ public class Drive extends CommandBase {
         this.targetAngle = targetAngle;
     }
 
-    public boolean isAutomationAllowed() {
-        return DriverStation.isAutonomous() || isAutomating;
-    }
     public void setAutomationXSupplier(DoubleSupplier automationXSupplier) {
         this.automationXSupplier = automationXSupplier;
     }
@@ -285,34 +318,38 @@ public class Drive extends CommandBase {
     public void setAutomationSpeedLimiterSupplier(DoubleSupplier automationSpeedLimiterSupplier) {
         this.automationSpeedLimiterSupplier = automationSpeedLimiterSupplier;
     }
+    public void setAutomationMaxOmegaSupplier(DoubleSupplier automationMaxOmegaSupplier) {
+        this.automationMaxOmegaSupplier = automationMaxOmegaSupplier;
+    }
     //#endregion
 
-    private void enableTeleopAutomation() {
-        // Use down, mid, up pov and automation button
-        // Get camerapose_targetspace,
-        // Have individual commands use limelight more directly
-        // Less abstraction
-
-        // Pose Estimator turn right = minus
-        // -Y = right
-        // +X = forward
+    private void tryEnableTeleopAutomation() {
+        if (automationCommand != null) {
+            automationCommand.cancel();
+            automationCommand = null;
+        }
 
         switch (Arm.get().getGridPosition()) {
             case Low:
-                Commands.sequence(
-                    Commands.print("Test drive to relative pose start"),
-                    new DriveToRelativePose(new Pose2d(0, 2, Rotation2d.fromDegrees(0)), 1.0),
-                    new DriveToRelativePose(new Pose2d(-2, 0, Rotation2d.fromDegrees(0)), 1.0),
-                    new DriveToRelativePose(new Pose2d(0, -2, Rotation2d.fromDegrees(0)), 1.0),
-                    new DriveToRelativePose(new Pose2d(2, 0, Rotation2d.fromDegrees(0)), 1.0),
-                    Commands.print("Test drive to relative pose end")
-                ).schedule();
+                switch (Gripper.get().getHeldGamePiece()) {
+                    case Cone:
+                        Commands.sequence(
+
+                        );
+                        break;
+                    case Cube:
+                        Commands.sequence(
+
+                        );
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case Mid:
                 switch (Gripper.get().getHeldGamePiece()) {
                     case Cone:
-                        System.out.println("start cone mid place");
-                        Commands.sequence(
+                        automationCommand = Commands.sequence(
                             new MidConeNode(),
                             Commands.waitSeconds(1),
                             Commands.runOnce(() -> {
@@ -321,50 +358,121 @@ public class Drive extends CommandBase {
                             Commands.waitSeconds(0.5),
                             Commands.runOnce(() -> {
                                 Gripper.get().midOuttakeConeCommand.schedule();
-                            }),
-                            Commands.waitSeconds(0.5)
-                        ).schedule();
+                            })
+                        );
                         break;
                     case Cube:
-                        System.out.println("start cube mid place");
-                        Commands.sequence(
+                        automationCommand = Commands.sequence(
                             new MidCubeNode(),
                             Commands.runOnce(() -> {
                                 Gripper.get().midOuttakeCubeCommand.schedule();
                             })
-                        ).schedule();
+                        );
                         break;
                     default:
                         break;
                 }
+                // switch (Gripper.get().getHeldGamePiece()) {
+                //     case Cone:
+                //         System.out.println("start cone mid place");
+                //         Commands.sequence(
+                //             new MidConeNode(),
+                //             Commands.waitSeconds(1),
+                //             Commands.runOnce(() -> {
+                //                 Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
+                //             }),
+                //             Commands.waitSeconds(0.5),
+                //             Commands.runOnce(() -> {
+                //                 Gripper.get().midOuttakeConeCommand.schedule();
+                //             })
+                //         ).schedule();
+                //         break;
+                //     case Cube:
+                //         System.out.println("start cube mid place");
+                //         Commands.sequence(
+                //             new MidCubeNode(),
+                //             Commands.runOnce(() -> {
+                //                 Gripper.get().midOuttakeCubeCommand.schedule();
+                //             })
+                //         ).schedule();
+                //         break;
+                //     default:
+                //         break;
+                // }
                 break;
             case High:
                 switch (Gripper.get().getHeldGamePiece()) {
                     case Cone:
-                        System.out.println("start cone high place");
-                        Commands.sequence(
-                            new HighConeNode(),
+                        automationCommand = Commands.sequence(
+                            // new HighConeNode(),
+                            // Commands.runOnce(() -> {
+                            //     Gripper.get().intakeCommand.schedule();
+                            // }),
+                            // Commands.waitSeconds(1.5),
+                            // Commands.runOnce(() -> {
+                            //     Gripper.get().highOuttakeConeCommand.schedule();
+                            // }),
+                            // Commands.runOnce(() -> {
+                            //     if (automationCommand != null) {
+                            //         automationCommand.cancel();
+                            //         automationCommand = null;
+                            //     }
+                            // })
+                            new NewHighConeNode(),
                             Commands.waitSeconds(1),
                             Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeConeCommand.schedule();
+                            }),
+                            Commands.runOnce(() -> {
+                                if (automationCommand != null) {
+                                    automationCommand.cancel();
+                                    automationCommand = null;
+                                }
                             })
-                            // new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 0.4)
-                        ).schedule();
+                        );
                         break;
                     case Cube:
-                        System.out.println("start cube high place");
-                        Commands.sequence(
+                        automationCommand = Commands.sequence(
                             new HighCubeNode(),
-                            new WaitCommand(1),
+                            Commands.waitSeconds(1),
                             Commands.runOnce(() -> {
                                 Gripper.get().highOuttakeCubeCommand.schedule();
                             })
-                        ).schedule();
+                        );
                         break;
                     default:
                         break;
                 }
+                // switch (Gripper.get().getHeldGamePiece()) {
+                //     case Cone:
+                //         System.out.println("start cone high place");
+                //         Commands.sequence(
+                //             new HighConeNode(),
+                //             Commands.waitSeconds(1),
+                //             Commands.runOnce(() -> {
+                //                 Gripper.get().highOuttakeConeCommand.schedule();
+                //             })
+                //             // new DriveToRelativePose(new Pose2d(0, 1, Rotation2d.fromDegrees(0)), 0.4)
+                //         ).schedule();
+                //         break;
+                //     case Cube:
+                //         System.out.println("start cube high place");
+                //         Commands.sequence(
+                //             new HighCubeNode(),
+                //             new WaitCommand(1),
+                //             Commands.runOnce(() -> {
+                //                 Gripper.get().highOuttakeCubeCommand.schedule();
+                //             })
+                //         ).schedule();
+                //         break;
+                //     default:
+                //         break;
+                // }
                 break;
+        }
+
+        if (automationCommand != null) {
+            automationCommand.schedule();
         }
     }
 }
