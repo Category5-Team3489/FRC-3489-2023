@@ -4,14 +4,15 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Cat5Subsystem;
+import frc.robot.subsystems.Leds;
 
 public class RobotContainer {
     //#region Singleton
@@ -42,10 +43,22 @@ public class RobotContainer {
     private final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
     
     public RobotContainer() {
+        instance = this;
+        cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
+
+        // Initialize subsystems
+        Camera.get();
+
+        Leds.get();
+
         configureBindings();
     }
 
     private void configureBindings() {
         // TODO Move bindings here
     }
+
+    // Try out DataLogManager
+    // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html
+    // Combine with shuffleboard logging stuff?
 }

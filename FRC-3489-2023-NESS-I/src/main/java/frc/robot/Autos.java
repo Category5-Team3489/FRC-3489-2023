@@ -7,24 +7,31 @@ import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class Autos {
-    public static final String TaxiAuto = "Taxi";
-    public static final String BalanceAuto = "Balance";
-    public static final String BumpBalanceAuto = "BumpBalance";
-    public static final String NothingAuto = "Nothing";
+    // Constants
+    private static final String TaxiAuto = "Taxi";
+    private static final String BalanceAuto = "Balance";
+    private static final String BumpBalanceAuto = "BumpBalance";
+    private static final String NothingAuto = "Nothing";
 
+    // State
     private final SendableChooser<String> autoChooser = new SendableChooser<String>();
 
     public Autos() {
-        var autoTab = Cat5ShuffleboardTab.Auto.get();
         autoChooser.setDefaultOption(TaxiAuto, TaxiAuto);
         autoChooser.addOption(BalanceAuto, BalanceAuto);
         autoChooser.addOption(BumpBalanceAuto, BumpBalanceAuto);
         autoChooser.addOption(NothingAuto, NothingAuto);
-        autoTab.add(autoChooser);
+
+        Cat5ShuffleboardTab.Auto.get().add(autoChooser);
     }
     
+    //#region Public
     public Command getAutonomousCommand() {
-        switch (autoChooser.getSelected()) {
+        String selectedAuto = autoChooser.getSelected();
+
+        System.out.println("Constructed selected auto: \"" + selectedAuto + "\"");
+
+        switch (selectedAuto) {
             case TaxiAuto:
                 return getTaxiAutoCommand();
             case BalanceAuto:
@@ -35,8 +42,9 @@ public class Autos {
                 return getNothingAutoCommand();
         }
 
-        return print("No auto selected, doing nothing");
+        return print("Unknown auto selected, doing nothing");
     }
+    //#endregion
 
     private Command getTaxiAutoCommand() {
         return print("Taxi auto selected, not implemented, doing nothing");
