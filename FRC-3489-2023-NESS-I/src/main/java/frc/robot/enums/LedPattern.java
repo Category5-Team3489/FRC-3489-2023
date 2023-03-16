@@ -1,8 +1,6 @@
 package frc.robot.enums;
 
 public enum LedPattern {
-    Alliance(Double.NaN),
-
     RainbowRainbowPalette(-0.99),
     RainbowPartyPalette(-0.97),
     RainbowOceanPalette(-0.95),

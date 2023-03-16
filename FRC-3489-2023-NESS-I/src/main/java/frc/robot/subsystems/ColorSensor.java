@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.configs.colorsensor.ColorAndProximityConfig;
 import frc.robot.enums.GamePiece;
+import frc.robot.enums.LedPattern;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.ColorSensorConstants.*;
@@ -37,14 +39,14 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     private final Timer warningTimer = new Timer();
 
     private ColorSensor() {
-        super((i) -> instance = i);
+        super(i -> instance = i);
 
         warningTimer.restart();
 
         // #region Shuffleboard
         if (Constants.IsDebugShuffleboardEnabled) {
             var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-                    .withSize(2, 3);
+                    .withSize(2, 1);
 
             layout.addDouble("Red", () -> color.red);
             layout.addDouble("Green", () -> color.green);
@@ -57,6 +59,10 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
 
     @Override
     public void periodic() {
+        if (Robot.isSimulation()) {
+            return;
+        }
+
         color = colorSensor.getColor();
         proximity = colorSensor.getProximity();
 
@@ -83,12 +89,18 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
 
             if (!colorSensor.isConnected()) {
                 DriverStation.reportWarning("Color sensor not connected", false);
+                Leds.get().getCommand(LedPattern.Aqua, LedPattern.StrobeRed, 0.5, true)
+                    .schedule();
             }
             else if (colorSensor.hasReset()) {
                 DriverStation.reportWarning("Color sensor has reset", false);
+                Leds.get().getCommand(LedPattern.DarkBlue, LedPattern.StrobeRed, 0.5, true)
+                    .schedule();
             }
             else if (color.red == 0 && color.green == 0 && color.blue == 0 && proximity == 0) {
                 DriverStation.reportWarning("Color sensor values are zero", false);
+                Leds.get().getCommand(LedPattern.BlueGreen, LedPattern.StrobeRed, 0.5, true)
+                    .schedule();
             }
         }
     }

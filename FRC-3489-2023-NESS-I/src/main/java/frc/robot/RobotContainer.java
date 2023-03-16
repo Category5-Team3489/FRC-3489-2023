@@ -7,12 +7,18 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.LedsConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.enums.LedPattern;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Cat5Subsystem;
+import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Leds;
+import frc.robot.subsystems.NavX2;
 
 public class RobotContainer {
     //#region Singleton
@@ -49,13 +55,32 @@ public class RobotContainer {
         // Initialize subsystems
         Camera.get();
 
+        NavX2.get();
+        // TODO Limelight
+        // TODO Drivetrain
+        // TODO PoseEstimator
+
+        ColorSensor.get();
+        // TODO Gripper
+        // TODO Arm
+
         Leds.get();
 
         configureBindings();
     }
 
     private void configureBindings() {
-        // TODO Move bindings here
+        xbox.start()
+            .onTrue(NavX2.get().zeroYawCommand);
+
+        new Trigger(() -> DriverStation.isAutonomousEnabled())
+            .onTrue(Leds.get().getCommand(LedPattern.Blue, 1.0, false));
+        new Trigger(() -> DriverStation.isTeleopEnabled())
+            .onTrue(Leds.get().getCommand(LedPattern.Green, 1.0, false));
+        man.axisLessThan(LedsConstants.GamePieceIndicatorManAxis, -LedsConstants.GamePieceIndicatorThreshold)
+            .whileTrue(Leds.get().getCommand(LedPattern.BlueViolet, Double.MAX_VALUE, true));
+        man.axisGreaterThan(LedsConstants.GamePieceIndicatorManAxis, LedsConstants.GamePieceIndicatorThreshold)
+            .whileTrue(Leds.get().getCommand(LedPattern.Yellow, Double.MAX_VALUE, true));
     }
 
     // Try out DataLogManager

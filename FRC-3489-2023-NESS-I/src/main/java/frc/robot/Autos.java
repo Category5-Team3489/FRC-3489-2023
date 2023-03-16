@@ -13,16 +13,18 @@ public class Autos {
     private static final String BumpBalanceAuto = "BumpBalance";
     private static final String NothingAuto = "Nothing";
 
-    // State
+    // Shuffleboard
     private final SendableChooser<String> autoChooser = new SendableChooser<String>();
 
     public Autos() {
+        //#region Shuffleboard
         autoChooser.setDefaultOption(TaxiAuto, TaxiAuto);
         autoChooser.addOption(BalanceAuto, BalanceAuto);
         autoChooser.addOption(BumpBalanceAuto, BumpBalanceAuto);
         autoChooser.addOption(NothingAuto, NothingAuto);
-
+        
         Cat5ShuffleboardTab.Auto.get().add(autoChooser);
+        //#endregion
     }
     
     //#region Public

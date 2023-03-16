@@ -28,7 +28,9 @@ public class Camera extends Cat5Subsystem<Camera> {
             camera.setResolution(CameraConstants.PixelWidth, CameraConstants.PixelHeight);
             camera.setFPS(CameraConstants.FPS);
 
+            //#region Shuffleboard
             Cat5ShuffleboardTab.Main.get().add(server.getSource());
+            //#endregion
         }
         catch (Exception e) {
             DriverStation.reportWarning("Camera not initialized", false);
