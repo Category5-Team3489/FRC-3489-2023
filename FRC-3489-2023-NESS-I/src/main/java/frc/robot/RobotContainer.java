@@ -94,6 +94,51 @@ public class RobotContainer {
 
     }
 
+    //#region Public
+    // TODO RENAME THESE, focus on their purpose, not internal method names
+
+    public double getDriveXPercent() {
+        return Cat5Utils.quadraticAxis(-xbox.getLeftY(), OperatorConstants.XboxAxisDeadband);
+    }
+
+    public double getDriveYPercent() {
+        return Cat5Utils.quadraticAxis(-xbox.getLeftX(), OperatorConstants.XboxAxisDeadband);
+    }
+
+    public double getDriveOmegaPercent() {
+        return Cat5Utils.quadraticAxis(-xbox.getRightX(), OperatorConstants.XboxAxisDeadband);
+    }
+
+    public double getDriveSpeedLimiterPercent() {
+        double speedLimiter = 1.0 / 2.0;
+
+        if (xbox.leftBumper().getAsBoolean()) {
+            speedLimiter = 1.0 / 3.0;
+        }
+        else if (xbox.rightBumper().getAsBoolean()) {
+            speedLimiter = 1.0;
+        }
+
+        return speedLimiter;
+    }
+
+    public int getDrivePovAngle() {
+        return xbox.getHID().getPOV();
+    }
+
+    public double getDriveLeftHeadingAdjustmentPercent() {
+        return Cat5Utils.deadband(xbox.getLeftTriggerAxis(), OperatorConstants.XboxAxisDeadband);
+    }
+
+    public double getDriveRightHeadingAdjustmentPercent() {
+        return Cat5Utils.deadband(xbox.getRightTriggerAxis(), OperatorConstants.XboxAxisDeadband);
+    }
+
+    public double getArmManualControlPercent() {
+        return Cat5Utils.linearAxis(-man.getY(), OperatorConstants.ManAxisDeadband);
+    }
+    //#endregion
+
     // Try out DataLogManager
     // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html
     // Combine with shuffleboard logging stuff?

@@ -4,14 +4,19 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Cat5Utils;
 import frc.robot.commands.drivetrain.BrakeRotation;
 import frc.robot.commands.drivetrain.BrakeTranslation;
+import frc.robot.commands.drivetrain.Drive;
 import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
@@ -39,14 +44,25 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     public final SwerveModule backRightModule;
 
     // Commands
+    public final Drive driveCommand;
     public final BrakeTranslation brakeTranslationCommand;
     public final BrakeRotation brakeRotationCommand;
+
+    // State
+    private Rotation2d targetHeading = null;
+    private PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
     private Drivetrain() {
         super(i -> instance = i);
 
+        driveCommand = new Drive();
         brakeTranslationCommand = new BrakeTranslation();
         brakeRotationCommand = new BrakeRotation();
+
+        setDefaultCommand(driveCommand);
+
+        omegaController.enableContinuousInput(-180, 180);
+        omegaController.setTolerance(OmegaToleranceDegrees / 2.0);
 
         //#region Devices
         ShuffleboardTab tab = Shuffleboard.getTab("SDS Debug");
@@ -98,9 +114,42 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     }
 
     //#region Public
-    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double omegaRadiansPerSecond) {
-        // TODO Rotation button adjusts target heading, not omega directly??????!??!?
-        // TODO Use triggers for that, they go from 0..1, left and right rotation from them
+    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double speedLimiter) {
+
+    }
+
+    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double omegaRadiansPerSecond, double speedLimiter) {
+        double maxVelocityMetersPerSecond = maxVelocityConfig.getMaxVelocityMetersPerSecond();
+        
+        Rotation2d theta = NavX2.get().getRotation();
+
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, theta);
+    
+        SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond * speedLimiter);
+
+        double frontLeftSteerAngleRadians = states[0].angle.getRadians();
+        double frontRightSteerAngleRadians = states[1].angle.getRadians();
+        double backLeftSteerAngleRadians = states[2].angle.getRadians();
+        double backRightSteerAngleRadians = states[3].angle.getRadians();
+        
+        setFrontLeftSpeedAngle(states[0].speedMetersPerSecond, frontLeftSteerAngleRadians);
+        setFrontRightSpeedAngle(states[1].speedMetersPerSecond, frontRightSteerAngleRadians);
+        setBackLeftSpeedAngle(states[2].speedMetersPerSecond, backLeftSteerAngleRadians);
+        setBackRightSpeedAngle(states[3].speedMetersPerSecond, backRightSteerAngleRadians);
+    }
+
+    public void adjustTargetHeading(Rotation2d adjustment) {
+        if (targetHeading == null) {
+            targetHeading = NavX2.get().getRotation();
+        }
+
+        targetHeading = targetHeading.plus(adjustment);
+    }
+
+    public void resetTargetHeading() {
+        targetHeading = null;
+        omegaController.reset();
     }
 
     // Front Left
