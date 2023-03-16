@@ -8,15 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.GripperConstants;
 import frc.robot.Constants.LedsConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.enums.LedPattern;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
+import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.NavX2;
 
@@ -61,7 +64,7 @@ public class RobotContainer {
         // TODO PoseEstimator
 
         ColorSensor.get();
-        // TODO Gripper
+        Gripper.get();
         // TODO Arm
 
         Leds.get();
@@ -81,6 +84,14 @@ public class RobotContainer {
             .whileTrue(Leds.get().getCommand(LedPattern.BlueViolet, Double.MAX_VALUE, true));
         man.axisGreaterThan(LedsConstants.GamePieceIndicatorManAxis, LedsConstants.GamePieceIndicatorThreshold)
             .whileTrue(Leds.get().getCommand(LedPattern.Yellow, Double.MAX_VALUE, true));
+        //Gripper
+        man.button(GripperConstants.OuttakeManButton)
+            .onTrue(Commands.runOnce(() -> Gripper.get().outtakeCommand()));
+        man.button(GripperConstants.StopManButton)
+            .onTrue(Commands.runOnce(() -> Gripper.get().stopCommand.schedule()));
+        man.button(GripperConstants.IntakeManButton)
+            .onTrue(Commands.runOnce(() -> Gripper.get().intakeCommand.schedule()));
+
     }
 
     // Try out DataLogManager
