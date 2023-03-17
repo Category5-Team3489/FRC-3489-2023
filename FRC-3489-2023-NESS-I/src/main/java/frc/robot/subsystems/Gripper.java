@@ -15,10 +15,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
 import frc.robot.enums.LedPattern;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.GripperConstants;
-import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
+
+import static frc.robot.Constants.GripperConstants.*;
 
 public class Gripper extends Cat5Subsystem<Gripper> {
     //#region Singleton
@@ -30,8 +30,8 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     //#endregion
 
     // Devices
-    private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(GripperConstants.LeftMotorDeviceId);
-    private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(GripperConstants.RightMotorDeviceId);
+    private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(LeftMotorDeviceId);
+    private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(RightMotorDeviceId);
 
     // Suppliers
     private final BooleanSupplier isColorSensorDisabled;
@@ -39,23 +39,15 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     // Commands
     public final CommandBase stopCommand = getStopCommand();
     public final CommandBase intakeCommand = getIntakeCommand();
-    // public final CommandBase lowOuttakeCommand = getLowOuttakeCommand();
-    // public final CommandBase midOuttakeCommand = getMidOuttakeCommand();
-    // public final CommandBase highOuttakeCommand = getHighOuttakeCommand();
-    public final CommandBase lowOuttakeConeCommand = getOuttakeCommand("Low Cone", GripperConstants.LowOuttakeConePercent, GripperConstants.LowOuttakeConeSeconds);
-    public final CommandBase midOuttakeConeCommand = getOuttakeCommand("Mid Cone", GripperConstants.MidOuttakeConePercent, GripperConstants.MidOuttakeConeSeconds);
-    public final CommandBase highOuttakeConeCommand = getOuttakeCommand("High Cone", GripperConstants.HighOuttakeConePercent, GripperConstants.HighOuttakeConeSeconds);
-    public final CommandBase lowOuttakeCubeCommand = getOuttakeCommand("Low Cube", GripperConstants.LowOuttakeCubePercent, GripperConstants.LowOuttakeCubeSeconds);
-    public final CommandBase midOuttakeCubeCommand = getOuttakeCommand("Mid Cube", GripperConstants.MidOuttakeCubePercent, GripperConstants.MidOuttakeCubeSeconds);
-    public final CommandBase highOuttakeCubeCommand = getOuttakeCommand("High Cube", GripperConstants.HighOuttakeCubePercent, GripperConstants.HighOuttakeCubeSeconds);
-    public final CommandBase lowOuttakeUnknownCommand = getOuttakeCommand("Low Unknown", GripperConstants.LowOuttakeUnknownPercent, GripperConstants.LowOuttakeUnknownSeconds);
-    public final CommandBase midOuttakeUnknownCommand = getOuttakeCommand("Mid Unknown", GripperConstants.MidOuttakeUnknownPercent, GripperConstants.MidOuttakeUnknownSeconds);
-    public final CommandBase highOuttakeUnknownCommand = getOuttakeCommand("High Unknown", GripperConstants.HighOuttakeUnknownPercent, GripperConstants.HighOuttakeUnknownSeconds);
-
-
-    private double coneSeconds;
-    private double cubeSeconds;
-    private double unknownSeconds;
+    public final CommandBase lowOuttakeConeCommand = getOuttakeCommand("Low Cone", LowOuttakeConePercent, LowOuttakeConeSeconds);
+    public final CommandBase midOuttakeConeCommand = getOuttakeCommand("Mid Cone", MidOuttakeConePercent, MidOuttakeConeSeconds);
+    public final CommandBase highOuttakeConeCommand = getOuttakeCommand("High Cone", HighOuttakeConePercent, HighOuttakeConeSeconds);
+    public final CommandBase lowOuttakeCubeCommand = getOuttakeCommand("Low Cube", LowOuttakeCubePercent, LowOuttakeCubeSeconds);
+    public final CommandBase midOuttakeCubeCommand = getOuttakeCommand("Mid Cube", MidOuttakeCubePercent, MidOuttakeCubeSeconds);
+    public final CommandBase highOuttakeCubeCommand = getOuttakeCommand("High Cube", HighOuttakeCubePercent, HighOuttakeCubeSeconds);
+    public final CommandBase lowOuttakeUnknownCommand = getOuttakeCommand("Low Unknown", LowOuttakeUnknownPercent, LowOuttakeUnknownSeconds);
+    public final CommandBase midOuttakeUnknownCommand = getOuttakeCommand("Mid Unknown", MidOuttakeUnknownPercent, MidOuttakeUnknownSeconds);
+    public final CommandBase highOuttakeUnknownCommand = getOuttakeCommand("High Unknown", HighOuttakeUnknownPercent, HighOuttakeUnknownSeconds);
 
     private GridPosition gridPosition = Arm.get().getGridPosition();
     
@@ -92,7 +84,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             .getEntry();
         isColorSensorDisabled = () -> isColorSensorDisabledEntry.getBoolean(false);
 
-        if (OperatorConstants.DebugShuffleboard) {
+        if (Constants.IsDebugShuffleboardEnabled) {
             layout.addDouble("Motor (%)", () -> motorPercent);
 
             var subsystemLayout = getLayout(Cat5ShuffleboardTab.Gripper, BuiltInLayouts.kList)
@@ -100,9 +92,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
             subsystemLayout.add(stopCommand);
             subsystemLayout.add(intakeCommand);
-            // subsystemLayout.add(lowOuttakeCommand);
-            // subsystemLayout.add(midOuttakeCommand);
-            // subsystemLayout.add(highOuttakeCommand);
         }
         //#endregion
     }
@@ -185,7 +174,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                 //     }
                 // }
                 if (heldGamePiece == GamePiece.Cube) {
-                    if (proximity < GripperConstants.ReintakeCubeProximityThreshold) {
+                    if (proximity < ReintakeCubeProximityThreshold) {
                         intakeCommand.schedule();
                         reintakeAntiEatTimer.restart();
                     }
@@ -215,13 +204,13 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                 //     }
                 // }
                 if (heldGamePiece == GamePiece.Cube) {
-                    if (canReintakeAgain && reintakeAntiEatTimer.hasElapsed(GripperConstants.ReintakeAntiCubeEatTimeout)) {
+                    if (canReintakeAgain && reintakeAntiEatTimer.hasElapsed(ReintakeAntiCubeEatTimeout)) {
                         canReintakeAgain = false;
                         stopCommand.schedule();
                     }
                 }
 
-                setMotors(GripperConstants.IntakePercent);
+                setMotors(IntakePercent);
             }
             else {
                 heldGamePiece = detectedGamePiece;

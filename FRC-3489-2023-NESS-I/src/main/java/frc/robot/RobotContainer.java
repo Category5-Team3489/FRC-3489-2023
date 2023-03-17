@@ -21,6 +21,7 @@ import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.NavX2;
+import frc.robot.subsystems.Wrist;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -67,6 +68,7 @@ public class RobotContainer {
         ColorSensor.get();
         Gripper.get();
         // TODO Arm
+        Wrist.get();
 
         Leds.get();
 

@@ -118,6 +118,17 @@ public final class Constants {
         public static final int RightMotorDeviceId = 10;
     }
 
+    public static class WristConstants {//4096 clicks/rotation
+        public static final int WristMotorId = 12;
+
+        public static final int PeakOutputForward = 1;
+        public static final int PeakOutputReverse = -1;
+        public static final int SlotIdx = 0;
+        public static final double KP = 0.15;
+
+        public static final double ClicksPerRotation = 4096;
+    }
+
     public static class ArmConstants {
         public static final int ForceHomeManButton = 8;
         public static final int HomeManButton = 10;
