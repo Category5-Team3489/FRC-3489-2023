@@ -23,54 +23,6 @@ public final class Constants {
         public static final int FPS = 10;
     }
 
-    public static class ColorSensorConstants {
-        public static final double WarningIntervalSeconds = 4.0;
-    }
-
-    public static class LedsConstants {
-        public static final int GamePieceIndicatorManAxis = 3;
-        public static final double GamePieceIndicatorThreshold = 0.8;
-
-        public static final int LeftChannel = 1;
-        public static final int RightChannel = 0;
-    }
-
-    public static class GripperConstants {
-        public static final int StopManButton = 1;
-        public static final int IntakeManButton = 2;
-        public static final int OuttakeManButton = 3;
-
-        // public static final int ReintakeConeProximityThreshold = 300;
-        public static final int ReintakeCubeProximityThreshold = 150; // 200
-        // public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
-        public static final double ReintakeAntiCubeEatTimeout = 0.75;
-
-        public static final double IntakePercent = -0.5;
-
-        public static final double LowOuttakeConePercent = 0.2; // 1
-        public static final double LowOuttakeCubePercent = 0.2; // 0.3
-        public static final double LowOuttakeUnknownPercent = (LowOuttakeConePercent + LowOuttakeCubePercent) / 2.0;
-        public static final double MidOuttakeConePercent = 0.1; // good
-        public static final double MidOuttakeCubePercent = 0.3;
-        public static final double MidOuttakeUnknownPercent = (MidOuttakeConePercent + MidOuttakeCubePercent) / 2.0;
-        public static final double HighOuttakeConePercent = 1; // good
-        public static final double HighOuttakeCubePercent = 1; // good, 0.3
-        public static final double HighOuttakeUnknownPercent = (HighOuttakeConePercent + HighOuttakeCubePercent) / 2.0;
-
-        public static final double LowOuttakeConeSeconds = 1; // good, 0.5
-        public static final double LowOuttakeCubeSeconds = 0.5;
-        public static final double LowOuttakeUnknownSeconds = (LowOuttakeConeSeconds + LowOuttakeCubeSeconds) / 2.0;
-        public static final double MidOuttakeConeSeconds = 2; // good, 0.5
-        public static final double MidOuttakeCubeSeconds = 0.5;
-        public static final double MidOuttakeUnknownSeconds = (MidOuttakeConeSeconds + MidOuttakeCubeSeconds) / 2.0;
-        public static final double HighOuttakeConeSeconds = 1; // good, 0.5
-        public static final double HighOuttakeCubeSeconds = 1; // 0.5
-        public static final double HighOuttakeUnknownSeconds = (HighOuttakeConeSeconds + HighOuttakeCubeSeconds) / 2.0;
-
-        public static final int LeftMotorDeviceId = 9;
-        public static final int RightMotorDeviceId = 10;
-    }
-
     public static class DrivetrainConstants {
         public static final int AutomateManButton = 5;
         public static final int StopAutomationManButton = 4;
@@ -124,6 +76,46 @@ public final class Constants {
         public static final int BackRightDriveDeviceId = 1;
         public static final int BackRightSteerDeviceId = 2;
         public static final int BackRightEncoderDeviceId = 23;
+    }
+
+    public static class ColorSensorConstants {
+        public static final double WarningIntervalSeconds = 4.0;
+    }
+
+    public static class GripperConstants {
+        public static final int StopManButton = 1;
+        public static final int IntakeManButton = 2;
+        public static final int OuttakeManButton = 3;
+
+        // public static final int ReintakeConeProximityThreshold = 300;
+        public static final int ReintakeCubeProximityThreshold = 150; // 200
+        // public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
+        public static final double ReintakeAntiCubeEatTimeout = 0.75;
+
+        public static final double IntakePercent = -0.5;
+
+        public static final double LowOuttakeConePercent = 0.2; // 1
+        public static final double LowOuttakeCubePercent = 0.2; // 0.3
+        public static final double LowOuttakeUnknownPercent = (LowOuttakeConePercent + LowOuttakeCubePercent) / 2.0;
+        public static final double MidOuttakeConePercent = 0.1; // good
+        public static final double MidOuttakeCubePercent = 0.3;
+        public static final double MidOuttakeUnknownPercent = (MidOuttakeConePercent + MidOuttakeCubePercent) / 2.0;
+        public static final double HighOuttakeConePercent = 1; // good
+        public static final double HighOuttakeCubePercent = 1; // good, 0.3
+        public static final double HighOuttakeUnknownPercent = (HighOuttakeConePercent + HighOuttakeCubePercent) / 2.0;
+
+        public static final double LowOuttakeConeSeconds = 1; // good, 0.5
+        public static final double LowOuttakeCubeSeconds = 0.5;
+        public static final double LowOuttakeUnknownSeconds = (LowOuttakeConeSeconds + LowOuttakeCubeSeconds) / 2.0;
+        public static final double MidOuttakeConeSeconds = 2; // good, 0.5
+        public static final double MidOuttakeCubeSeconds = 0.5;
+        public static final double MidOuttakeUnknownSeconds = (MidOuttakeConeSeconds + MidOuttakeCubeSeconds) / 2.0;
+        public static final double HighOuttakeConeSeconds = 1; // good, 0.5
+        public static final double HighOuttakeCubeSeconds = 1; // 0.5
+        public static final double HighOuttakeUnknownSeconds = (HighOuttakeConeSeconds + HighOuttakeCubeSeconds) / 2.0;
+
+        public static final int LeftMotorDeviceId = 9;
+        public static final int RightMotorDeviceId = 10;
     }
 
     public static class ArmConstants {
@@ -180,5 +172,14 @@ public final class Constants {
         
         public static final int MotorDeviceId = 11;
         public static final int LimitSwitchChannel = 0;
+    }
+
+    public static class LedsConstants {
+        public static final int GamePieceIndicatorManAxis = 3;
+
+        public static final double GamePieceIndicatorThreshold = 0.8;
+
+        public static final int LeftChannel = 1;
+        public static final int RightChannel = 0;
     }
 }

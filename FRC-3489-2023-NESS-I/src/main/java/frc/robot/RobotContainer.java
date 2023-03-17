@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -22,6 +21,8 @@ import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.NavX2;
+
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class RobotContainer {
     //#region Singleton
@@ -84,19 +85,17 @@ public class RobotContainer {
             .whileTrue(Leds.get().getCommand(LedPattern.BlueViolet, Double.MAX_VALUE, true));
         man.axisGreaterThan(LedsConstants.GamePieceIndicatorManAxis, LedsConstants.GamePieceIndicatorThreshold)
             .whileTrue(Leds.get().getCommand(LedPattern.Yellow, Double.MAX_VALUE, true));
-        //Gripper
-        man.button(GripperConstants.OuttakeManButton)
-            .onTrue(Commands.runOnce(() -> Gripper.get().outtakeCommand()));
-        man.button(GripperConstants.StopManButton)
-            .onTrue(Commands.runOnce(() -> Gripper.get().stopCommand.schedule()));
-        man.button(GripperConstants.IntakeManButton)
-            .onTrue(Commands.runOnce(() -> Gripper.get().intakeCommand.schedule()));
 
+        // Gripper
+        // man.button(GripperConstants.OuttakeManButton)
+        //     .onTrue(runOnce(() -> Gripper.get().outtakeCommand()));
+        // man.button(GripperConstants.StopManButton)
+        //     .onTrue(runOnce(() -> Gripper.get().stopCommand.schedule()));
+        // man.button(GripperConstants.IntakeManButton)
+        //     .onTrue(runOnce(() -> Gripper.get().intakeCommand.schedule()));
     }
 
     //#region Public
-    // TODO RENAME THESE, focus on their purpose, not internal method names
-
     public double getDriveXPercent() {
         return Cat5Utils.quadraticAxis(-xbox.getLeftY(), OperatorConstants.XboxAxisDeadband);
     }
