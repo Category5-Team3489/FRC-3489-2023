@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.Cat5Utils;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.configs.colorsensor.ColorAndProximityConfig;
@@ -88,16 +89,19 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
             warningTimer.restart();
 
             if (!colorSensor.isConnected()) {
+                Cat5Utils.time();
                 DriverStation.reportWarning("Color sensor not connected", false);
                 Leds.get().getCommand(LedPattern.Aqua, LedPattern.StrobeRed, 0.5, true)
                     .schedule();
             }
             else if (colorSensor.hasReset()) {
+                Cat5Utils.time();
                 DriverStation.reportWarning("Color sensor has reset", false);
                 Leds.get().getCommand(LedPattern.DarkBlue, LedPattern.StrobeRed, 0.5, true)
                     .schedule();
             }
             else if (color.red == 0 && color.green == 0 && color.blue == 0 && proximity == 0) {
+                Cat5Utils.time();
                 DriverStation.reportWarning("Color sensor values are zero", false);
                 Leds.get().getCommand(LedPattern.BlueGreen, LedPattern.StrobeRed, 0.5, true)
                     .schedule();

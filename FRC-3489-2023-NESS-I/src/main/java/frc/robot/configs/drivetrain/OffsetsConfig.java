@@ -2,6 +2,7 @@ package frc.robot.configs.drivetrain;
 
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import frc.robot.Cat5Utils;
 import frc.robot.configs.Cat5Config;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Drivetrain;
@@ -40,6 +41,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Drivetrain.get().setFrontLeftPercentAngle(0, 0);
 
+            Cat5Utils.time();
             System.out.println("Zero Front Left");
         })
             .ignoringDisable(true)
@@ -50,6 +52,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Drivetrain.get().setFrontRightPercentAngle(0, 0);
 
+            Cat5Utils.time();
             System.out.println("Zero Front Right");
         })
             .ignoringDisable(true)
@@ -60,6 +63,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Drivetrain.get().setBackLeftPercentAngle(0, 0);
 
+            Cat5Utils.time();
             System.out.println("Zero Back Left");
         })
             .ignoringDisable(true)
@@ -70,6 +74,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Drivetrain.get().setBackRightPercentAngle(0, 0);
 
+            Cat5Utils.time();
             System.out.println("Zero Back Right");
         })
             .ignoringDisable(true)
@@ -81,6 +86,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Preferences.setDouble(FrontLeftOffsetRadiansPreferencesKey, frontLeftOffsetRadians);
 
+            Cat5Utils.time();
             System.out.println("Save Front Left (rad): " + frontLeftOffsetRadians);
         })
             .ignoringDisable(true)
@@ -91,6 +97,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Preferences.setDouble(FrontRightOffsetRadiansPreferencesKey, frontRightOffsetRadians);
 
+            Cat5Utils.time();
             System.out.println("Save Front Right (rad): " + frontRightOffsetRadians);
         })
             .ignoringDisable(true)
@@ -101,6 +108,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Preferences.setDouble(BackLeftOffsetRadiansPreferencesKey, backLeftOffsetRadians);
 
+            Cat5Utils.time();
             System.out.println("Save Back Left (rad): " + backLeftOffsetRadians);
         })
             .ignoringDisable(true)
@@ -111,6 +119,7 @@ public class OffsetsConfig extends Cat5Config {
 
             Preferences.setDouble(BackRightOffsetRadiansPreferencesKey, backRightOffsetRadians);
 
+            Cat5Utils.time();
             System.out.println("Save Back Right (rad): " + backRightOffsetRadians);
         })
             .ignoringDisable(true)

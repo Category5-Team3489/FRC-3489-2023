@@ -2,9 +2,14 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class Cat5Utils {
+    public static void time() {
+        System.out.print("[" + ((int)(Timer.getFPGATimestamp() * 100)) / 100.0 + "s]: ");
+    }
+
     public static double linearAxis(double value, double deadband) {
         value = deadband(value, deadband);
         return value;

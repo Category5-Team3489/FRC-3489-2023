@@ -31,6 +31,7 @@ public class Autos {
     public Command getAutonomousCommand() {
         String selectedAuto = autoChooser.getSelected();
 
+        Cat5Utils.time();
         System.out.println("Constructed selected auto: \"" + selectedAuto + "\"");
 
         switch (selectedAuto) {

@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.GripperConstants;
 import frc.robot.Constants.LedsConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.enums.LedPattern;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
@@ -22,8 +22,6 @@ import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.NavX2;
 import frc.robot.subsystems.Wrist;
-
-import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class RobotContainer {
     //#region Singleton
@@ -45,6 +43,7 @@ public class RobotContainer {
         }
 
         cat5Subsystems.add(cat5Subsystem);
+        Cat5Utils.time();
         System.out.println("Registered subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\"");
     }
     //#endregion
@@ -67,8 +66,8 @@ public class RobotContainer {
 
         ColorSensor.get();
         Gripper.get();
-        // TODO Arm
         Wrist.get();
+        Arm.get();
 
         Leds.get();
 
@@ -87,14 +86,6 @@ public class RobotContainer {
             .whileTrue(Leds.get().getCommand(LedPattern.BlueViolet, Double.MAX_VALUE, true));
         man.axisGreaterThan(LedsConstants.GamePieceIndicatorManAxis, LedsConstants.GamePieceIndicatorThreshold)
             .whileTrue(Leds.get().getCommand(LedPattern.Yellow, Double.MAX_VALUE, true));
-
-        // Gripper
-        // man.button(GripperConstants.OuttakeManButton)
-        //     .onTrue(runOnce(() -> Gripper.get().outtakeCommand()));
-        // man.button(GripperConstants.StopManButton)
-        //     .onTrue(runOnce(() -> Gripper.get().stopCommand.schedule()));
-        // man.button(GripperConstants.IntakeManButton)
-        //     .onTrue(runOnce(() -> Gripper.get().intakeCommand.schedule()));
     }
 
     //#region Public

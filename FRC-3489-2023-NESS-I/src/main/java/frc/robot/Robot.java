@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Arm;
 
 public class Robot extends TimedRobot {
     private Command autonomousCommand;
@@ -25,9 +26,16 @@ public class Robot extends TimedRobot {
         }
 
         LiveWindow.setEnabled(false);
+        LiveWindow.disableAllTelemetry();
 
         new RobotContainer();
         autos = new Autos();
+
+        addPeriodic(() -> {
+            if (Arm.get().pollLimitSwitchRisingEdge()) {
+                Arm.get().notifyLimitSwitchRisingEdge();
+            }
+        }, 1.0 / 75.0);
     }
 
     @Override

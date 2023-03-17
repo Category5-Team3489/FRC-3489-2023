@@ -2,6 +2,8 @@ package frc.robot.configs.drivetrain;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.Cat5Utils;
 import frc.robot.configs.Cat5Config;
 import frc.robot.enums.ModulePosition;
 
@@ -12,7 +14,8 @@ public class DriveMotorConfig extends Cat5Config {
     //#region Motor
     public static void supplyDriveMotor(TalonFX motor) {
         if (driveMotorIndex == 4) {
-            System.out.println("[ERORR] TOO MANY DRIVE MOTORS SUPPLIED!!!");
+            Cat5Utils.time();
+            DriverStation.reportWarning("Too many drive motors supplied in drive motor config", false);
             return;
         }
         

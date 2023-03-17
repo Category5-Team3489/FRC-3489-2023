@@ -3,8 +3,10 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
@@ -19,6 +21,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.enums.GridPosition;
+import frc.robot.enums.LedPattern;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.ArmConstants.*;
@@ -52,6 +55,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     private double targetAngleDegrees = MinAngleDegrees;
     private GridPosition gridPosition = GridPosition.Low;
     private IdleMode idleMode = IdleMode.kCoast;
+    private boolean lastLimitSwitchValue = false;
 
     private Arm() {
         super(i -> instance = i);
@@ -119,6 +123,14 @@ public class Arm extends Cat5Subsystem<Arm> {
         //#endregion
     }
 
+    @Override
+    public void periodic() {
+        if (!isHomed && limitSwitch.get() && lastLimitSwitchValue) {
+            setEncoderAngleDegrees(MinAngleDegrees);
+            isHomed = true;
+        }
+    }
+
     //#region Encoder
     private double getEncoderAngleDegrees() {
         double rotations = encoder.getPosition();
@@ -136,7 +148,7 @@ public class Arm extends Cat5Subsystem<Arm> {
             return 0;
         }
 
-        return 0; // Math.cos(Math.toRadians(MatgetEncoderAngleDegrees()) / 2);
+        return 0; // Math.cos(Math.toRadians(getEncoderAngleDegrees()) / 2);
     }
 
     private double getResistGravityPercent() {
@@ -154,6 +166,16 @@ public class Arm extends Cat5Subsystem<Arm> {
     //#endregion
 
     //#region Commands
+    private CommandBase getGotoTargetCommand() {
+        return Commands.run(() -> {
+            double targetRevolutions = targetAngleDegrees * MotorRevolutionsPerDegree;
+            double direction = encoder.getVelocity() > 0 ? 1 : -1;
+            double arbFeedforward = getResistConstantForceSpringPercent() + getResistGravityPercent() + getResistStaticFrictionPercent(direction);
+            pidController.setReference(targetRevolutions, ControlType.kPosition, 0, arbFeedforward * 12.0, ArbFFUnits.kVoltage);
+        }, this)
+            .withName("Goto Target");
+    }
+    
     private CommandBase getManualControlCommand() {
         return run(() -> {
             double percent = RobotContainer.get().getArmManualControlPercent();
@@ -180,6 +202,28 @@ public class Arm extends Cat5Subsystem<Arm> {
     //#endregion
 
     //#region Public
+    public boolean pollLimitSwitchRisingEdge() {
+        if (limitSwitch.get() && !lastLimitSwitchValue) {
+            lastLimitSwitchValue = true;
+
+            return true;
+        }
+
+        lastLimitSwitchValue = limitSwitch.get();
+
+        return false;
+    }
+
+    public void notifyLimitSwitchRisingEdge() {
+        setEncoderAngleDegrees(MinAngleDegrees);
+        isHomed = true;
+
+        Cat5Utils.time();
+        System.out.println("Arm limit switch rising edge, homed");
+        Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
+            .schedule();
+    }
+
     public void setTargetAngleDegrees(GridPosition gridPosition, double angleDegrees, IdleMode idleMode) {
         this.gridPosition = gridPosition;
         angleDegrees = MathUtil.clamp(angleDegrees, MinAngleDegrees, MaxAngleDegrees);
