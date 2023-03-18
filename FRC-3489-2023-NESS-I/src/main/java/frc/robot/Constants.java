@@ -23,6 +23,18 @@ public final class Constants {
         public static final int FPS = 10;
     }
 
+    public static class LimelightConstants {
+        public static final long FiducialPipeline = 0;
+        public static final long MidRetroreflectivePipeline = 1;
+        public static final long HighRetroreflectivePipeline = 2;
+
+        public static final long DefaultPipeline = FiducialPipeline;
+
+        public static final double CamposeValidActivePipelineSeconds = 0.5;
+        public static final double BotposeValidTargetArea = 0.005;
+        public static final double CamposeValidAverageDriveVelocityLimitMetersPerSecond = 0.25;
+    }
+
     public static class DrivetrainConstants {
         public static final int AutomateManButton = 5;
         public static final int StopAutomationManButton = 4;
@@ -87,9 +99,11 @@ public final class Constants {
         public static final int IntakeManButton = 2;
         public static final int OuttakeManButton = 3;
 
-        // public static final int ReintakeConeProximityThreshold = 300;
+        public static final boolean IsConeReintakingEnabled = false;
+        public static final boolean IsCubeReintakingEnabled = true;
+        public static final int ReintakeConeProximityThreshold = 300;
         public static final int ReintakeCubeProximityThreshold = 150; // 200
-        // public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
+        public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
         public static final double ReintakeAntiCubeEatTimeout = 0.75;
 
         public static final double IntakePercent = -0.5;

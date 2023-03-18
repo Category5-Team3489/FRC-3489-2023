@@ -39,11 +39,12 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         if (Constants.IsDebugShuffleboardEnabled) {
             layout.add(zeroYawCommand);
 
-            layout.addBoolean("Is Calibrating", () -> isCalibrating());
+            layout.addBoolean("Is Calibrating", () -> navx.isCalibrating());
         }
         //#endregion
     }
 
+    //#region Commands
     private CommandBase getZeroYawCommand() {
         return runOnce(() -> {
             navx.zeroYaw();
@@ -53,16 +54,13 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
             .ignoringDisable(true)
             .withName("Zero Yaw");
     }
+    //#endregion
 
     //#region Public
     public Rotation2d getRotation() {
         heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
 
         return heading;
-    }
-
-    public boolean isCalibrating() {
-        return navx.isCalibrating();
     }
     //#endregion
 }

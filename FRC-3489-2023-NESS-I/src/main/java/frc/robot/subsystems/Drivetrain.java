@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Cat5Utils;
+import frc.robot.Constants;
 import frc.robot.commands.drivetrain.BrakeRotation;
 import frc.robot.commands.drivetrain.BrakeTranslation;
 import frc.robot.commands.drivetrain.Drive;
@@ -21,6 +22,7 @@ import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
 import frc.robot.enums.ModulePosition;
+import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
 
@@ -111,6 +113,33 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             0
         );
         //#endregion
+
+        //#region Shuffleboard
+        var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
+            .withSize(2, 1);
+
+        layout.add("Subsystem Info", this);
+        layout.addDouble("Average (m per s)", () -> getAverageDriveVelocityMetersPerSecond());
+
+        if (Constants.IsDebugShuffleboardEnabled) {
+            layout.addDouble("Front Left (m per s)", () -> frontLeftModule.getDriveVelocity());
+            layout.addDouble("Front Right (m per s)", () -> frontRightModule.getDriveVelocity());
+            layout.addDouble("Back Left (m per s)", () -> backLeftModule.getDriveVelocity());
+            layout.addDouble("Back Right (m per s)", () -> backRightModule.getDriveVelocity());
+
+            // layout.addDouble("Front Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
+            // layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
+            // layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
+            // layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());
+
+            var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
+                .withSize(2, 1);
+
+            subsystemLayout.add(driveCommand);
+            subsystemLayout.add(brakeTranslationCommand);
+            subsystemLayout.add(brakeRotationCommand);
+        }
+        //#endregion
     }
 
     //#region Public
@@ -137,6 +166,10 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         setFrontRightSpeedAngle(states[1].speedMetersPerSecond, frontRightSteerAngleRadians);
         setBackLeftSpeedAngle(states[2].speedMetersPerSecond, backLeftSteerAngleRadians);
         setBackRightSpeedAngle(states[3].speedMetersPerSecond, backRightSteerAngleRadians);
+    }
+
+    public void setTargetHeading(Rotation2d targetHeading) {
+        this.targetHeading = targetHeading;
     }
 
     public void adjustTargetHeading(Rotation2d adjustment) {

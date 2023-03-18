@@ -7,10 +7,12 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.GripperConstants;
 import frc.robot.Constants.LedsConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.enums.LedPattern;
@@ -18,10 +20,14 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Cat5Subsystem;
 import frc.robot.subsystems.ColorSensor;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Leds;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
 import frc.robot.subsystems.Wrist;
+
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class RobotContainer {
     //#region Singleton
@@ -60,9 +66,8 @@ public class RobotContainer {
         Camera.get();
 
         NavX2.get();
-        // TODO Limelight
-        // TODO Drivetrain
-        // TODO PoseEstimator
+        Limelight.get();
+        Drivetrain.get();
 
         ColorSensor.get();
         Gripper.get();
@@ -77,6 +82,42 @@ public class RobotContainer {
     private void configureBindings() {
         xbox.start()
             .onTrue(NavX2.get().zeroYawCommand);
+
+        xbox.leftStick()
+            .whileTrue(Drivetrain.get().brakeTranslationCommand);
+        xbox.rightStick()
+            .whileTrue(Drivetrain.get().brakeRotationCommand);
+        
+        xbox.y()
+            .onTrue(runOnce(() -> {
+                Drivetrain.get().setTargetHeading(Rotation2d.fromDegrees(0));
+            }));
+        xbox.b()
+            .onTrue(runOnce(() -> {
+                Drivetrain.get().setTargetHeading(Rotation2d.fromDegrees(-90));
+            }));
+        xbox.a()
+            .onTrue(runOnce(() -> {
+                Drivetrain.get().setTargetHeading(Rotation2d.fromDegrees(-180));
+            }));
+        xbox.x()
+            .onTrue(runOnce(() -> {
+                Drivetrain.get().setTargetHeading(Rotation2d.fromDegrees(-270));
+            }));
+
+        new Trigger(() -> DriverStation.isEnabled())
+            .onTrue(runOnce(() -> {
+                Gripper.get().setHeldGamePiece(ColorSensor.get().getDetectedGamePiece());
+            }));
+
+        man.button(GripperConstants.StopManButton)
+            .onTrue(Gripper.get().stopCommand);
+        man.button(GripperConstants.IntakeManButton)
+            .onTrue(Gripper.get().intakeCommand);
+        man.button(GripperConstants.OuttakeManButton)
+            .onTrue(runOnce(() -> {
+                Gripper.get().scheduleOuttakeCommand();
+            }));
 
         new Trigger(() -> DriverStation.isAutonomousEnabled())
             .onTrue(Leds.get().getCommand(LedPattern.Blue, 1.0, false));

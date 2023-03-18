@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -9,16 +7,15 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import frc.robot.enums.GamePiece;
-import frc.robot.enums.GridPosition;
-import frc.robot.enums.LedPattern;
+import frc.robot.Cat5Utils;
 import frc.robot.Constants;
+import frc.robot.enums.GamePiece;
+import frc.robot.enums.LedPattern;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.GripperConstants.*;
+
+import java.util.function.BooleanSupplier;
 
 public class Gripper extends Cat5Subsystem<Gripper> {
     //#region Singleton
@@ -37,20 +34,18 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private final BooleanSupplier isColorSensorDisabled;
 
     // Commands
-    public final CommandBase stopCommand = getStopCommand();
-    public final CommandBase intakeCommand = getIntakeCommand();
-    public final CommandBase lowOuttakeConeCommand = getOuttakeCommand("Low Cone", LowOuttakeConePercent, LowOuttakeConeSeconds);
-    public final CommandBase midOuttakeConeCommand = getOuttakeCommand("Mid Cone", MidOuttakeConePercent, MidOuttakeConeSeconds);
-    public final CommandBase highOuttakeConeCommand = getOuttakeCommand("High Cone", HighOuttakeConePercent, HighOuttakeConeSeconds);
-    public final CommandBase lowOuttakeCubeCommand = getOuttakeCommand("Low Cube", LowOuttakeCubePercent, LowOuttakeCubeSeconds);
-    public final CommandBase midOuttakeCubeCommand = getOuttakeCommand("Mid Cube", MidOuttakeCubePercent, MidOuttakeCubeSeconds);
-    public final CommandBase highOuttakeCubeCommand = getOuttakeCommand("High Cube", HighOuttakeCubePercent, HighOuttakeCubeSeconds);
-    public final CommandBase lowOuttakeUnknownCommand = getOuttakeCommand("Low Unknown", LowOuttakeUnknownPercent, LowOuttakeUnknownSeconds);
-    public final CommandBase midOuttakeUnknownCommand = getOuttakeCommand("Mid Unknown", MidOuttakeUnknownPercent, MidOuttakeUnknownSeconds);
-    public final CommandBase highOuttakeUnknownCommand = getOuttakeCommand("High Unknown", HighOuttakeUnknownPercent, HighOuttakeUnknownSeconds);
+    public final CommandBase stopCommand;
+    public final CommandBase intakeCommand;
+    private final CommandBase lowOuttakeConeCommand;
+    private final CommandBase midOuttakeConeCommand;
+    private final CommandBase highOuttakeConeCommand;
+    private final CommandBase lowOuttakeCubeCommand;
+    private final CommandBase midOuttakeCubeCommand;
+    private final CommandBase highOuttakeCubeCommand;
+    private final CommandBase lowOuttakeUnknownCommand;
+    private final CommandBase midOuttakeUnknownCommand;
+    private final CommandBase highOuttakeUnknownCommand;
 
-    private GridPosition gridPosition = Arm.get().getGridPosition();
-    
     // State
     private GamePiece heldGamePiece = GamePiece.Unknown;
     private double motorPercent = 0;
@@ -58,18 +53,21 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private Timer reintakeAntiEatTimer = new Timer();
 
     private Gripper() {
-        super((i) -> instance = i);
+        super(i -> instance = i);
 
-        // motorPercent: negative intake, outtake
+        stopCommand = getStopCommand();
+        intakeCommand = getIntakeCommand();
+        lowOuttakeConeCommand = getOuttakeCommand("Low Outtake Cone", LowOuttakeConePercent, LowOuttakeConeSeconds);
+        midOuttakeConeCommand = getOuttakeCommand("Mid Outtake Cone", MidOuttakeConePercent, MidOuttakeConeSeconds);
+        highOuttakeConeCommand = getOuttakeCommand("High Outtake Cone", HighOuttakeConePercent, HighOuttakeConeSeconds);
+        lowOuttakeCubeCommand = getOuttakeCommand("Low Outtake Cube", LowOuttakeCubePercent, LowOuttakeCubeSeconds);
+        midOuttakeCubeCommand = getOuttakeCommand("Mid Outtake Cube", MidOuttakeCubePercent, MidOuttakeCubeSeconds);
+        highOuttakeCubeCommand = getOuttakeCommand("High Outtake Cube", HighOuttakeCubePercent, HighOuttakeCubeSeconds);
+        lowOuttakeUnknownCommand = getOuttakeCommand("Low Outtake Unknown", LowOuttakeUnknownPercent, LowOuttakeUnknownSeconds);
+        midOuttakeUnknownCommand = getOuttakeCommand("Mid Outtake Unknown", MidOuttakeUnknownPercent, MidOuttakeUnknownSeconds);
+        highOuttakeUnknownCommand = getOuttakeCommand("High Outtake Unknown", HighOuttakeUnknownPercent, HighOuttakeUnknownSeconds);
 
         setDefaultCommand(stopCommand);
-
-        //#region Bindings
-        new Trigger(() -> DriverStation.isEnabled())
-            .onTrue(Commands.runOnce(() -> {
-                heldGamePiece = ColorSensor.get().getDetectedGamePiece();
-            }));
-        //#endregion
 
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
@@ -92,12 +90,121 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
             subsystemLayout.add(stopCommand);
             subsystemLayout.add(intakeCommand);
+            subsystemLayout.add(lowOuttakeConeCommand);
+            subsystemLayout.add(midOuttakeConeCommand);
+            subsystemLayout.add(highOuttakeConeCommand);
+            subsystemLayout.add(lowOuttakeCubeCommand);
+            subsystemLayout.add(midOuttakeCubeCommand);
+            subsystemLayout.add(highOuttakeCubeCommand);
+            subsystemLayout.add(lowOuttakeUnknownCommand);
+            subsystemLayout.add(midOuttakeUnknownCommand);
+            subsystemLayout.add(highOuttakeUnknownCommand);
         }
         //#endregion
     }
 
-    public void outtakeCommand() {
-        switch (gridPosition) {
+    //#region Control
+    private void setMotors(double percent) {
+        motorPercent = percent;
+        
+        if (percent != 0) {
+            leftMotor.set(percent);
+            rightMotor.set(-percent);
+        }
+        else {
+            leftMotor.stopMotor();
+            rightMotor.stopMotor();
+        }
+    }
+    //#endregion Control
+
+    //#region Commands
+    private CommandBase getStopCommand() {
+        return run(() -> {
+            if (heldGamePiece == GamePiece.Unknown) {
+                canReintakeAgain = true;
+            }
+
+            setMotors(0);
+
+            if (DriverStation.isEnabled() && canReintakeAgain) {
+                int proximity = ColorSensor.get().getProximity();
+                if (IsConeReintakingEnabled) {
+                    if (heldGamePiece == GamePiece.Cone && proximity < ReintakeConeProximityThreshold) {
+                        intakeCommand.schedule();
+                        reintakeAntiEatTimer.restart();
+                    }
+                }
+                if (IsCubeReintakingEnabled) {
+                    if (heldGamePiece == GamePiece.Cube && proximity < ReintakeCubeProximityThreshold) {
+                        intakeCommand.schedule();
+                        reintakeAntiEatTimer.restart();
+                    }
+                }
+            }
+        })
+            .ignoringDisable(true)
+            .withName("Stop");
+    }
+
+    private CommandBase getIntakeCommand() {
+        return run(() -> {
+            if (heldGamePiece == GamePiece.Unknown) {
+                canReintakeAgain = true;
+            }
+
+            GamePiece detectedGamePiece = GamePiece.Unknown;
+
+            if (!isColorSensorDisabled.getAsBoolean()) {
+                detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
+            }
+
+            if (detectedGamePiece == GamePiece.Unknown) {
+                if (IsConeReintakingEnabled) {
+                    if (heldGamePiece == GamePiece.Cone &&
+                        canReintakeAgain && reintakeAntiEatTimer.hasElapsed(ReintakeAntiConeEatTimeout)) {
+                        canReintakeAgain = false;
+                        stopCommand.schedule();
+                    }
+                }
+                if (IsCubeReintakingEnabled) {
+                    if (heldGamePiece == GamePiece.Cube &&
+                        canReintakeAgain && reintakeAntiEatTimer.hasElapsed(ReintakeAntiCubeEatTimeout)) {
+                        canReintakeAgain = false;
+                        stopCommand.schedule();
+                    }
+                }
+
+                setMotors(IntakePercent);
+            }
+            else {
+                heldGamePiece = detectedGamePiece;
+                stopCommand.schedule();
+            }
+        })
+            .withName("Intake");
+    }
+
+    private CommandBase getOuttakeCommand(String name, double percent, double seconds) {
+        return run(() -> {
+            setMotors(percent);
+        })
+            .withTimeout(seconds)
+            .withName(name);
+    }
+    //#endregion
+
+    //#region Public
+    public GamePiece getHeldGamePiece() {
+        return heldGamePiece;
+    }
+
+    public void setHeldGamePiece(GamePiece heldGamePiece) {
+        this.heldGamePiece = heldGamePiece;
+    }
+
+    public void scheduleOuttakeCommand() {
+        switch (Arm.get().getGridPosition()) {
             case Low:
                 switch (heldGamePiece) {
                     case Cone:
@@ -138,100 +245,12 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                 }
                 break;
         }
-        Leds.get().getCommand(LedPattern.StrobeWhite,2,true).schedule();
+
         heldGamePiece = GamePiece.Unknown;
-    }
-
-    //#region Control
-    private void setMotors(double percent) {
-        motorPercent = percent;
-        if (percent != 0) {
-            leftMotor.set(percent);
-            rightMotor.set(-percent);
-        }
-        else {
-            leftMotor.stopMotor();
-            rightMotor.stopMotor();
-        }
-    }
-    //#endregion Control
-
-    //#region Commands
-    private CommandBase getStopCommand() {
-        return Commands.run(() -> {
-            if (heldGamePiece == GamePiece.Unknown) {
-                canReintakeAgain = true;
-            }
-
-            setMotors(0);
-
-            if (DriverStation.isEnabled() && canReintakeAgain) {
-                int proximity = ColorSensor.get().getProximity();
-                // if (heldGamePiece == GamePiece.Cone) {
-                //     if (proximity < GripperConstants.ReintakeConeProximityThreshold) {
-                //         intakeCommand.schedule();
-                //         reintakeAntiEatTimer.restart();
-                //     }
-                // }
-                if (heldGamePiece == GamePiece.Cube) {
-                    if (proximity < ReintakeCubeProximityThreshold) {
-                        intakeCommand.schedule();
-                        reintakeAntiEatTimer.restart();
-                    }
-                }
-            }
-        }, this)
-            .ignoringDisable(true)
-            .withName("Stop");
-    }
-    private CommandBase getIntakeCommand() {
-        return Commands.run(() -> {
-            if (heldGamePiece == GamePiece.Unknown) {
-                canReintakeAgain = true;
-            }
-
-            GamePiece detectedGamePiece = GamePiece.Unknown;
-
-            if (!isColorSensorDisabled.getAsBoolean()) {
-                detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
-            }
-
-            if (detectedGamePiece == GamePiece.Unknown) {
-                // if (heldGamePiece == GamePiece.Cone) {
-                //     if (canReintakeAgain && reintakeAntiEatTimer.hasElapsed(GripperConstants.ReintakeAntiConeEatTimeout)) {
-                //         canReintakeAgain = false;
-                //         stopCommand.schedule();
-                //     }
-                // }
-                if (heldGamePiece == GamePiece.Cube) {
-                    if (canReintakeAgain && reintakeAntiEatTimer.hasElapsed(ReintakeAntiCubeEatTimeout)) {
-                        canReintakeAgain = false;
-                        stopCommand.schedule();
-                    }
-                }
-
-                setMotors(IntakePercent);
-            }
-            else {
-                heldGamePiece = detectedGamePiece;
-                stopCommand.schedule();
-            }
-        }, this)
-            .withName("Intake");
-    }
-
-    private CommandBase getOuttakeCommand(String name, double percent, double seconds) {
-        return Commands.run(() -> {
-            setMotors(percent);
-        }, this)
-            .withTimeout(seconds)
-            .withName(name);
-    }
-    //#endregion
-
-    //#region Public
-    public GamePiece getHeldGamePiece() {
-        return heldGamePiece;
+        Cat5Utils.time();
+        System.out.println("Gripper outtake");
+        Leds.get().getCommand(LedPattern.StrobeWhite, 1.0, true)
+            .schedule();
     }
     //#endregion
 }
