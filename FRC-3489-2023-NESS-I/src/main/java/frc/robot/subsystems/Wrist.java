@@ -20,94 +20,108 @@ public class Wrist extends Cat5Subsystem<Wrist> {
         return instance;
     }
     //#endregion
-
+    
     // Devices
-    private final WPI_TalonSRX motor = new WPI_TalonSRX(WristMotorId);
-    private final DigitalInput topLimitSwitch = new DigitalInput(topLimitSwitchChannel);
-    private final DigitalInput bottomLimitSwitch = new DigitalInput(bottomLimitSwitchChannel);
-
+    private final WPI_TalonSRX motor = new WPI_TalonSRX(MotorDeviceId);
+    private final DigitalInput limitSwitch = new DigitalInput(LimitSwitchChannel);
+    
     // Commands
-    private final CommandBase setWristAngleCommand;
-    private final CommandBase homeBottomWristCommand;
-    private final CommandBase homeTopWristCommand;
+    private final CommandBase gotoHomeCommand;
+    private final CommandBase gotoTargetCommand;
 
     // State
-    private double targetClicks;
-    private boolean isTopHomed = false;
-    private boolean isBottomHomed = false;
+    private boolean isHomed = false;
+    private double encoderOffsetClicks = 0;
+    private double targetAngleDegrees = 0;
 
     private Wrist() {
-        super((i) -> instance = i);
+        super(i -> instance = i);
 
-        setWristAngleCommand = setWristAngleCommand();
-        homeBottomWristCommand = homeBottomWristCommand();
-        homeTopWristCommand = homeTopWristCommand();
+        gotoHomeCommand = getGotoHomeCommand();
+        gotoTargetCommand = getGotoTargetCommand();
 
+        setDefaultCommand(gotoHomeCommand);
+
+        //#region Devices
         motor.configFactoryDefault();
         motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        motor.configPeakOutputForward(MinOutputPercent);
+        motor.configPeakOutputReverse(MaxOutputPercent);
+        motor.config_kP(0, ProportionalGainPercentPerClickOfError);
+        //#endregion
 
-        motor.configPeakOutputForward(PeakOutputForward);
-		motor.configPeakOutputReverse(PeakOutputReverse);
-
-        motor.config_kP(SlotIdx, KP);
-
+        //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
+        
+        layout.addBoolean("Is Homed", () -> isHomed);
+        layout.addDouble("Encoder Offset (clicks)", () -> encoderOffsetClicks);
+        layout.addDouble("Target Angle (deg)", () -> targetAngleDegrees);
+        layout.addDouble("Encoder Angle (deg)", () -> getEncoderAngleDegrees());
+        layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 
-        layout.addDouble("Wrist Target Clicks", () -> targetClicks);
-        layout.addBoolean("Is Bottom Homed", () -> isBottomHomed);
-        layout.addBoolean("Is Top Homed", () -> isTopHomed);
-        layout.addBoolean("Top Limit Switch", () -> topLimitSwitch.get());
-        layout.addBoolean("Bottom Limit Switch", () -> bottomLimitSwitch.get());
-    }
-
-    public void setWristAngle(double targetPositionDegree) {
-        targetClicks = targetPositionDegree * (ClicksPerRotation / 360);
-    }
-
-    private CommandBase setWristAngleCommand() {
-        return Commands.run(() -> {
-            motor.set(ControlMode.Position, targetClicks);
-        }, this);
-    }
-
-    private CommandBase homeTopWristCommand() {
-        return Commands.run(() -> {
-            if (isTopHomed) {
-                return;
-            }
-            if (!isTopHomed && topLimitSwitch.get()) {
-                setWristAngle(MaxAngleDegrees);
-                isTopHomed = true;
-            }
-            else {
-                motor.setVoltage(HomingPercent * 12.0);
-            }
-        }, this);
-    }
-
-    private CommandBase homeBottomWristCommand() {
-        return Commands.run(() -> {
-            if (isBottomHomed) {
-                return;
-            }
-            if (!isBottomHomed && bottomLimitSwitch.get()) {
-                setWristAngle(MinAngleDegrees);
-                isBottomHomed = true;
-            }
-            else {
-                motor.setVoltage(-HomingPercent * 12.0);
-            }
-        }, this);
+        layout.add("Force Home", Commands.runOnce(() -> {
+            forceHome();
+        })
+            .withName("Force Home")
+        );
+        //#endregion
     }
 
     @Override
     public void periodic() {
-        if (isBottomHomed) {
-            setWristAngleCommand.schedule();
+        if (limitSwitch.get()) {
+            resetEncoder();
+        }
+
+        if (isHomed) {
+            gotoTargetCommand.schedule();
         }
         else {
-            homeBottomWristCommand.schedule();
+            gotoHomeCommand.schedule();
         }
     }
+
+    //#region Encoder
+    private double getEncoderAngleDegrees() {
+        double clicks = motor.getSelectedSensorPosition() - encoderOffsetClicks;
+        return clicks * DegreesPerClick;
+    }
+
+    private void resetEncoder() {
+        encoderOffsetClicks = motor.getSelectedSensorPosition();
+        isHomed = true;
+    }
+    //#endregion
+
+    //#region Commands
+    private CommandBase getGotoHomeCommand() {
+        return run(() -> {
+            if (isHomed) {
+                return;
+            }
+            
+            motor.setVoltage(HomingPercent * 12.0);
+        })
+            .withName("Goto Home");
+    }
+    
+    private CommandBase getGotoTargetCommand() {
+        return run(() -> {
+            double targetClicks = encoderOffsetClicks + (targetAngleDegrees * ClicksPerDegree);
+            motor.set(ControlMode.Position, targetClicks);
+        })
+            .withName("Goto Target");
+    }
+    //#endregion
+
+    //#region Public
+    public void forceHome() {
+        isHomed = false;
+    }
+
+    public void setTargetAngleDegrees(double angleDegrees) {
+        targetAngleDegrees = angleDegrees;
+    }
+    //#endregion
 }

@@ -27,7 +27,8 @@ public class ColorAndProximityConfig extends Cat5Config {
         detectionProximity = Preferences.getInt(DetectionProximityPreferencesKey, 512);
 
         //#region Shuffleboard
-        var layout = getLayout(Cat5ShuffleboardTab.ColorSensor, BuiltInLayouts.kList);
+        var layout = getLayout(Cat5ShuffleboardTab.ColorSensor, BuiltInLayouts.kList)
+            .withSize(2, 1);
 
         layout.addString("Cone Color", () -> coneColor.toHexString());
         layout.addString("Cube Color", () -> cubeColor.toHexString());

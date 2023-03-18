@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
         }
 
         LiveWindow.setEnabled(false);
-        LiveWindow.disableAllTelemetry();
+        // LiveWindow.disableAllTelemetry();
 
         new RobotContainer();
         autos = new Autos();

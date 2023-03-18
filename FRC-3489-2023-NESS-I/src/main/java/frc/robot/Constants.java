@@ -14,6 +14,7 @@ public final class Constants {
 
         public static final double XboxAxisDeadband = 0.05;
         public static final double ManAxisDeadband = 0.1;
+        public static final double LargeManAxisDeadband = 0.5;
     }
 
     public static class CameraConstants {
@@ -132,21 +133,23 @@ public final class Constants {
         public static final int RightMotorDeviceId = 10;
     }
 
-    public static class WristConstants {//4096 clicks/rotation
-        public static final int WristMotorId = 12;
-        public static final int topLimitSwitchChannel = 1;
-        public static final int bottomLimitSwitchChannel = 2;
-
-        public static final int PeakOutputForward = 1;
-        public static final int PeakOutputReverse = -1;
-        public static final int SlotIdx = 0;
-        public static final double KP = 0.15;
-
-        public static final double ClicksPerRotation = 4096;
-        public static final double HomingPercent = -0.4;
-
+    public static class WristConstants {
         public static final double MinAngleDegrees = 0;
         public static final double MaxAngleDegrees = 37.0;
+
+        public static final double ClicksPerRotation = 4096 * (2.0 / 1.0);
+        public static final double ClicksPerDegree = ClicksPerRotation / 360;
+        public static final double DegreesPerClick = 1.0 / ClicksPerDegree;
+
+        public static final double HomingPercent = 0.15;
+
+        public static final double MinOutputPercent = -0.15;
+        public static final double MaxOutputPercent = 0.15;
+        public static final double ProportionalGainPercentPerClickOfError = 0.15;
+
+        public static final int MotorDeviceId = 12;
+        public static final int LimitSwitchChannel = 1;
+        public static final int TopLimitSwitchChannel = 2;
     }
 
     public static class ArmConstants {
@@ -158,7 +161,7 @@ public final class Constants {
         public static final int MidManButton = 9;
         public static final int HighManButton = 7;
 
-        public static final double CorrectionMaxDegreesPerSecond = 0.5;
+        public static final double CorrectionMaxDegreesPerSecond = 25; // 0.5
     
         public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (44.0 / 12.0);
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;

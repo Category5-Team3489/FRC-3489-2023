@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -130,7 +131,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             // layout.addDouble("Front Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
             // layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
             // layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
-            // layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());
+            // layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());    
 
             var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
                 .withSize(2, 1);
@@ -144,7 +145,22 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
     //#region Public
     public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double speedLimiter) {
+        Rotation2d theta = NavX2.get().getRotation();
 
+        if (targetHeading == null) {
+            targetHeading = theta;
+        }
+
+        double outputDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetHeading.getDegrees());
+        outputDegreesPerSecond = MathUtil.clamp(outputDegreesPerSecond, -OmegaMaxDegreesPerSecond, OmegaMaxDegreesPerSecond);
+
+        double omegaRadiansPerSecond = 0;
+
+        if (!omegaController.atSetpoint()) {
+            omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
+        }
+
+        driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiter);
     }
 
     public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double omegaRadiansPerSecond, double speedLimiter) {

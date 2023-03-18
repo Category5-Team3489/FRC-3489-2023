@@ -4,6 +4,13 @@
       "window": {
         "visible": true
       }
+    },
+    "Other Devices": {
+      "Talon SRX[12]": {
+        "header": {
+          "open": true
+        }
+      }
     }
   },
   "NTProvider": {
@@ -40,7 +47,8 @@
       "/Shuffleboard/Main/Arm/Subsystem Info": "Subsystem",
       "/Shuffleboard/Main/Drivetrain/Subsystem Info": "Subsystem",
       "/Shuffleboard/Main/Gripper/Subsystem Info": "Subsystem",
-      "/Shuffleboard/Main/NavX2/Zero Yaw": "Command"
+      "/Shuffleboard/Main/NavX2/Zero Yaw": "Command",
+      "/Shuffleboard/Main/Wrist/Force Home": "Command"
     }
   }
 }

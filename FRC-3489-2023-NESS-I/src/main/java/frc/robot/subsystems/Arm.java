@@ -17,9 +17,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Cat5Utils;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.enums.GridPosition;
 import frc.robot.enums.LedPattern;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -50,6 +50,11 @@ public class Arm extends Cat5Subsystem<Arm> {
     private final BooleanSupplier debugIsTrackingTarget;
     private final DoubleSupplier debugTargetAngleDegrees;
 
+    // Commands
+    private final CommandBase gotoHomeCommand = getGotoHomeCommand();
+    private final CommandBase gotoTargetCommand = getGotoTargetCommand();
+    private final CommandBase manualControlCommand = getManualControlCommand();
+
     // State
     private boolean isHomed = false;
     private double targetAngleDegrees = MinAngleDegrees;
@@ -74,6 +79,8 @@ public class Arm extends Cat5Subsystem<Arm> {
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
         //#endregion
+
+        setDefaultCommand(gotoHomeCommand);
 
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
@@ -112,13 +119,13 @@ public class Arm extends Cat5Subsystem<Arm> {
         if (Constants.IsDebugShuffleboardEnabled) {
     
             layout.add("Force Home", Commands.runOnce(() -> {
-                isHomed = false;
+                forceHome();
             })
                 .withName("Force Home")
             );
     
-            // subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
-            // subsystemLayout.addDouble("Motor Temperature (deg F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
+            subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
+            subsystemLayout.addDouble("Motor Temperature (deg F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
         }
         //#endregion
     }
@@ -129,6 +136,26 @@ public class Arm extends Cat5Subsystem<Arm> {
             setEncoderAngleDegrees(MinAngleDegrees);
             isHomed = true;
         }
+
+        if (isManualControlEnabled.getAsBoolean()) {
+            manualControlCommand.schedule();
+        }
+        else {
+            if (isHomed) {
+                if (debugIsTrackingTarget.getAsBoolean()) {
+                    setTargetAngleDegrees(GridPosition.Mid, debugTargetAngleDegrees.getAsDouble(), IdleMode.kBrake);
+                }
+
+                double correctionPercent = RobotContainer.get().getArmCorrectionPercent();
+                targetAngleDegrees += correctionPercent * CorrectionMaxDegreesPerSecond * Robot.kDefaultPeriod;
+                targetAngleDegrees = MathUtil.clamp(targetAngleDegrees, MinAngleDegrees, MaxAngleDegrees);
+
+                gotoTargetCommand.schedule();
+            }
+            else {
+                gotoHomeCommand.schedule();
+            }
+        }
     }
 
     //#region Encoder
@@ -136,6 +163,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         double rotations = encoder.getPosition();
         return rotations * DegreesPerMotorRevolution;
     }
+
     private void setEncoderAngleDegrees(double angleDegrees) {
         double rotations = angleDegrees * MotorRevolutionsPerDegree;
         encoder.setPosition(rotations);
@@ -166,13 +194,24 @@ public class Arm extends Cat5Subsystem<Arm> {
     //#endregion
 
     //#region Commands
+    private CommandBase getGotoHomeCommand() {
+        return run(() -> {
+            if (isHomed) {
+                return;
+            }
+            
+            motor.setVoltage(HomingPercent * 12.0);
+        })
+            .withName("Goto Home");
+    }
+
     private CommandBase getGotoTargetCommand() {
-        return Commands.run(() -> {
+        return run(() -> {
             double targetRevolutions = targetAngleDegrees * MotorRevolutionsPerDegree;
             double direction = encoder.getVelocity() > 0 ? 1 : -1;
             double arbFeedforward = getResistConstantForceSpringPercent() + getResistGravityPercent() + getResistStaticFrictionPercent(direction);
             pidController.setReference(targetRevolutions, ControlType.kPosition, 0, arbFeedforward * 12.0, ArbFFUnits.kVoltage);
-        }, this)
+        })
             .withName("Goto Target");
     }
     
@@ -202,6 +241,12 @@ public class Arm extends Cat5Subsystem<Arm> {
     //#endregion
 
     //#region Public
+    public void forceHome() {
+        isHomed = false;
+
+        Arm.get().setTargetAngleDegrees(GridPosition.Low, MinAngleDegrees, IdleMode.kCoast);
+    }
+
     public boolean pollLimitSwitchRisingEdge() {
         if (limitSwitch.get() && !lastLimitSwitchValue) {
             lastLimitSwitchValue = true;
@@ -222,6 +267,10 @@ public class Arm extends Cat5Subsystem<Arm> {
         System.out.println("Arm limit switch rising edge, homed");
         Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
             .schedule();
+    }
+
+    public double getTargetAngleDegrees() {
+        return targetAngleDegrees;
     }
 
     public void setTargetAngleDegrees(GridPosition gridPosition, double angleDegrees, IdleMode idleMode) {

@@ -20,7 +20,7 @@ public class MaxVelocityConfig extends Cat5Config {
 
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
-            .withSize(2, 3);
+            .withSize(2, 1);
 
         layout.addDouble("Max Velocity (m per s)", () -> getMaxVelocityMetersPerSecond());
         layout.addDouble("Max Angular Velocity (rad per s)", () -> getMaxAngularVelocityRadiansPerSecond());

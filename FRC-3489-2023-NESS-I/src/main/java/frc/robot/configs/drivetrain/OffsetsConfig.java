@@ -29,7 +29,8 @@ public class OffsetsConfig extends Cat5Config {
         backRightOffsetRadians = Preferences.getDouble(BackRightOffsetRadiansPreferencesKey, 0);
         
         //#region Shuffleboard
-        var layout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList);
+        var layout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
+            .withSize(2, 1);
 
         layout.addDouble("Front Left", () -> Math.toDegrees(getFrontLeftOffsetRadians()));
         layout.addDouble("Front Right", () -> Math.toDegrees(getFrontRightOffsetRadians()));

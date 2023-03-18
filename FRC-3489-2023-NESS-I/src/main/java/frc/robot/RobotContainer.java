@@ -7,14 +7,20 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.revrobotics.CANSparkMax.IdleMode;
+
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.GripperConstants;
 import frc.robot.Constants.LedsConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.enums.GamePiece;
+import frc.robot.enums.GridPosition;
 import frc.robot.enums.LedPattern;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Camera;
@@ -119,6 +125,92 @@ public class RobotContainer {
                 Gripper.get().scheduleOuttakeCommand();
             }));
 
+        new Trigger(() -> DriverStation.isEnabled())
+            .onTrue(runOnce(() -> {
+                Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
+            }));
+
+        man.button(ArmConstants.ForceHomeManButton)
+            .debounce(0.1, DebounceType.kBoth)
+            .onTrue(runOnce(() -> {
+                Arm.get().forceHome();
+            }));
+
+        man.button(ArmConstants.HomeManButton)
+            .onTrue(runOnce(() -> {
+                Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
+            }));
+
+        man.button(ArmConstants.DoubleSubstationButton)
+            .onTrue(runOnce(() -> {
+                Arm.get().setTargetAngleDegrees(GridPosition.High, ArmConstants.DoubleSubstationDegrees, IdleMode.kBrake);
+            }));
+
+
+        man.button(ArmConstants.FloorManButton)
+            .onTrue(runOnce(() -> {
+                Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
+            }));
+
+        man.button(ArmConstants.LowManButton)
+            .onTrue(runOnce(() -> {
+                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+                switch (heldGamePiece) {
+                    case Cone:
+                        Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.LowConeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Cube:
+                        Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.LowCubeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Unknown:
+                        Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.LowUnknownAngleDegrees, IdleMode.kBrake);
+                        break;
+                }
+            }));
+
+        man.button(ArmConstants.MidManButton)
+            .debounce(0.1, DebounceType.kBoth)
+            .onTrue(runOnce(() -> {
+                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+                switch (heldGamePiece) {
+                    case Cone:
+                        if (Arm.get().getGridPosition() != GridPosition.Mid) {
+                            Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
+                        }
+                        else {
+                            if (Arm.get().getTargetAngleDegrees() != ArmConstants.OnMidConeAngleDegrees) {
+                                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
+                            }
+                            else {
+                                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
+                            }
+                        }
+                        break;
+                    case Cube:
+                        Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.MidCubeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Unknown:
+                        Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.MidUnknownAngleDegrees, IdleMode.kBrake);
+                        break;
+                }
+            }));
+
+        man.button(ArmConstants.HighManButton)
+            .onTrue(runOnce(() -> {
+                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+                switch (heldGamePiece) {
+                    case Cone:
+                        Arm.get().setTargetAngleDegrees(GridPosition.High, ArmConstants.HighConeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Cube:
+                        Arm.get().setTargetAngleDegrees(GridPosition.High, ArmConstants.HighCubeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Unknown:
+                        Arm.get().setTargetAngleDegrees(GridPosition.High, ArmConstants.HighUnknownAngleDegrees, IdleMode.kBrake);
+                        break;
+                }
+            }));
+
         new Trigger(() -> DriverStation.isAutonomousEnabled())
             .onTrue(Leds.get().getCommand(LedPattern.Blue, 1.0, false));
         new Trigger(() -> DriverStation.isTeleopEnabled())
@@ -169,6 +261,10 @@ public class RobotContainer {
 
     public double getArmManualControlPercent() {
         return Cat5Utils.linearAxis(-man.getY(), OperatorConstants.ManAxisDeadband);
+    }
+
+    public double getArmCorrectionPercent() {
+        return Cat5Utils.linearAxis(-man.getY(), OperatorConstants.LargeManAxisDeadband);
     }
     //#endregion
 

@@ -81,6 +81,8 @@ public class Drive extends CommandBase {
             Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, speedLimiter);
         }
         else {
+            Drivetrain.get().resetTargetHeading();
+
             Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiter);
         }
     }
