@@ -7,6 +7,8 @@ import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.swervedrivespecialties.swervelib.AbsoluteEncoder;
 import com.swervedrivespecialties.swervelib.AbsoluteEncoderFactory;
 
+import frc.robot.Robot;
+
 public class CanCoderFactoryBuilder {
     private Direction direction = Direction.COUNTER_CLOCKWISE;
     private int periodMilliseconds = 10;
@@ -46,6 +48,10 @@ public class CanCoderFactoryBuilder {
 
         @Override
         public double getAbsoluteAngle() {
+            if (Robot.isSimulation()) {
+                return 0;
+            }
+
             double angle = Math.toRadians(encoder.getAbsolutePosition());
             angle %= 2.0 * Math.PI;
             if (angle < 0.0) {

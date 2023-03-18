@@ -62,10 +62,6 @@ public class Drive extends CommandBase {
                 xPercent = Math.sin(Math.toRadians(pov));
                 yPercent = Math.cos(Math.toRadians(pov));
 
-                double xyMagnitude = Math.hypot(xMetersPerSecond, yMetersPerSecond);
-                xPercent /= xyMagnitude;
-                yPercent /= xyMagnitude;
-
                 xMetersPerSecond = xPercent * PovSpeedMetersPerSecond;
                 yMetersPerSecond = yPercent * PovSpeedMetersPerSecond;
             }

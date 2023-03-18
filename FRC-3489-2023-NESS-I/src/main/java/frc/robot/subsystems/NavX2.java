@@ -49,7 +49,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         return runOnce(() -> {
             navx.zeroYaw();
 
-            // TODO Notifiy drivetrain of new target angle
+            Drivetrain.get().resetTargetHeading();
         })
             .ignoringDisable(true)
             .withName("Zero Yaw");

@@ -13,24 +13,25 @@ import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import static frc.robot.Constants.WristConstants.*;
 
 public class Wrist extends Cat5Subsystem<Wrist> {
+    //#region Singleton
     private static Wrist instance = new Wrist();
 
-    //#region Singleton
     public static Wrist get() {
         return instance;
     }
     //#endregion
 
-    //Devices
+    // Devices
     private final WPI_TalonSRX motor = new WPI_TalonSRX(WristMotorId);
     private final DigitalInput topLimitSwitch = new DigitalInput(topLimitSwitchChannel);
     private final DigitalInput bottomLimitSwitch = new DigitalInput(bottomLimitSwitchChannel);
 
+    // Commands
     private final CommandBase setWristAngleCommand;
     private final CommandBase homeBottomWristCommand;
     private final CommandBase homeTopWristCommand;
 
-
+    // State
     private double targetClicks;
     private boolean isTopHomed = false;
     private boolean isBottomHomed = false;
@@ -43,7 +44,7 @@ public class Wrist extends Cat5Subsystem<Wrist> {
         homeTopWristCommand = homeTopWristCommand();
 
         motor.configFactoryDefault();
-        motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+        motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
         motor.configPeakOutputForward(PeakOutputForward);
 		motor.configPeakOutputReverse(PeakOutputReverse);
