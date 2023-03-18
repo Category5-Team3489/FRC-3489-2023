@@ -13,8 +13,11 @@
       "/Shuffleboard/ColorSensor/ColorAndProximityConfig/Save Cone Color": "Command",
       "/Shuffleboard/ColorSensor/ColorAndProximityConfig/Save Cube Color": "Command",
       "/Shuffleboard/ColorSensor/ColorAndProximityConfig/Save Detection Proximity": "Command",
+      "/Shuffleboard/Gripper/Gripper/Intake": "Command",
+      "/Shuffleboard/Gripper/Gripper/Stop": "Command",
       "/Shuffleboard/Main/Arm/Force Home": "Command",
       "/Shuffleboard/Main/Arm/Subsystem Info": "Subsystem",
+      "/Shuffleboard/Main/Gripper/Subsystem Info": "Subsystem",
       "/Shuffleboard/Main/NavX2/Zero Yaw": "Command"
     }
   }

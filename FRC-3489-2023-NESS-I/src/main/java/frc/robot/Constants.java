@@ -120,6 +120,8 @@ public final class Constants {
 
     public static class WristConstants {//4096 clicks/rotation
         public static final int WristMotorId = 12;
+        public static final int topLimitSwitchChannel = 1;
+        public static final int bottomLimitSwitchChannel = 2;
 
         public static final int PeakOutputForward = 1;
         public static final int PeakOutputReverse = -1;
@@ -127,6 +129,10 @@ public final class Constants {
         public static final double KP = 0.15;
 
         public static final double ClicksPerRotation = 4096;
+        public static final double HomingPercent = -0.4;
+
+        public static final double MinAngleDegrees = 0;
+        public static final double MaxAngleDegrees = 37.0;
     }
 
     public static class ArmConstants {
