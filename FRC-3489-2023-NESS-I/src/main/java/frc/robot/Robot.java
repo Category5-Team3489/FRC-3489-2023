@@ -19,6 +19,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        //#region Config
         DriverStation.silenceJoystickConnectionWarning(isSimulation());
 
         for (int port = 5800; port <= 5805; port++) {
@@ -27,15 +28,18 @@ public class Robot extends TimedRobot {
 
         LiveWindow.setEnabled(false);
         // LiveWindow.disableAllTelemetry();
+        //#endregion
 
         new RobotContainer();
         autos = new Autos();
 
+        //#region Callbacks
         addPeriodic(() -> {
             if (Arm.get().pollLimitSwitchRisingEdge()) {
                 Arm.get().notifyLimitSwitchRisingEdge();
             }
         }, 1.0 / 75.0);
+        //#endregion
     }
 
     @Override

@@ -101,7 +101,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     public boolean isCamposeValid() {
         return activePipeline == LimelightConstants.FiducialPipeline &&
             activePipelineTimer.get() > LimelightConstants.CamposeValidActivePipelineSeconds &&
-            targetAreaEntry.getDouble(Double.NaN) > LimelightConstants.BotposeValidTargetArea &&
+            targetAreaEntry.getDouble(Double.NaN) > LimelightConstants.CamposeValidTargetArea &&
             Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.CamposeValidAverageDriveVelocityLimitMetersPerSecond;
     }
 

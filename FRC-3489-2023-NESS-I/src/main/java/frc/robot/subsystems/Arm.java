@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Cat5Utils;
 import frc.robot.Constants;
+import frc.robot.Inputs;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.enums.GridPosition;
 import frc.robot.enums.LedPattern;
@@ -146,7 +146,7 @@ public class Arm extends Cat5Subsystem<Arm> {
                     setTargetAngleDegrees(GridPosition.Mid, debugTargetAngleDegrees.getAsDouble(), IdleMode.kBrake);
                 }
 
-                double correctionPercent = RobotContainer.get().getArmCorrectionPercent();
+                double correctionPercent = Inputs.getArmCorrectionPercent();
                 targetAngleDegrees += correctionPercent * CorrectionMaxDegreesPerSecond * Robot.kDefaultPeriod;
                 targetAngleDegrees = MathUtil.clamp(targetAngleDegrees, MinAngleDegrees, MaxAngleDegrees);
 
@@ -217,7 +217,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     
     private CommandBase getManualControlCommand() {
         return run(() -> {
-            double percent = RobotContainer.get().getArmManualControlPercent();
+            double percent = Inputs.getArmManualControlPercent();
 
             if (percent < 0) {
                 percent = MathUtil.interpolate(0, ArmConstants.ManualControlMaxDownPercent, -percent);

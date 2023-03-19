@@ -12,13 +12,10 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.GripperConstants;
 import frc.robot.Constants.LedsConstants;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
 import frc.robot.enums.LedPattern;
@@ -34,6 +31,7 @@ import frc.robot.subsystems.NavX2;
 import frc.robot.subsystems.Wrist;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static frc.robot.Inputs.*;
 
 public class RobotContainer {
     //#region Singleton
@@ -50,7 +48,8 @@ public class RobotContainer {
     public static void registerCat5Subsystem(Cat5Subsystem<?> cat5Subsystem) {
         for (Cat5Subsystem<?> subsystem : cat5Subsystems) {
             if (subsystem.getClass().getSimpleName() == cat5Subsystem.getClass().getSimpleName()) {
-                throw new RuntimeException("Attempted to register subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\" twice");
+                Cat5Utils.time();
+                DriverStation.reportError("Attempted to register subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\" twice", true);
             }
         }
 
@@ -59,10 +58,6 @@ public class RobotContainer {
         System.out.println("Registered subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\"");
     }
     //#endregion
-
-    // Controllers
-    private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.XboxPort);
-    private final CommandJoystick man = new CommandJoystick(OperatorConstants.ManPort);
     
     public RobotContainer() {
         instance = this;
@@ -86,27 +81,27 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        xbox.start()
+        Xbox.start()
             .onTrue(NavX2.get().zeroYawCommand);
 
-        xbox.leftStick()
+        Xbox.leftStick()
             .whileTrue(Drivetrain.get().brakeTranslationCommand);
-        xbox.rightStick()
+        Xbox.rightStick()
             .whileTrue(Drivetrain.get().brakeRotationCommand);
         
-        xbox.y()
+        Xbox.y()
             .onTrue(runOnce(() -> {
                 Drivetrain.get().setTargetHeading(Rotation2d.fromDegrees(0));
             }));
-        xbox.b()
+        Xbox.b()
             .onTrue(runOnce(() -> {
                 Drivetrain.get().setTargetHeading(Rotation2d.fromDegrees(-90));
             }));
-        xbox.a()
+        Xbox.a()
             .onTrue(runOnce(() -> {
                 Drivetrain.get().setTargetHeading(Rotation2d.fromDegrees(-180));
             }));
-        xbox.x()
+        Xbox.x()
             .onTrue(runOnce(() -> {
                 Drivetrain.get().setTargetHeading(Rotation2d.fromDegrees(-270));
             }));
@@ -116,11 +111,11 @@ public class RobotContainer {
                 Gripper.get().setHeldGamePiece(ColorSensor.get().getDetectedGamePiece());
             }));
 
-        man.button(GripperConstants.StopManButton)
+        Man.button(GripperConstants.StopManButton)
             .onTrue(Gripper.get().stopCommand);
-        man.button(GripperConstants.IntakeManButton)
+        Man.button(GripperConstants.IntakeManButton)
             .onTrue(Gripper.get().intakeCommand);
-        man.button(GripperConstants.OuttakeManButton)
+        Man.button(GripperConstants.OuttakeManButton)
             .onTrue(runOnce(() -> {
                 Gripper.get().scheduleOuttakeCommand();
             }));
@@ -130,29 +125,29 @@ public class RobotContainer {
                 Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
             }));
 
-        man.button(ArmConstants.ForceHomeManButton)
+        Man.button(ArmConstants.ForceHomeManButton)
             .debounce(0.1, DebounceType.kBoth)
             .onTrue(runOnce(() -> {
                 Arm.get().forceHome();
             }));
 
-        man.button(ArmConstants.HomeManButton)
+        Man.button(ArmConstants.HomeManButton)
             .onTrue(runOnce(() -> {
                 Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
             }));
 
-        man.button(ArmConstants.DoubleSubstationButton)
+        Man.button(ArmConstants.DoubleSubstationButton)
             .onTrue(runOnce(() -> {
                 Arm.get().setTargetAngleDegrees(GridPosition.High, ArmConstants.DoubleSubstationDegrees, IdleMode.kBrake);
             }));
 
 
-        man.button(ArmConstants.FloorManButton)
+        Man.button(ArmConstants.FloorManButton)
             .onTrue(runOnce(() -> {
                 Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
             }));
 
-        man.button(ArmConstants.LowManButton)
+        Man.button(ArmConstants.LowManButton)
             .onTrue(runOnce(() -> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
                 switch (heldGamePiece) {
@@ -168,7 +163,7 @@ public class RobotContainer {
                 }
             }));
 
-        man.button(ArmConstants.MidManButton)
+        Man.button(ArmConstants.MidManButton)
             .debounce(0.1, DebounceType.kBoth)
             .onTrue(runOnce(() -> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
@@ -195,7 +190,7 @@ public class RobotContainer {
                 }
             }));
 
-        man.button(ArmConstants.HighManButton)
+        Man.button(ArmConstants.HighManButton)
             .onTrue(runOnce(() -> {
                 GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
                 switch (heldGamePiece) {
@@ -215,58 +210,11 @@ public class RobotContainer {
             .onTrue(Leds.get().getCommand(LedPattern.Blue, 1.0, false));
         new Trigger(() -> DriverStation.isTeleopEnabled())
             .onTrue(Leds.get().getCommand(LedPattern.Green, 1.0, false));
-        man.axisLessThan(LedsConstants.GamePieceIndicatorManAxis, -LedsConstants.GamePieceIndicatorThreshold)
+        Man.axisLessThan(LedsConstants.GamePieceIndicatorManAxis, -LedsConstants.GamePieceIndicatorThreshold)
             .whileTrue(Leds.get().getCommand(LedPattern.BlueViolet, Double.MAX_VALUE, true));
-        man.axisGreaterThan(LedsConstants.GamePieceIndicatorManAxis, LedsConstants.GamePieceIndicatorThreshold)
+        Man.axisGreaterThan(LedsConstants.GamePieceIndicatorManAxis, LedsConstants.GamePieceIndicatorThreshold)
             .whileTrue(Leds.get().getCommand(LedPattern.Yellow, Double.MAX_VALUE, true));
     }
-
-    //#region Public
-    public double getDriveXPercent() {
-        return Cat5Utils.quadraticAxis(-xbox.getLeftY(), OperatorConstants.XboxAxisDeadband);
-    }
-
-    public double getDriveYPercent() {
-        return Cat5Utils.quadraticAxis(-xbox.getLeftX(), OperatorConstants.XboxAxisDeadband);
-    }
-
-    public double getDriveOmegaPercent() {
-        return Cat5Utils.quadraticAxis(-xbox.getRightX(), OperatorConstants.XboxAxisDeadband);
-    }
-
-    public double getDriveSpeedLimiterPercent() {
-        double speedLimiter = 1.0 / 2.0;
-
-        if (xbox.leftBumper().getAsBoolean()) {
-            speedLimiter = 1.0 / 3.0;
-        }
-        else if (xbox.rightBumper().getAsBoolean()) {
-            speedLimiter = 1.0;
-        }
-
-        return speedLimiter;
-    }
-
-    public int getDrivePovAngle() {
-        return xbox.getHID().getPOV();
-    }
-
-    public double getDriveLeftHeadingAdjustmentPercent() {
-        return Cat5Utils.deadband(xbox.getLeftTriggerAxis(), OperatorConstants.XboxAxisDeadband);
-    }
-
-    public double getDriveRightHeadingAdjustmentPercent() {
-        return Cat5Utils.deadband(xbox.getRightTriggerAxis(), OperatorConstants.XboxAxisDeadband);
-    }
-
-    public double getArmManualControlPercent() {
-        return Cat5Utils.linearAxis(-man.getY(), OperatorConstants.ManAxisDeadband);
-    }
-
-    public double getArmCorrectionPercent() {
-        return Cat5Utils.linearAxis(-man.getY(), OperatorConstants.LargeManAxisDeadband);
-    }
-    //#endregion
 
     // Try out DataLogManager
     // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html

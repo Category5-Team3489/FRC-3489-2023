@@ -4,8 +4,8 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Inputs;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Drivetrain;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
@@ -34,9 +34,9 @@ public class Drive extends CommandBase {
         double maxVelocityMetersPerSecond = Drivetrain.get().maxVelocityConfig.getMaxVelocityMetersPerSecond();
         double maxAngularVelocityRadiansPerSecond = Drivetrain.get().maxVelocityConfig.getMaxAngularVelocityRadiansPerSecond();
 
-        double speedLimiter = RobotContainer.get().getDriveSpeedLimiterPercent();
+        double speedLimiter = Inputs.getDriveSpeedLimiterPercent();
 
-        double xPercent = RobotContainer.get().getDriveXPercent();
+        double xPercent = Inputs.getDriveXPercent();
         if (speedLimiter == 1.0) {
             xPercent = xRateLimiter.calculate(xPercent);
         }
@@ -45,7 +45,7 @@ public class Drive extends CommandBase {
         }
         double xMetersPerSecond = xPercent * maxVelocityMetersPerSecond;
 
-        double yPercent = RobotContainer.get().getDriveYPercent();
+        double yPercent = Inputs.getDriveYPercent();
         if (speedLimiter == 1.0) {
             yPercent = yRateLimiter.calculate(yPercent);
         }
@@ -55,7 +55,7 @@ public class Drive extends CommandBase {
         double yMetersPerSecond = yPercent * maxVelocityMetersPerSecond;
 
         if (xMetersPerSecond == 0 && yMetersPerSecond == 0) {
-            int pov = RobotContainer.get().getDrivePovAngle();
+            int pov = Inputs.getDrivePovAngle();
             if (pov != -1) {
                 pov += 90;
 
@@ -67,12 +67,12 @@ public class Drive extends CommandBase {
             }
         }
 
-        double omegaPercent = RobotContainer.get().getDriveOmegaPercent();
+        double omegaPercent = Inputs.getDriveOmegaPercent();
         double omegaRadiansPerSecond = omegaPercent * maxAngularVelocityRadiansPerSecond;
 
         if (omegaRadiansPerSecond == 0) {
-            double leftHeadingAdjustmentPercent = RobotContainer.get().getDriveLeftHeadingAdjustmentPercent();
-            double rightHeadingAdjustmentPercent = RobotContainer.get().getDriveRightHeadingAdjustmentPercent();
+            double leftHeadingAdjustmentPercent = Inputs.getDriveLeftHeadingAdjustmentPercent();
+            double rightHeadingAdjustmentPercent = Inputs.getDriveRightHeadingAdjustmentPercent();
 
             double headingAdjustmentPercent = (-leftHeadingAdjustmentPercent) + rightHeadingAdjustmentPercent;
             double headingAdjustmentDegrees = headingAdjustmentPercent * HeadingAdjustmentMaxDegreesPerSecond * Robot.kDefaultPeriod;
