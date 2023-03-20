@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.enums.ArmCommand;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.LedPattern;
+import frc.robot.enums.WristCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Cat5Subsystem;
@@ -139,7 +140,7 @@ public class RobotContainer {
         //#region Wrist
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
-                Wrist.get().command(ArmCommand.ForceHome);
+                Wrist.get().command(WristCommand.Starting);
             }));
         //#endregion
 
