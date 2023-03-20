@@ -4,17 +4,25 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import frc.robot.enums.LimelightPipeline;
 
 public final class Constants {
     public static boolean IsDebugShuffleboardEnabled = true;
     
-    public static class OperatorConstants {
+    public static class InputConstants {
         public static final int XboxPort = 0;
         public static final int ManPort = 1;
 
         public static final double XboxAxisDeadband = 0.05;
         public static final double ManAxisDeadband = 0.1;
         public static final double LargeManAxisDeadband = 0.5;
+
+        public static final int AutomateManButton = 5;
+
+        public static final int GripperStopManButton = 1;
+        public static final int GripperIntakeManButton = 2;
+        public static final int GripperOuttakeManButton = 3;
+
     }
 
     public static class CameraConstants {
@@ -25,11 +33,7 @@ public final class Constants {
     }
 
     public static class LimelightConstants {
-        public static final long FiducialPipeline = 0;
-        public static final long MidRetroreflectivePipeline = 1;
-        public static final long HighRetroreflectivePipeline = 2;
-
-        public static final long DefaultPipeline = FiducialPipeline;
+        public static final LimelightPipeline DefaultPipeline = LimelightPipeline.Fiducial;
 
         public static final double CamposeValidActivePipelineSeconds = 0.5;
         public static final double CamposeValidTargetArea = 0.005;
@@ -37,9 +41,6 @@ public final class Constants {
     }
 
     public static class DrivetrainConstants {
-        public static final int AutomateManButton = 5;
-        public static final int StopAutomationManButton = 4;
-
         public static final double PovSpeedMetersPerSecond = 0.4;
 
         public static final double XYRateLimiterPercentPerSecond = 3;
@@ -96,10 +97,6 @@ public final class Constants {
     }
 
     public static class GripperConstants {
-        public static final int StopManButton = 1;
-        public static final int IntakeManButton = 2;
-        public static final int OuttakeManButton = 3;
-
         public static final boolean IsConeReintakingEnabled = false;
         public static final boolean IsCubeReintakingEnabled = true;
         public static final int ReintakeConeProximityThreshold = 300;
@@ -197,10 +194,6 @@ public final class Constants {
 
         public static final int StallSmartCurrentLimitAmps = 30;
         public static final double ProportionalGainPercentPerRevolutionOfError = 0.1; // 0.025
-        // public static final double IntegralGainPercentPerRevolutionMillisecondOfError = 0;
-        public static final double DerivativeGainPercentPerRevolutionPerMillisecondOfError = 0;
-        // public static final double FeedforwardGainPercentPerRevolutionOfError = 0;
-        // public static final double IntegrationZoneRevolutionsOfError = 0;
         public static final double MinOutputPercent = -0.5;
         public static final double MaxOutputPercent = 0.75; // 0.85
         

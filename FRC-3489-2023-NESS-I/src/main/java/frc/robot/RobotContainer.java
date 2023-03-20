@@ -14,7 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.GripperConstants;
+import frc.robot.Constants.InputConstants;
 import frc.robot.Constants.LedsConstants;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
@@ -59,7 +59,7 @@ public class RobotContainer {
     }
     //#endregion
     
-    public RobotContainer() {
+    private RobotContainer() {
         instance = this;
         cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
 
@@ -108,14 +108,22 @@ public class RobotContainer {
 
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
+                GamePiece detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
                 Gripper.get().setHeldGamePiece(ColorSensor.get().getDetectedGamePiece());
+
+                Cat5Utils.time();
+                System.out.println("Detected game piece: \"" + detectedGamePiece.toString() + "\" on enable, set as held game piece in gripper");
             }));
 
-        Man.button(GripperConstants.StopManButton)
-            .onTrue(Gripper.get().stopCommand);
-        Man.button(GripperConstants.IntakeManButton)
-            .onTrue(Gripper.get().intakeCommand);
-        Man.button(GripperConstants.OuttakeManButton)
+        Man.button(InputConstants.GripperStopManButton)
+            .onTrue(runOnce(() -> {
+                Gripper.get().scheduleStopCommand();
+            }));
+        Man.button(InputConstants.GripperIntakeManButton)
+            .onTrue(runOnce(() -> {
+                Gripper.get().scheduleIntakeCommand();
+            }));
+        Man.button(InputConstants.GripperOuttakeManButton)
             .onTrue(runOnce(() -> {
                 Gripper.get().scheduleOuttakeCommand();
             }));
@@ -126,7 +134,6 @@ public class RobotContainer {
             }));
 
         Man.button(ArmConstants.ForceHomeManButton)
-            .debounce(0.1, DebounceType.kBoth)
             .onTrue(runOnce(() -> {
                 Arm.get().forceHome();
             }));

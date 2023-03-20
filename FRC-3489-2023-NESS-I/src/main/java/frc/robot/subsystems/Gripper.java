@@ -34,8 +34,8 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private final BooleanSupplier isColorSensorDisabled;
 
     // Commands
-    public final CommandBase stopCommand;
-    public final CommandBase intakeCommand;
+    private final CommandBase stopCommand;
+    private final CommandBase intakeCommand;
     private final CommandBase lowOuttakeConeCommand;
     private final CommandBase midOuttakeConeCommand;
     private final CommandBase highOuttakeConeCommand;
@@ -203,6 +203,14 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         this.heldGamePiece = heldGamePiece;
     }
 
+    public void scheduleStopCommand() {
+        stopCommand.schedule();
+    }
+
+    public void scheduleIntakeCommand() {
+        intakeCommand.schedule();
+    }
+
     public void scheduleOuttakeCommand() {
         switch (Arm.get().getGridPosition()) {
             case Low:
@@ -247,6 +255,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         }
 
         heldGamePiece = GamePiece.Unknown;
+
         Cat5Utils.time();
         System.out.println("Gripper outtake");
         Leds.get().getCommand(LedPattern.StrobeWhite, 1.0, true)

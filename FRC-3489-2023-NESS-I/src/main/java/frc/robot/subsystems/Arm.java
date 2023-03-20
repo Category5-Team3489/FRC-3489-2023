@@ -75,7 +75,6 @@ public class Arm extends Cat5Subsystem<Arm> {
         motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
         pidController.setP(ProportionalGainPercentPerRevolutionOfError);
-        pidController.setD(DerivativeGainPercentPerRevolutionPerMillisecondOfError);
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
         //#endregion

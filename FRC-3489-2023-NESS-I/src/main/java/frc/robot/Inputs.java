@@ -2,24 +2,24 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.InputConstants;
 
 public class Inputs {
     // Devices
-    public static final CommandXboxController Xbox = new CommandXboxController(OperatorConstants.XboxPort);
-    public static final CommandJoystick Man = new CommandJoystick(OperatorConstants.ManPort);
+    public static final CommandXboxController Xbox = new CommandXboxController(InputConstants.XboxPort);
+    public static final CommandJoystick Man = new CommandJoystick(InputConstants.ManPort);
 
     //#region Drive
     public static double getDriveXPercent() {
-        return Cat5Utils.quadraticAxis(-Xbox.getLeftY(), OperatorConstants.XboxAxisDeadband);
+        return Cat5Utils.quadraticAxis(-Xbox.getLeftY(), InputConstants.XboxAxisDeadband);
     }
 
     public static double getDriveYPercent() {
-        return Cat5Utils.quadraticAxis(-Xbox.getLeftX(), OperatorConstants.XboxAxisDeadband);
+        return Cat5Utils.quadraticAxis(-Xbox.getLeftX(), InputConstants.XboxAxisDeadband);
     }
 
     public static double getDriveOmegaPercent() {
-        return Cat5Utils.quadraticAxis(-Xbox.getRightX(), OperatorConstants.XboxAxisDeadband);
+        return Cat5Utils.quadraticAxis(-Xbox.getRightX(), InputConstants.XboxAxisDeadband);
     }
 
     public static double getDriveSpeedLimiterPercent() {
@@ -40,21 +40,21 @@ public class Inputs {
     }
 
     public static double getDriveLeftHeadingAdjustmentPercent() {
-        return Cat5Utils.deadband(Xbox.getLeftTriggerAxis(), OperatorConstants.XboxAxisDeadband);
+        return Cat5Utils.deadband(Xbox.getLeftTriggerAxis(), InputConstants.XboxAxisDeadband);
     }
 
     public static double getDriveRightHeadingAdjustmentPercent() {
-        return Cat5Utils.deadband(Xbox.getRightTriggerAxis(), OperatorConstants.XboxAxisDeadband);
+        return Cat5Utils.deadband(Xbox.getRightTriggerAxis(), InputConstants.XboxAxisDeadband);
     }
     //#endregion
 
     //#region Arm
     public static double getArmManualControlPercent() {
-        return Cat5Utils.linearAxis(-Man.getY(), OperatorConstants.ManAxisDeadband);
+        return Cat5Utils.linearAxis(-Man.getY(), InputConstants.ManAxisDeadband);
     }
 
     public static double getArmCorrectionPercent() {
-        return Cat5Utils.linearAxis(-Man.getY(), OperatorConstants.LargeManAxisDeadband);
+        return Cat5Utils.linearAxis(-Man.getY(), InputConstants.LargeManAxisDeadband);
     }
     //#endregion
 }

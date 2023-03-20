@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import frc.robot.Constants;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.enums.LimelightPipeline;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 public class Limelight extends Cat5Subsystem<Limelight> {
@@ -27,11 +28,11 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
 
     private final DoubleArraySubscriber camerapose_targetspaceSubscriber = limelight.getDoubleArrayTopic("camerapose_targetspace").subscribe(new double[] {});
-
-    private final NetworkTableEntry tagIdEntry = limelight.getEntry("tid");
     
     private final NetworkTableEntry getpipeEntry = limelight.getEntry("getpipe");
     private final NetworkTableEntry pipelineEntry = limelight.getEntry("pipeline");
+
+    private final NetworkTableEntry tagIdEntry = limelight.getEntry("tid");
     private final NetworkTableEntry targetXEntry = limelight.getEntry("tx");
     private final NetworkTableEntry targetYEntry = limelight.getEntry("ty");
     private final NetworkTableEntry targetAreaEntry = limelight.getEntry("ta");
@@ -39,7 +40,7 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     // State
     private Timer activePipelineTimer = new Timer();
 
-    private long desiredPipeline = LimelightConstants.DefaultPipeline;
+    private LimelightPipeline desiredPipeline = LimelightConstants.DefaultPipeline;
     private long activePipeline = -1;
 
     private Limelight() {
@@ -51,15 +52,8 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         if (Constants.IsDebugShuffleboardEnabled) {
             var subsystemLayout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
                 .withSize(2, 1);
-            
-            subsystemLayout.addDouble("Active Pipeline Timer", () -> activePipelineTimer.get());
-            subsystemLayout.addInteger("Desired Pipeline", () -> desiredPipeline);
-            subsystemLayout.addInteger("Active Pipeline", () -> activePipeline);
-            subsystemLayout.addDouble("Target X", () -> targetXEntry.getDouble(Double.NaN));
-            subsystemLayout.addDouble("Target Y", () -> targetYEntry.getDouble(Double.NaN));
-            subsystemLayout.addDouble("Target Area", () -> targetAreaEntry.getDouble(Double.NaN));
+
             subsystemLayout.addBoolean("Is Campose Valid", () -> isCamposeValid());
-            
             subsystemLayout.addString("Campose", () -> {
                 var campose = getCampose();
                 if (campose != null) {
@@ -67,7 +61,15 @@ public class Limelight extends Cat5Subsystem<Limelight> {
                 }
                 return "null";
             });
+            
+            subsystemLayout.addDouble("Active Pipeline Timer", () -> activePipelineTimer.get());
+            subsystemLayout.addString("Desired Pipeline", () -> desiredPipeline.toString());
+            subsystemLayout.addInteger("Active Pipeline", () -> activePipeline);
+
             subsystemLayout.addInteger("Tag Id", () -> getTagId());
+            subsystemLayout.addDouble("Target X", () -> targetXEntry.getDouble(Double.NaN));
+            subsystemLayout.addDouble("Target Y", () -> targetYEntry.getDouble(Double.NaN));
+            subsystemLayout.addDouble("Target Area", () -> targetAreaEntry.getDouble(Double.NaN));
         }
         //#endregion
     }
@@ -84,22 +86,22 @@ public class Limelight extends Cat5Subsystem<Limelight> {
             activePipelineTimer.restart();
         }
 
-        if (desiredPipeline != activePipeline) {
+        if (desiredPipeline.getIndex() != activePipeline) {
             setPipeline(desiredPipeline);
         }
     }
 
-    private void setPipeline(long pipeline) {
+    private void setPipeline(LimelightPipeline pipeline) {
         if (isActivePipeline(pipeline)) {
             return;
         }
 
-        pipelineEntry.setNumber(pipeline);
+        pipelineEntry.setNumber(pipeline.getIndex());
     }
 
     //#region Public
     public boolean isCamposeValid() {
-        return activePipeline == LimelightConstants.FiducialPipeline &&
+        return isActivePipeline(LimelightPipeline.Fiducial) &&
             activePipelineTimer.get() > LimelightConstants.CamposeValidActivePipelineSeconds &&
             targetAreaEntry.getDouble(Double.NaN) > LimelightConstants.CamposeValidTargetArea &&
             Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.CamposeValidAverageDriveVelocityLimitMetersPerSecond;
@@ -117,12 +119,18 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         }
     }
 
-    public long getTagId() {
-        return tagIdEntry.getInteger(-1);
-    }
-
     public long getActivePipeline() {
         return activePipeline;
+    }
+    public void setDesiredPipeline(LimelightPipeline pipeline) {
+        desiredPipeline = pipeline;
+    }
+    public boolean isActivePipeline(LimelightPipeline pipeline) {
+        return activePipeline == pipeline.getIndex();
+    }
+
+    public long getTagId() {
+        return tagIdEntry.getInteger(-1);
     }
     public double getTargetX() {
         return targetXEntry.getDouble(Double.NaN);
@@ -132,13 +140,6 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     }
     public double getTargetArea() {
         return targetAreaEntry.getDouble(Double.NaN);
-    }
-
-    public void setDesiredPipeline(long pipeline) {
-        desiredPipeline = pipeline;
-    }
-    public boolean isActivePipeline(long pipeline) {
-        return activePipeline == pipeline;
     }
     //#endregion
 }

@@ -30,7 +30,7 @@ public class Robot extends TimedRobot {
         // LiveWindow.disableAllTelemetry();
         //#endregion
 
-        new RobotContainer();
+        RobotContainer.get();
         autos = new Autos();
 
         //#region Callbacks

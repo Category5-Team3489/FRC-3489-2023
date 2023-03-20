@@ -47,7 +47,7 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         // #region Shuffleboard
         if (Constants.IsDebugShuffleboardEnabled) {
             var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
-                    .withSize(2, 1);
+                .withSize(2, 1);
 
             layout.addDouble("Red", () -> color.red);
             layout.addDouble("Green", () -> color.green);
