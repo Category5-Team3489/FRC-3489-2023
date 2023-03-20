@@ -8,22 +8,6 @@ import frc.robot.enums.LimelightPipeline;
 
 public final class Constants {
     public static boolean IsDebugShuffleboardEnabled = true;
-    
-    public static class InputConstants {
-        public static final int XboxPort = 0;
-        public static final int ManPort = 1;
-
-        public static final double XboxAxisDeadband = 0.05;
-        public static final double ManAxisDeadband = 0.1;
-        public static final double LargeManAxisDeadband = 0.5;
-
-        public static final int AutomateManButton = 5;
-
-        public static final int GripperStopManButton = 1;
-        public static final int GripperIntakeManButton = 2;
-        public static final int GripperOuttakeManButton = 3;
-
-    }
 
     public static class CameraConstants {
         public static final int PixelWidth = 160;
@@ -52,8 +36,6 @@ public final class Constants {
         public static final double OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError = 0;
         public static final double OmegaToleranceDegrees = 0.0;
         public static final double OmegaMaxDegreesPerSecond = 720; // FIXME This is around 2 times the max rotation speed of the robot
-
-        public static final double CenterOfRotationMaxScale = 5;
 
         public static final double MaxVoltage = 12;
 
@@ -131,33 +113,25 @@ public final class Constants {
     }
 
     public static class WristConstants {
-        public static final double MinAngleDegrees = 0;
-        public static final double MaxAngleDegrees = 37.0;
+        public static final double MinRotations = 0;
+        public static final double MaxRotations = 0;
+        public static final double StartingRotations = 0;
+        public static final double HorizontalRotations = 0;
+        public static final double CarryingRotations = 0;
 
-        public static final double ClicksPerRotation = 4096 * (2.0 / 1.0);
-        public static final double ClicksPerDegree = ClicksPerRotation / 360;
-        public static final double DegreesPerClick = 1.0 / ClicksPerDegree;
+        public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (2.0 / 1.0);
+        public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
+        public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
-        public static final double HomingPercent = 0.15;
-
+        public static final int StallSmartCurrentLimitAmps = 20;
+        public static final double ProportionalGainPercentPerRevolutionOfError = 0.025;
         public static final double MinOutputPercent = -0.15;
-        public static final double MaxOutputPercent = 0.15;
-        public static final double ProportionalGainPercentPerClickOfError = 0.15;
+        public static final double MaxOutputPercent = 0.15; // 0.85
 
         public static final int MotorDeviceId = 12;
-        public static final int LimitSwitchChannel = 1;
-        public static final int TopLimitSwitchChannel = 2;
     }
 
     public static class ArmConstants {
-        public static final int ForceHomeManButton = 8;
-        public static final int HomeManButton = 10;
-        public static final int DoubleSubstationButton = 6;
-        public static final int FloorManButton = 12;
-        public static final int LowManButton = 11;
-        public static final int MidManButton = 9;
-        public static final int HighManButton = 7;
-
         public static final double CorrectionMaxDegreesPerSecond = 25; // 0.5
     
         public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (44.0 / 12.0);
@@ -179,10 +153,10 @@ public final class Constants {
         public static final double LowCubeAngleDegrees = -70;
         public static final double LowUnknownAngleDegrees = (LowConeAngleDegrees + LowCubeAngleDegrees) / 2.0;
 
-        public static final double AboveMidConeAngleDegrees = 14; // 11
-        public static final double OnMidConeAngleDegrees = -10; // -4
+        public static final double MidConeAngleDegrees = 14; // 11
+        public static final double ScoreMidConeAngleDegrees = -10; // -4
         public static final double MidCubeAngleDegrees = 11;
-        public static final double MidUnknownAngleDegrees = (AboveMidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
+        public static final double MidUnknownAngleDegrees = (MidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
         public static final double HighConeAngleDegrees = 27; // 36
         public static final double HighCubeAngleDegrees = 25;
@@ -193,6 +167,7 @@ public final class Constants {
         public static final double ResistStaticFrictionPercent = 0;
 
         public static final int StallSmartCurrentLimitAmps = 30;
+        public static final double ClosedLoopSecondsToFull = 0.1;
         public static final double ProportionalGainPercentPerRevolutionOfError = 0.1; // 0.025
         public static final double MinOutputPercent = -0.5;
         public static final double MaxOutputPercent = 0.75; // 0.85

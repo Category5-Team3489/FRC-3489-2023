@@ -22,7 +22,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     private final AHRS navx = new AHRS(Port.kMXP, (byte)66);
 
     // Commands
-    public final CommandBase zeroYawCommand = getZeroYawCommand();
+    private final CommandBase zeroYawCommand = getZeroYawCommand();
 
     // State
     private Rotation2d heading = new Rotation2d();
@@ -61,6 +61,10 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
 
         return heading;
+    }
+
+    public void scheduleZeroYawCommand() {
+        zeroYawCommand.schedule();
     }
     //#endregion
 }

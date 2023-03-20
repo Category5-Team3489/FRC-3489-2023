@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants;
+import frc.robot.Inputs;
+import frc.robot.enums.GamePiece;
 import frc.robot.enums.LedPattern;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
@@ -26,9 +28,14 @@ public class Leds extends Cat5Subsystem<Leds> {
     private final PWMSparkMax leftBlinkin = new PWMSparkMax(LeftChannel);
     private final PWMSparkMax rightBlinkin = new PWMSparkMax(RightChannel);
 
+    // Commands
+    private final Command coneIndicatorCommand = getCommand(LedPattern.Yellow, Double.MAX_VALUE, true);
+    private final Command cubeIndicatorCommand = getCommand(LedPattern.BlueViolet, Double.MAX_VALUE, true);
+
     // State
     private LedPattern leftActivePattern = LedPattern.Black;
     private LedPattern rightActivePattern = LedPattern.Black;
+    private GamePiece indicatedGamePiece = GamePiece.Unknown;
 
     private Leds() {
         super(i -> instance = i);
@@ -36,7 +43,14 @@ public class Leds extends Cat5Subsystem<Leds> {
         // https://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf
 
         setDefaultCommand(getCommand(() -> {
-            return getAlliancePattern();
+            switch (DriverStation.getAlliance()) {
+                case Red:
+                    return LedPattern.ColorWavesLavaPalette;
+                case Blue:
+                    return LedPattern.ColorWavesOceanPalette;
+                default:
+                    return LedPattern.Black;
+            }
         }, Double.MAX_VALUE, true));
 
         //#region Shuffleboard
@@ -46,18 +60,34 @@ public class Leds extends Cat5Subsystem<Leds> {
 
             layout.addString("Left Active Pattern", () -> leftActivePattern.toString());
             layout.addString("Right Active Pattern", () -> rightActivePattern.toString());
+            layout.addString("Indicated Game Piece", () -> indicatedGamePiece.toString());
         }
         //#endregion
     }
 
-    private LedPattern getAlliancePattern() {
-        switch (DriverStation.getAlliance()) {
-            case Red:
-				return LedPattern.ColorWavesLavaPalette;
-			case Blue:
-				return LedPattern.ColorWavesOceanPalette;
-			default:
-				return LedPattern.Black;
+    @Override
+    public void periodic() {
+        if (!DriverStation.isTeleopEnabled()) {
+            indicatedGamePiece = GamePiece.Unknown;
+
+            coneIndicatorCommand.cancel();
+            cubeIndicatorCommand.cancel();
+        }
+        else {
+            indicatedGamePiece = Inputs.getIndicatedGamePiece();
+
+            switch (indicatedGamePiece) {
+                case Cone:
+                    coneIndicatorCommand.schedule();
+                    break;
+                case Cube:
+                    cubeIndicatorCommand.schedule();
+                    break;
+                case Unknown:
+                    coneIndicatorCommand.cancel();
+                    cubeIndicatorCommand.cancel();
+                    break;
+            }
         }
     }
 
@@ -102,6 +132,10 @@ public class Leds extends Cat5Subsystem<Leds> {
         return run(run)
             .withTimeout(seconds)
             .withInterruptBehavior(interruptBehavior);
+    }
+
+    public GamePiece getIndicatedGamePiece() {
+        return indicatedGamePiece;
     }
     //#endregion
 }

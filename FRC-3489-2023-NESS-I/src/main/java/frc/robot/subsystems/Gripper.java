@@ -34,17 +34,17 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private final BooleanSupplier isColorSensorDisabled;
 
     // Commands
-    private final CommandBase stopCommand;
-    private final CommandBase intakeCommand;
-    private final CommandBase lowOuttakeConeCommand;
-    private final CommandBase midOuttakeConeCommand;
-    private final CommandBase highOuttakeConeCommand;
-    private final CommandBase lowOuttakeCubeCommand;
-    private final CommandBase midOuttakeCubeCommand;
-    private final CommandBase highOuttakeCubeCommand;
-    private final CommandBase lowOuttakeUnknownCommand;
-    private final CommandBase midOuttakeUnknownCommand;
-    private final CommandBase highOuttakeUnknownCommand;
+    private final CommandBase stopCommand = getStopCommand();
+    private final CommandBase intakeCommand = getIntakeCommand();
+    private final CommandBase lowOuttakeConeCommand = getOuttakeCommand("Low Outtake Cone", LowOuttakeConePercent, LowOuttakeConeSeconds);
+    private final CommandBase midOuttakeConeCommand = getOuttakeCommand("Mid Outtake Cone", MidOuttakeConePercent, MidOuttakeConeSeconds);
+    private final CommandBase highOuttakeConeCommand = getOuttakeCommand("High Outtake Cone", HighOuttakeConePercent, HighOuttakeConeSeconds);
+    private final CommandBase lowOuttakeCubeCommand = getOuttakeCommand("Low Outtake Cube", LowOuttakeCubePercent, LowOuttakeCubeSeconds);
+    private final CommandBase midOuttakeCubeCommand = getOuttakeCommand("Mid Outtake Cube", MidOuttakeCubePercent, MidOuttakeCubeSeconds);
+    private final CommandBase highOuttakeCubeCommand = getOuttakeCommand("High Outtake Cube", HighOuttakeCubePercent, HighOuttakeCubeSeconds);
+    private final CommandBase lowOuttakeUnknownCommand = getOuttakeCommand("Low Outtake Unknown", LowOuttakeUnknownPercent, LowOuttakeUnknownSeconds);
+    private final CommandBase midOuttakeUnknownCommand = getOuttakeCommand("Mid Outtake Unknown", MidOuttakeUnknownPercent, MidOuttakeUnknownSeconds);
+    private final CommandBase highOuttakeUnknownCommand = getOuttakeCommand("High Outtake Unknown", HighOuttakeUnknownPercent, HighOuttakeUnknownSeconds);
 
     // State
     private GamePiece heldGamePiece = GamePiece.Unknown;
@@ -54,18 +54,6 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
     private Gripper() {
         super(i -> instance = i);
-
-        stopCommand = getStopCommand();
-        intakeCommand = getIntakeCommand();
-        lowOuttakeConeCommand = getOuttakeCommand("Low Outtake Cone", LowOuttakeConePercent, LowOuttakeConeSeconds);
-        midOuttakeConeCommand = getOuttakeCommand("Mid Outtake Cone", MidOuttakeConePercent, MidOuttakeConeSeconds);
-        highOuttakeConeCommand = getOuttakeCommand("High Outtake Cone", HighOuttakeConePercent, HighOuttakeConeSeconds);
-        lowOuttakeCubeCommand = getOuttakeCommand("Low Outtake Cube", LowOuttakeCubePercent, LowOuttakeCubeSeconds);
-        midOuttakeCubeCommand = getOuttakeCommand("Mid Outtake Cube", MidOuttakeCubePercent, MidOuttakeCubeSeconds);
-        highOuttakeCubeCommand = getOuttakeCommand("High Outtake Cube", HighOuttakeCubePercent, HighOuttakeCubeSeconds);
-        lowOuttakeUnknownCommand = getOuttakeCommand("Low Outtake Unknown", LowOuttakeUnknownPercent, LowOuttakeUnknownSeconds);
-        midOuttakeUnknownCommand = getOuttakeCommand("Mid Outtake Unknown", MidOuttakeUnknownPercent, MidOuttakeUnknownSeconds);
-        highOuttakeUnknownCommand = getOuttakeCommand("High Outtake Unknown", HighOuttakeUnknownPercent, HighOuttakeUnknownSeconds);
 
         setDefaultCommand(stopCommand);
 

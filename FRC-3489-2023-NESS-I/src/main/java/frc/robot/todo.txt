@@ -1,0 +1,38 @@
+// Other
+Main
+Robot
+Inputs
+
+// Subsystems
+Camera
+NavX2
+Limelight
+Drivetrain
+
+adjust gripper with arm corrections instead
+
+Confetti when balances in endgame
+
+LEDS do stuff when autoplacement allignment is happening
+
+Wrist is in pickup mode at low position:
+    It uses pov, knock it up or down to select facing down or horizontal
+    and LED game piece indicator
+
+When there is a held game piece the wrist is always in closed position at low height
+
+pov top 3 up = gripper up 
+pov middle = gripper horizontal
+
+gripper up down, middle somehow????!?!??!
+
+Gripper position for picking up tipped over cones
+
+Move arm and gripper to carry position right after picking game piece up
+
+
+
+do gripper corrections somehow
+
+
+Low position button toggles gripper position

@@ -7,17 +7,12 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.revrobotics.CANSparkMax.IdleMode;
-
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.InputConstants;
-import frc.robot.Constants.LedsConstants;
+import frc.robot.enums.ArmCommand;
 import frc.robot.enums.GamePiece;
-import frc.robot.enums.GridPosition;
 import frc.robot.enums.LedPattern;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Camera;
@@ -81,9 +76,28 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        Xbox.start()
-            .onTrue(NavX2.get().zeroYawCommand);
+        //#region ColorSensor and Gripper
+        new Trigger(() -> DriverStation.isEnabled())
+            .onTrue(runOnce(() -> {
+                GamePiece detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
+                Gripper.get().setHeldGamePiece(detectedGamePiece);
 
+                Cat5Utils.time();
+                System.out.println("Detected game piece: \"" + detectedGamePiece.toString() + "\" on enable, set as held game piece in gripper");
+            }));
+        //#endregion
+
+        //#region Gripper and Arm
+        //#endregion
+
+        //#region NavX2
+        Xbox.start()
+            .onTrue(runOnce(() -> {
+                NavX2.get().scheduleZeroYawCommand();
+            }));
+        //#endregion
+
+        //#region Drivetrain
         Xbox.leftStick()
             .whileTrue(Drivetrain.get().brakeTranslationCommand);
         Xbox.rightStick()
@@ -105,122 +119,74 @@ public class RobotContainer {
             .onTrue(runOnce(() -> {
                 Drivetrain.get().setTargetHeading(Rotation2d.fromDegrees(-270));
             }));
+        //#endregion
 
-        new Trigger(() -> DriverStation.isEnabled())
-            .onTrue(runOnce(() -> {
-                GamePiece detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
-                Gripper.get().setHeldGamePiece(ColorSensor.get().getDetectedGamePiece());
-
-                Cat5Utils.time();
-                System.out.println("Detected game piece: \"" + detectedGamePiece.toString() + "\" on enable, set as held game piece in gripper");
-            }));
-
-        Man.button(InputConstants.GripperStopManButton)
+        //#region Gripper
+        Man.button(GripperStopManButton)
             .onTrue(runOnce(() -> {
                 Gripper.get().scheduleStopCommand();
             }));
-        Man.button(InputConstants.GripperIntakeManButton)
+        Man.button(GripperIntakeManButton)
             .onTrue(runOnce(() -> {
                 Gripper.get().scheduleIntakeCommand();
             }));
-        Man.button(InputConstants.GripperOuttakeManButton)
+        Man.button(GripperOuttakeManButton)
             .onTrue(runOnce(() -> {
                 Gripper.get().scheduleOuttakeCommand();
             }));
+        //#endregion
 
+        //#region Wrist
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
+                Wrist.get().command(ArmCommand.ForceHome);
             }));
+        //#endregion
 
-        Man.button(ArmConstants.ForceHomeManButton)
+        //#region Arm
+        new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
-                Arm.get().forceHome();
+                Arm.get().command(ArmCommand.ForceHome);
             }));
 
-        Man.button(ArmConstants.HomeManButton)
+        Man.button(HomeManButton)
             .onTrue(runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
+                Arm.get().command(ArmCommand.Home);
             }));
 
-        Man.button(ArmConstants.DoubleSubstationButton)
+        Man.button(FloorManButton)
             .onTrue(runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.High, ArmConstants.DoubleSubstationDegrees, IdleMode.kBrake);
+                Arm.get().command(ArmCommand.Floor);
             }));
 
-
-        Man.button(ArmConstants.FloorManButton)
+        Man.button(LowManButton)
             .onTrue(runOnce(() -> {
-                Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
+                Arm.get().command(ArmCommand.Low);
             }));
 
-        Man.button(ArmConstants.LowManButton)
-            .onTrue(runOnce(() -> {
-                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
-                switch (heldGamePiece) {
-                    case Cone:
-                        Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.LowConeAngleDegrees, IdleMode.kBrake);
-                        break;
-                    case Cube:
-                        Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.LowCubeAngleDegrees, IdleMode.kBrake);
-                        break;
-                    case Unknown:
-                        Arm.get().setTargetAngleDegrees(GridPosition.Low, ArmConstants.LowUnknownAngleDegrees, IdleMode.kBrake);
-                        break;
-                }
-            }));
-
-        Man.button(ArmConstants.MidManButton)
+        Man.button(MidManButton)
             .debounce(0.1, DebounceType.kBoth)
             .onTrue(runOnce(() -> {
-                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
-                switch (heldGamePiece) {
-                    case Cone:
-                        if (Arm.get().getGridPosition() != GridPosition.Mid) {
-                            Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
-                        }
-                        else {
-                            if (Arm.get().getTargetAngleDegrees() != ArmConstants.OnMidConeAngleDegrees) {
-                                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.OnMidConeAngleDegrees, IdleMode.kBrake);
-                            }
-                            else {
-                                Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.AboveMidConeAngleDegrees, IdleMode.kBrake);
-                            }
-                        }
-                        break;
-                    case Cube:
-                        Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.MidCubeAngleDegrees, IdleMode.kBrake);
-                        break;
-                    case Unknown:
-                        Arm.get().setTargetAngleDegrees(GridPosition.Mid, ArmConstants.MidUnknownAngleDegrees, IdleMode.kBrake);
-                        break;
-                }
+                Arm.get().command(ArmCommand.Mid);
             }));
 
-        Man.button(ArmConstants.HighManButton)
+        Man.button(HighManButton)
             .onTrue(runOnce(() -> {
-                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
-                switch (heldGamePiece) {
-                    case Cone:
-                        Arm.get().setTargetAngleDegrees(GridPosition.High, ArmConstants.HighConeAngleDegrees, IdleMode.kBrake);
-                        break;
-                    case Cube:
-                        Arm.get().setTargetAngleDegrees(GridPosition.High, ArmConstants.HighCubeAngleDegrees, IdleMode.kBrake);
-                        break;
-                    case Unknown:
-                        Arm.get().setTargetAngleDegrees(GridPosition.High, ArmConstants.HighUnknownAngleDegrees, IdleMode.kBrake);
-                        break;
-                }
+                Arm.get().command(ArmCommand.High);
             }));
 
+        Man.button(DoubleSubstationManButton)
+            .onTrue(runOnce(() -> {
+                Arm.get().command(ArmCommand.DoubleSubstation);
+            }));
+        //#endregion
+
+        //#region Leds
         new Trigger(() -> DriverStation.isAutonomousEnabled())
             .onTrue(Leds.get().getCommand(LedPattern.Blue, 1.0, false));
         new Trigger(() -> DriverStation.isTeleopEnabled())
             .onTrue(Leds.get().getCommand(LedPattern.Green, 1.0, false));
-        Man.axisLessThan(LedsConstants.GamePieceIndicatorManAxis, -LedsConstants.GamePieceIndicatorThreshold)
-            .whileTrue(Leds.get().getCommand(LedPattern.BlueViolet, Double.MAX_VALUE, true));
-        Man.axisGreaterThan(LedsConstants.GamePieceIndicatorManAxis, LedsConstants.GamePieceIndicatorThreshold)
-            .whileTrue(Leds.get().getCommand(LedPattern.Yellow, Double.MAX_VALUE, true));
+        //#endregion
     }
 
     // Try out DataLogManager

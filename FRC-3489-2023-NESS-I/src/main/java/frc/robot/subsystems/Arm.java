@@ -20,6 +20,8 @@ import frc.robot.Constants;
 import frc.robot.Inputs;
 import frc.robot.Robot;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.enums.ArmCommand;
+import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
 import frc.robot.enums.LedPattern;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -61,9 +63,12 @@ public class Arm extends Cat5Subsystem<Arm> {
     private GridPosition gridPosition = GridPosition.Low;
     private IdleMode idleMode = IdleMode.kCoast;
     private boolean lastLimitSwitchValue = false;
+    private ArmCommand activeCommand = ArmCommand.None;
 
     private Arm() {
         super(i -> instance = i);
+
+        setDefaultCommand(gotoHomeCommand);
 
         //#region Devices
         pidController = motor.getPIDController();
@@ -73,13 +78,12 @@ public class Arm extends Cat5Subsystem<Arm> {
         motor.setIdleMode(idleMode);
         motor.enableVoltageCompensation(12.0);
         motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
-        motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+        motor.setClosedLoopRampRate(ClosedLoopSecondsToFull);
+        motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20); // TODO Should this be done in other places or with other frames?
         pidController.setP(ProportionalGainPercentPerRevolutionOfError);
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
         //#endregion
-
-        setDefaultCommand(gotoHomeCommand);
 
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
@@ -88,13 +92,15 @@ public class Arm extends Cat5Subsystem<Arm> {
         layout.add("Subsystem Info", this);
 
         layout.addBoolean("Is Homed", () -> isHomed);
-        layout.addDouble("Encoder Arm Angle (deg)", () -> getEncoderAngleDegrees());
-        layout.addDouble("Target Arm Angle (deg)", () -> targetAngleDegrees);
+        layout.addDouble("Encoder Angle (deg)", () -> getEncoderAngleDegrees());
+        layout.addDouble("Target Angle (deg)", () -> targetAngleDegrees);
 
         layout.addString("Grid Position", () -> gridPosition.toString());
         layout.addString("Idle Mode", () -> idleMode.toString());
 
         layout.addBoolean("Limit Switch", () -> limitSwitch.get());
+
+        layout.addString("Active Command", () -> activeCommand.toString());
 
         var subsystemLayout = getLayout(Cat5ShuffleboardTab.Arm, BuiltInLayouts.kList)
             .withSize(2, 1);
@@ -118,7 +124,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         if (Constants.IsDebugShuffleboardEnabled) {
     
             layout.add("Force Home", Commands.runOnce(() -> {
-                forceHome();
+                command(ArmCommand.ForceHome);
             })
                 .withName("Force Home")
             );
@@ -156,6 +162,19 @@ public class Arm extends Cat5Subsystem<Arm> {
             }
         }
     }
+
+    //#region Control
+    private void setTargetAngleDegrees(GridPosition gridPosition, double angleDegrees, IdleMode idleMode) {
+        this.gridPosition = gridPosition;
+        angleDegrees = MathUtil.clamp(angleDegrees, MinAngleDegrees, MaxAngleDegrees);
+        targetAngleDegrees = angleDegrees;
+
+        if (this.idleMode != idleMode) {
+            this.idleMode = idleMode;
+            motor.setIdleMode(idleMode);
+        }
+    }
+    //#endregion
 
     //#region Encoder
     private double getEncoderAngleDegrees() {
@@ -240,10 +259,86 @@ public class Arm extends Cat5Subsystem<Arm> {
     //#endregion
 
     //#region Public
-    public void forceHome() {
-        isHomed = false;
+    public void command(ArmCommand command) {
+        ArmCommand lastCommand = activeCommand;
+        activeCommand = command;
 
-        Arm.get().setTargetAngleDegrees(GridPosition.Low, MinAngleDegrees, IdleMode.kCoast);
+        GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+        
+        switch (command) {
+            case None:
+				break;
+            case ForceHome:
+                isHomed = false;
+                setTargetAngleDegrees(GridPosition.Low, MinAngleDegrees, IdleMode.kCoast);
+				break;
+            case Home:
+                if (lastCommand == ArmCommand.Home) {
+                    command(ArmCommand.ForceHome);
+                }
+                else {
+                    setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
+                }
+				break;
+            case Floor:
+                setTargetAngleDegrees(GridPosition.Low, ArmConstants.FloorAngleDegrees, IdleMode.kBrake);
+				break;
+            case Low:
+                switch (heldGamePiece) {
+                    case Cone:
+                        setTargetAngleDegrees(GridPosition.Low, ArmConstants.LowConeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Cube:
+                        setTargetAngleDegrees(GridPosition.Low, ArmConstants.LowCubeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Unknown:
+                        setTargetAngleDegrees(GridPosition.Low, ArmConstants.LowUnknownAngleDegrees, IdleMode.kBrake);
+                        break;
+                }
+				break;
+			case Mid:
+                switch (heldGamePiece) {
+                    case Cone:
+                        if (lastCommand == ArmCommand.Mid) {
+                            command(ArmCommand.ScoreMidCone);
+                        }
+                        else {
+                            setTargetAngleDegrees(GridPosition.Mid, ArmConstants.MidConeAngleDegrees, IdleMode.kBrake);
+                        }
+                        break;
+                    case Cube:
+                        setTargetAngleDegrees(GridPosition.Mid, ArmConstants.MidCubeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Unknown:
+                        setTargetAngleDegrees(GridPosition.Mid, ArmConstants.MidUnknownAngleDegrees, IdleMode.kBrake);
+                        break;
+                }
+				break;
+            case ScoreMidCone:
+                if (lastCommand == ArmCommand.ScoreMidCone) {
+                    command(ArmCommand.Mid);
+                }
+                else {
+                    setTargetAngleDegrees(GridPosition.Mid, ArmConstants.ScoreMidConeAngleDegrees, IdleMode.kBrake);
+                }
+				break;
+            case High:
+                switch (heldGamePiece) {
+                    case Cone:
+                        setTargetAngleDegrees(GridPosition.High, ArmConstants.HighConeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Cube:
+                        setTargetAngleDegrees(GridPosition.High, ArmConstants.HighCubeAngleDegrees, IdleMode.kBrake);
+                        break;
+                    case Unknown:
+                        setTargetAngleDegrees(GridPosition.High, ArmConstants.HighUnknownAngleDegrees, IdleMode.kBrake);
+                        break;
+                }
+				break;
+			case DoubleSubstation:
+                setTargetAngleDegrees(GridPosition.High, ArmConstants.DoubleSubstationDegrees, IdleMode.kBrake);
+				break;
+        }
     }
 
     public boolean pollLimitSwitchRisingEdge() {
@@ -266,21 +361,6 @@ public class Arm extends Cat5Subsystem<Arm> {
         System.out.println("Arm limit switch rising edge, homed");
         Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
             .schedule();
-    }
-
-    public double getTargetAngleDegrees() {
-        return targetAngleDegrees;
-    }
-
-    public void setTargetAngleDegrees(GridPosition gridPosition, double angleDegrees, IdleMode idleMode) {
-        this.gridPosition = gridPosition;
-        angleDegrees = MathUtil.clamp(angleDegrees, MinAngleDegrees, MaxAngleDegrees);
-        targetAngleDegrees = angleDegrees;
-
-        if (this.idleMode != idleMode) {
-            this.idleMode = idleMode;
-            motor.setIdleMode(idleMode);
-        }
     }
 
     public GridPosition getGridPosition() {

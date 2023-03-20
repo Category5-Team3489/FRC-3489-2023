@@ -73,7 +73,6 @@ public class Drive extends CommandBase {
         if (omegaRadiansPerSecond == 0) {
             double leftHeadingAdjustmentPercent = Inputs.getDriveLeftHeadingAdjustmentPercent();
             double rightHeadingAdjustmentPercent = Inputs.getDriveRightHeadingAdjustmentPercent();
-
             double headingAdjustmentPercent = (-leftHeadingAdjustmentPercent) + rightHeadingAdjustmentPercent;
             double headingAdjustmentDegrees = headingAdjustmentPercent * HeadingAdjustmentMaxDegreesPerSecond * Robot.kDefaultPeriod;
             Drivetrain.get().adjustTargetHeading(Rotation2d.fromDegrees(headingAdjustmentDegrees));

@@ -11,11 +11,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Cat5Utils;
 import frc.robot.Constants;
+import frc.robot.Inputs;
 import frc.robot.commands.drivetrain.BrakeRotation;
 import frc.robot.commands.drivetrain.BrakeTranslation;
 import frc.robot.commands.drivetrain.Drive;
@@ -143,7 +145,42 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         //#endregion
     }
 
+    @Override
+    public void periodic() {
+        if (DriverStation.isTeleopEnabled()) {
+            if (getCurrentCommand() != driveCommand && Inputs.isBeingDriven()) {
+                driveCommand.schedule();
+
+                Cat5Utils.time();
+                System.out.println("Drove out of non-drive command during teleop");
+            }
+        }
+    }
+
     //#region Public
+    // angleDegrees: 0 - forward, 
+    public void drivePercentAngle(double percent, double angleDegrees) {
+        double angleRadians = Math.toRadians(angleDegrees);
+        setFrontLeftPercentAngle(percent, angleRadians);
+        setFrontRightPercentAngle(percent, angleRadians);
+        setBackLeftPercentAngle(percent, angleRadians);
+        setBackRightPercentAngle(percent, angleRadians);
+    }
+
+    public void brakeTranslation() {
+        setFrontLeftPercentAngle(0, Math.toRadians(45 + 90));
+        setFrontRightPercentAngle(0, Math.toRadians(45));
+        setBackLeftPercentAngle(0, Math.toRadians(45));
+        setBackRightPercentAngle(0, Math.toRadians(45 + 90));
+    }
+
+    public void brakeRotation() {
+        setFrontLeftPercentAngle(0, Math.toRadians(45));
+        setFrontRightPercentAngle(0, Math.toRadians(45 + 90));
+        setBackLeftPercentAngle(0, Math.toRadians(45 + 90));
+        setBackRightPercentAngle(0, Math.toRadians(45));
+    }
+
     public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double speedLimiter) {
         Rotation2d theta = NavX2.get().getRotation();
 

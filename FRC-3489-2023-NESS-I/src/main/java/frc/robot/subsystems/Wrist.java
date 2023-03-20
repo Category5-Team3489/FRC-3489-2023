@@ -2,12 +2,20 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.ControlType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.enums.WristCommand;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.WristConstants.*;
@@ -22,106 +30,92 @@ public class Wrist extends Cat5Subsystem<Wrist> {
     //#endregion
     
     // Devices
-    private final WPI_TalonSRX motor = new WPI_TalonSRX(MotorDeviceId);
-    private final DigitalInput limitSwitch = new DigitalInput(LimitSwitchChannel);
+    private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless);
+    private final SparkMaxPIDController pidController;
+    private final RelativeEncoder encoder;
     
     // Commands
-    private final CommandBase gotoHomeCommand;
-    private final CommandBase gotoTargetCommand;
+    private final CommandBase gotoTargetCommand = getGotoTargetCommand();
 
     // State
-    private boolean isHomed = false;
-    private double encoderOffsetClicks = 0;
-    private double targetAngleDegrees = 0;
+    private double targetRotations = StartingRotations;
+    private WristCommand activeCommand = WristCommand.None;
 
     private Wrist() {
         super(i -> instance = i);
 
-        gotoHomeCommand = getGotoHomeCommand();
-        gotoTargetCommand = getGotoTargetCommand();
-
-        setDefaultCommand(gotoHomeCommand);
+        setDefaultCommand(gotoTargetCommand);
 
         //#region Devices
-        motor.configFactoryDefault();
-        motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        motor.configPeakOutputForward(MinOutputPercent);
-        motor.configPeakOutputReverse(MaxOutputPercent);
-        motor.config_kP(0, ProportionalGainPercentPerClickOfError);
+        pidController = motor.getPIDController();
+        encoder = motor.getEncoder();
+
+        motor.restoreFactoryDefaults();
+        motor.setIdleMode(IdleMode.kBrake);
+        // motor.setInverted(true); FIXME Will inverting this overcomplicate stuff?
+        motor.enableVoltageCompensation(12.0);
+        motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
+        motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20); // TODO Should this be done in other places or with other frames?
+        pidController.setP(ProportionalGainPercentPerRevolutionOfError);
+        pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
+        motor.burnFlash(); // Always remember this - burn flash, not motor
         //#endregion
 
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
-        
-        layout.addBoolean("Is Homed", () -> isHomed);
-        layout.addDouble("Encoder Offset (clicks)", () -> encoderOffsetClicks);
-        layout.addDouble("Target Angle (deg)", () -> targetAngleDegrees);
-        layout.addDouble("Encoder Angle (deg)", () -> getEncoderAngleDegrees());
-        layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 
-        layout.add("Force Home", Commands.runOnce(() -> {
-            forceHome();
-        })
-            .withName("Force Home")
-        );
+        layout.addDouble("Encoder Angle (deg)", () -> getEncoderAngleDegrees());
+        layout.addDouble("Target Angle (rotations)", () -> targetRotations);
         //#endregion
     }
 
-    @Override
-    public void periodic() {
-        if (limitSwitch.get()) {
-            resetEncoder();
-        }
-
-        if (isHomed) {
-            gotoTargetCommand.schedule();
-        }
-        else {
-            gotoHomeCommand.schedule();
-        }
+    //#region Control
+    private void setTargetRotations(double rotations) {
+        rotations = MathUtil.clamp(rotations, MinRotations, MaxRotations);
+        targetRotations = rotations;
     }
+    //#endregion
 
     //#region Encoder
     private double getEncoderAngleDegrees() {
-        double clicks = motor.getSelectedSensorPosition() - encoderOffsetClicks;
-        return clicks * DegreesPerClick;
-    }
-
-    private void resetEncoder() {
-        encoderOffsetClicks = motor.getSelectedSensorPosition();
-        isHomed = true;
+        double rotations = encoder.getPosition();
+        return rotations * DegreesPerMotorRevolution;
     }
     //#endregion
 
     //#region Commands
-    private CommandBase getGotoHomeCommand() {
-        return run(() -> {
-            if (isHomed) {
-                return;
-            }
-            
-            motor.setVoltage(HomingPercent * 12.0);
-        })
-            .withName("Goto Home");
-    }
-    
     private CommandBase getGotoTargetCommand() {
         return run(() -> {
-            double targetClicks = encoderOffsetClicks + (targetAngleDegrees * ClicksPerDegree);
-            motor.set(ControlMode.Position, targetClicks);
+            // TODO Do you want to fight gravity with a calculated arb feedforward, around -2% when tested
+            pidController.setReference(targetRotations, ControlType.kPosition, 0);
         })
             .withName("Goto Target");
     }
     //#endregion
 
     //#region Public
-    public void forceHome() {
-        isHomed = false;
+    public void command(WristCommand command) {
+        activeCommand = command;
+
+        switch (command) {
+            case None:
+                setTargetRotations(StartingRotations);
+                break;
+            case Starting:
+                setTargetRotations(StartingRotations);
+                break;
+            case Horizontal:
+                setTargetRotations(HorizontalRotations);
+                break;
+            case Carrying:
+                setTargetRotations(CarryingRotations);
+                break;
+        }
     }
 
-    public void setTargetAngleDegrees(double angleDegrees) {
-        targetAngleDegrees = angleDegrees;
+    public WristCommand getActiveCommand() {
+        return activeCommand;
     }
     //#endregion
 }
