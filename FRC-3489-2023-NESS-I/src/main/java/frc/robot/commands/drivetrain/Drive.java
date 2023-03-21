@@ -73,15 +73,13 @@ public class Drive extends CommandBase {
         if (omegaRadiansPerSecond == 0) {
             double leftHeadingAdjustmentPercent = Inputs.getDriveLeftHeadingAdjustmentPercent();
             double rightHeadingAdjustmentPercent = Inputs.getDriveRightHeadingAdjustmentPercent();
-            double headingAdjustmentPercent = (-leftHeadingAdjustmentPercent) + rightHeadingAdjustmentPercent;
-            double headingAdjustmentDegrees = -headingAdjustmentPercent * HeadingAdjustmentMaxDegreesPerSecond * Robot.kDefaultPeriod;
+            double headingAdjustmentPercent = leftHeadingAdjustmentPercent - rightHeadingAdjustmentPercent;
+            double headingAdjustmentDegrees = headingAdjustmentPercent * HeadingAdjustmentMaxDegreesPerSecond * Robot.kDefaultPeriod;
             Drivetrain.get().adjustTargetHeading(Rotation2d.fromDegrees(headingAdjustmentDegrees));
 
             Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, speedLimiter);
         }
         else {
-            Drivetrain.get().resetTargetHeading();
-
             Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiter);
         }
     }
@@ -90,7 +88,5 @@ public class Drive extends CommandBase {
     public void end(boolean interrupted) {
         xRateLimiter.reset(0);
         yRateLimiter.reset(0);
-
-        Drivetrain.get().resetTargetHeading();
     }
 }

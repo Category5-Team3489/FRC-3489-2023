@@ -37,8 +37,6 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         layout.addDouble("Heading (deg)", () -> heading.getDegrees());
         
         if (Constants.IsDebugShuffleboardEnabled) {
-            // layout.add(zeroYawCommand);
-
             layout.addBoolean("Is Calibrating", () -> navx.isCalibrating());
         }
         //#endregion

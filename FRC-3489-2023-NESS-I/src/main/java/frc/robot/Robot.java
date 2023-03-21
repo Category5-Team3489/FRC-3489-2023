@@ -27,8 +27,6 @@ public class Robot extends TimedRobot {
             PortForwarder.add(port, "limelight.local", port);
         }
 
-        Shuffleboard.update();
-
         LiveWindow.setEnabled(false);
         LiveWindow.disableAllTelemetry();
         //#endregion

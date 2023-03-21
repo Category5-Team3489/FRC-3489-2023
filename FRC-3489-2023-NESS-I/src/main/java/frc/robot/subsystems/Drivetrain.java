@@ -56,6 +56,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     // State
     private Rotation2d targetHeading = null;
     private PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
+    private Command lastCurrentCommand = null;
 
     private Drivetrain() {
         super(i -> instance = i);
@@ -122,6 +123,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             .withSize(2, 1);
 
         layout.add("Subsystem Info", this);
+
         layout.addDouble("Average (m per s)", () -> getAverageDriveVelocityMetersPerSecond());
 
         if (Constants.IsDebugShuffleboardEnabled) {
@@ -134,39 +136,45 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             // layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
             // layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
             // layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());    
-
-            var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
-                .withSize(2, 1);
-
-            // subsystemLayout.add(driveCommand);
-            // subsystemLayout.add(brakeTranslationCommand);
-            // subsystemLayout.add(brakeRotationCommand);
         }
         //#endregion
     }
 
     @Override
     public void periodic() {
-        if (DriverStation.isTeleopEnabled()) {
-            if (getCurrentCommand() != driveCommand && Inputs.isBeingDriven()) {
-                driveCommand.schedule();
+        Command currentCommand = getCurrentCommand();
+        if (currentCommand != lastCurrentCommand) {
+            lastCurrentCommand = currentCommand;
 
-                Cat5Utils.time();
-                System.out.println("Drove out of non-drive command during teleop");
-            }
+            targetHeading = null;
+            omegaController.reset();
+        }
+
+        if (!DriverStation.isTeleopEnabled()) {
+            return;
+        }
+
+        if (getCurrentCommand() != driveCommand && Inputs.isBeingDriven()) {
+            driveCommand.schedule();
+
+            Cat5Utils.time();
+            System.out.println("Drove out of non-drive command during teleop");
         }
     }
 
-    //#region Public
-    // angleDegrees: 0 - forward, 
-    public void drivePercentAngle(double percent, double angleDegrees) {
-        double angleRadians = Math.toRadians(angleDegrees);
-        setFrontLeftPercentAngle(percent, angleRadians);
-        setFrontRightPercentAngle(percent, angleRadians);
-        setBackLeftPercentAngle(percent, angleRadians);
-        setBackRightPercentAngle(percent, angleRadians);
+    private void applyStates(SwerveModuleState[] states) {
+        double frontLeftSteerAngleRadians = states[0].angle.getRadians();
+        double frontRightSteerAngleRadians = states[1].angle.getRadians();
+        double backLeftSteerAngleRadians = states[2].angle.getRadians();
+        double backRightSteerAngleRadians = states[3].angle.getRadians();
+        
+        setFrontLeftSpeedAngle(states[0].speedMetersPerSecond, frontLeftSteerAngleRadians);
+        setFrontRightSpeedAngle(states[1].speedMetersPerSecond, frontRightSteerAngleRadians);
+        setBackLeftSpeedAngle(states[2].speedMetersPerSecond, backLeftSteerAngleRadians);
+        setBackRightSpeedAngle(states[3].speedMetersPerSecond, backRightSteerAngleRadians);
     }
 
+    //#region Public
     public void brakeTranslation() {
         setFrontLeftPercentAngle(0, Math.toRadians(45 + 90));
         setFrontRightPercentAngle(0, Math.toRadians(45));
@@ -181,7 +189,18 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         setBackRightPercentAngle(0, Math.toRadians(45));
     }
 
-    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double speedLimiter) {
+    // angleDegrees: 0 - forward, 
+    public void drivePercentAngle(double percent, double angleDegrees) {
+        double angleRadians = Math.toRadians(angleDegrees);
+        setFrontLeftPercentAngle(percent, angleRadians);
+        setFrontRightPercentAngle(percent, angleRadians);
+        setBackLeftPercentAngle(percent, angleRadians);
+        setBackRightPercentAngle(percent, angleRadians);
+    }
+
+    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double speedLimiter, Rotation2d targetHeading, double headingAdjustmentDegrees) {
+        double maxVelocityMetersPerSecond = maxVelocityConfig.getMaxVelocityMetersPerSecond();
+        
         Rotation2d theta = NavX2.get().getRotation();
 
         if (targetHeading == null) {
@@ -201,6 +220,9 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     }
 
     public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double omegaRadiansPerSecond, double speedLimiter) {
+        targetHeading = null;
+        omegaController.reset();
+        
         double maxVelocityMetersPerSecond = maxVelocityConfig.getMaxVelocityMetersPerSecond();
         
         Rotation2d theta = NavX2.get().getRotation();
@@ -210,32 +232,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond * speedLimiter);
 
-        double frontLeftSteerAngleRadians = states[0].angle.getRadians();
-        double frontRightSteerAngleRadians = states[1].angle.getRadians();
-        double backLeftSteerAngleRadians = states[2].angle.getRadians();
-        double backRightSteerAngleRadians = states[3].angle.getRadians();
-        
-        setFrontLeftSpeedAngle(states[0].speedMetersPerSecond, frontLeftSteerAngleRadians);
-        setFrontRightSpeedAngle(states[1].speedMetersPerSecond, frontRightSteerAngleRadians);
-        setBackLeftSpeedAngle(states[2].speedMetersPerSecond, backLeftSteerAngleRadians);
-        setBackRightSpeedAngle(states[3].speedMetersPerSecond, backRightSteerAngleRadians);
-    }
-
-    public void setTargetHeading(Rotation2d targetHeading) {
-        this.targetHeading = targetHeading;
-    }
-
-    public void adjustTargetHeading(Rotation2d adjustment) {
-        if (targetHeading == null) {
-            targetHeading = NavX2.get().getRotation();
-        }
-
-        targetHeading = targetHeading.plus(adjustment);
-    }
-
-    public void resetTargetHeading() {
-        targetHeading = null;
-        omegaController.reset();
+        applyStates(states);
     }
 
     // Front Left

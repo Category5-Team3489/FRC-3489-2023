@@ -89,10 +89,8 @@ public class Limelight extends Cat5Subsystem<Limelight> {
             System.out.println("Limelight pipeline updated: " + activePipeline);
         }
 
-        if (desiredPipeline.getIndex() != activePipeline) {
-            if (!isActivePipeline(desiredPipeline)) {
-                pipelineEntry.setNumber(desiredPipeline.getIndex());
-            }
+        if (!isActivePipeline(desiredPipeline)) {
+            pipelineEntry.setNumber(desiredPipeline.getIndex());
         }
     }
 
@@ -119,11 +117,11 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     public long getActivePipeline() {
         return activePipeline;
     }
-    public void setDesiredPipeline(LimelightPipeline pipeline) {
-        desiredPipeline = pipeline;
-    }
     public boolean isActivePipeline(LimelightPipeline pipeline) {
         return activePipeline == pipeline.getIndex();
+    }
+    public void setDesiredPipeline(LimelightPipeline pipeline) {
+        desiredPipeline = pipeline;
     }
 
     public long getTagId() {
