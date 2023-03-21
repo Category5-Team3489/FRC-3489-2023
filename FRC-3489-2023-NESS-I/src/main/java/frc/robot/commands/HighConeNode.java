@@ -2,41 +2,45 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Cat5Utils;
 import frc.robot.enums.LimelightPipeline;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
-public class MidCubeNode extends CommandBase {
+public class HighConeNode extends CommandBase {
     private static double ProportionalGain = 0.18;
     private static double MaxStrafeMetersPerSecond = 0.5;
-    private static double MaxDistanceMetersPerSecond = 0.75;
-    private static double StrafeToleranceDegrees = 1.5;
-    private static double DistanceToleranceDegrees = 1.5;
+    private static double StrafeToleranceDegrees = 1;
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
-    private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -4.16;
-    private static double TargetYSetpointDegrees = -11.57;
+    private static double MaxOmegaDegreesPerSecond = 180; // 90
+    private static double TargetXSetpointDegrees = -3.857;
+    private static double WallSpeedMetersPerSecond = -0.5;
+    private static double WallTimeoutSeconds = 2;
+
+    private Timer wallTimer = new Timer();
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
-    private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
+    private SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(5);
 
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
-    
-    public MidCubeNode() {
+
+    private boolean hasHitStrafeSetpoint = false;
+
+    public HighConeNode() {
         addRequirements(Drivetrain.get());
     }
 
     @Override
     public void initialize() {
-        Limelight.get().setDesiredPipeline(LimelightPipeline.Fiducial);
+        Limelight.get().setDesiredPipeline(LimelightPipeline.HighRetroreflective);
 
         strafeController.setTolerance(StrafeToleranceDegrees);
-        distanceController.setTolerance(DistanceToleranceDegrees);
 
         Cat5Utils.time();
         System.out.println(getName() + " init");
@@ -44,7 +48,7 @@ public class MidCubeNode extends CommandBase {
 
     @Override
     public void execute() {
-        if (!Limelight.get().isActivePipeline(LimelightPipeline.Fiducial)) {
+        if (!Limelight.get().isActivePipeline(LimelightPipeline.HighRetroreflective)) {
             Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, SpeedLimiter, TargetAngle, 0, MaxOmegaDegreesPerSecond);
             return;
         }
@@ -58,21 +62,20 @@ public class MidCubeNode extends CommandBase {
             yMetersPerSecond = 0;
         }
 
-        double targetY = Limelight.get().getTargetY();
-        if (!Double.isNaN(targetY)) {
-            xMetersPerSecond = distanceController.calculate(targetY, TargetYSetpointDegrees);
-            xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -MaxDistanceMetersPerSecond, MaxDistanceMetersPerSecond);
-        }
-        else {
-            xMetersPerSecond = 0;
+        if (strafeController.atSetpoint() && !hasHitStrafeSetpoint) {
+            hasHitStrafeSetpoint = true;
+
+            wallTimer.restart();
         }
 
-        Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, SpeedLimiter, TargetAngle, 0, MaxOmegaDegreesPerSecond);
+        if (hasHitStrafeSetpoint) {
+            xMetersPerSecond = distanceRateLimiter.calculate(WallSpeedMetersPerSecond);
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return strafeController.atSetpoint() && distanceController.atSetpoint();
+        return wallTimer.hasElapsed(WallTimeoutSeconds);
     }
 
     @Override

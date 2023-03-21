@@ -9,7 +9,7 @@ import frc.robot.enums.LimelightPipeline;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
-public class MidCubeNode extends CommandBase {
+public class HighCubeNode extends CommandBase {
     private static double ProportionalGain = 0.18;
     private static double MaxStrafeMetersPerSecond = 0.5;
     private static double MaxDistanceMetersPerSecond = 0.75;
@@ -18,8 +18,8 @@ public class MidCubeNode extends CommandBase {
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
     private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -4.16;
-    private static double TargetYSetpointDegrees = -11.57;
+    private static double TargetXSetpointDegrees = -6.2;
+    private static double TargetYSetpointDegrees = -19;
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
     private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
@@ -27,7 +27,7 @@ public class MidCubeNode extends CommandBase {
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
     
-    public MidCubeNode() {
+    public HighCubeNode() {
         addRequirements(Drivetrain.get());
     }
 

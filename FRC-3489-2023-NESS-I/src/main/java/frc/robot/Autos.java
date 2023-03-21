@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.drivetrain.DrivePercentAngleSeconds;
+import frc.robot.commands.drivetrain.DriveRelativeMeters;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Drivetrain;
 
@@ -15,6 +16,7 @@ public class Autos {
     private static final String BalanceAuto = "Balance";
     private static final String BumpBalanceAuto = "BumpBalance";
     private static final String NothingAuto = "Nothing";
+    private static final String DriveRelMetersAuto = "DriveRelMeters";
 
     // Shuffleboard
     private final SendableChooser<String> autoChooser = new SendableChooser<String>();
@@ -27,6 +29,7 @@ public class Autos {
         autoChooser.addOption(BalanceAuto, BalanceAuto);
         autoChooser.addOption(BumpBalanceAuto, BumpBalanceAuto);
         autoChooser.addOption(NothingAuto, NothingAuto);
+        autoChooser.addOption(DriveRelMetersAuto, DriveRelMetersAuto);
         
         Cat5ShuffleboardTab.Auto.get().add(autoChooser);
         //#endregion
@@ -54,6 +57,8 @@ public class Autos {
                 return getBumpBalanceAutoCommand();
             case NothingAuto:
                 return getNothingAutoCommand();
+            case DriveRelMetersAuto:
+                return getDriveRelMetersCommand();
         }
 
         return print("Unknown auto selected, doing nothing");
@@ -100,6 +105,13 @@ public class Autos {
 
     private Command getNothingAutoCommand() {
         return sequence(
+            completed()
+        );
+    }
+
+    private Command getDriveRelMetersCommand() {
+        return sequence(
+            new DriveRelativeMeters(1, 0, 0, 0.25, 0.05),
             completed()
         );
     }

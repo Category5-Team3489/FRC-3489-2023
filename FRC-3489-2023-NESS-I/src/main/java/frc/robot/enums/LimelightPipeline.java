@@ -2,8 +2,8 @@ package frc.robot.enums;
 
 public enum LimelightPipeline {
     Fiducial(0),
-    MidRetroreflectivePipeline(1),
-    HighRetroreflectivePipeline(2);
+    MidRetroreflective(1),
+    HighRetroreflective(2);
 
     private final long index;
 

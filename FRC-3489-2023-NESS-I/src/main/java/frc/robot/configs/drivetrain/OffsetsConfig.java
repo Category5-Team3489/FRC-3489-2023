@@ -42,7 +42,7 @@ public class OffsetsConfig extends Cat5Config {
         layout.addDouble("Back Left", () -> Math.toDegrees(getBackLeftOffsetRadians()));
         layout.addDouble("Back Right", () -> Math.toDegrees(getBackRightOffsetRadians()));
 
-        layout.add(run(() -> {
+        layout.add(Drivetrain.get().run(() -> {
             frontLeftOffsetRadians = 0;
 
             Drivetrain.get().setFrontLeftPercentAngle(0, 0);
@@ -53,7 +53,7 @@ public class OffsetsConfig extends Cat5Config {
             .ignoringDisable(true)
             .withName("Zero Front Left")
         );
-        layout.add(run(() -> {
+        layout.add(Drivetrain.get().run(() -> {
             frontRightOffsetRadians = 0;
 
             Drivetrain.get().setFrontRightPercentAngle(0, 0);
@@ -64,7 +64,7 @@ public class OffsetsConfig extends Cat5Config {
             .ignoringDisable(true)
             .withName("Zero Front Right")
         );
-        layout.add(run(() -> {
+        layout.add(Drivetrain.get().run(() -> {
             backLeftOffsetRadians = 0;
 
             Drivetrain.get().setBackLeftPercentAngle(0, 0);
@@ -75,7 +75,7 @@ public class OffsetsConfig extends Cat5Config {
             .ignoringDisable(true)
             .withName("Zero Back Left")
         );
-        layout.add(run(() -> {
+        layout.add(Drivetrain.get().run(() -> {
             backRightOffsetRadians = 0;
 
             Drivetrain.get().setBackRightPercentAngle(0, 0);

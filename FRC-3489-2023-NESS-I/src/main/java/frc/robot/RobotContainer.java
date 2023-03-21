@@ -11,6 +11,10 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.HighConeNode;
+import frc.robot.commands.HighCubeNode;
+import frc.robot.commands.MidConeNode;
+import frc.robot.commands.MidCubeNode;
 import frc.robot.enums.ArmCommand;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.LedPattern;
@@ -73,10 +77,89 @@ public class RobotContainer {
 
         Leds.get();
 
+        RobotCommands.get();
+
         configureBindings();
     }
 
     private void configureBindings() {
+        //#region Automation
+        Man.button(AutomateManButton)
+            .debounce(ManButtonDebounceSeconds, DebounceType.kBoth)
+            .onTrue(runOnce(() -> {
+                switch (Arm.get().getGridPosition()) {
+                    case Low:
+                        Cat5Utils.time();
+                        System.out.println("Low automation not implemented");
+                        break;
+                    case Mid:
+                        switch (Gripper.get().getHeldGamePiece()) {
+                            case Cone:
+                                sequence(
+                                    new MidConeNode(),
+                                    waitSeconds(1),
+                                    runOnce(() -> {
+                                        Arm.get().command(ArmCommand.None);
+                                        Arm.get().command(ArmCommand.ScoreMidCone);
+                                    }),
+                                    waitSeconds(0.5),
+                                    runOnce(() -> {
+                                        Gripper.get().scheduleOuttakeCommand();
+                                    })
+                                ).schedule();
+
+                                Cat5Utils.time();
+                                System.out.println("Mid cone automation");
+                                break;
+                            case Cube:
+                                sequence(
+                                    new MidCubeNode(),
+                                    runOnce(() -> {
+                                        Gripper.get().scheduleOuttakeCommand();
+                                    })
+                                ).schedule();
+
+                                Cat5Utils.time();
+                                System.out.println("Mid cube automation");
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case High:
+                        switch (Gripper.get().getHeldGamePiece()) {
+                            case Cone:
+                                sequence(
+                                    new HighConeNode(),
+                                    waitSeconds(1),
+                                    runOnce(() -> {
+                                        Gripper.get().scheduleOuttakeCommand();
+                                    })
+                                ).schedule();
+
+                                Cat5Utils.time();
+                                System.out.println("High cone automation");
+                                break;
+                            case Cube:
+                                sequence(
+                                    new HighCubeNode(),
+                                    waitSeconds(1),
+                                    runOnce(() -> {
+                                        Gripper.get().scheduleOuttakeCommand();
+                                    })
+                                ).schedule();
+
+                                Cat5Utils.time();
+                                System.out.println("High cube automation");
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                }
+            }));
+        //#endregion
+
         //#region ColorSensor and Gripper
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
@@ -99,6 +182,14 @@ public class RobotContainer {
         //#endregion
 
         //#region Drivetrain
+        new Trigger(() -> DriverStation.isEnabled())
+            .onTrue(runOnce(() -> {
+                Drivetrain.get().resetTargetHeading();
+
+                Cat5Utils.time();
+                System.out.println("Reset target heading on enable");
+            }));
+
         Xbox.leftStick()
             .whileTrue(Drivetrain.get().brakeTranslationCommand);
         Xbox.rightStick()
@@ -154,6 +245,7 @@ public class RobotContainer {
             .onTrue(runOnce(() -> {
                 Arm.get().command(ArmCommand.Home);
                 Wrist.get().command(WristCommand.Carrying);
+                Gripper.get().scheduleStopCommand();
             }));
 
         Man.button(FloorManButton)
@@ -161,7 +253,7 @@ public class RobotContainer {
                 runOnce(() -> {
                     Arm.get().command(ArmCommand.Floor);
                 }),
-                waitSeconds(0.25),//0.333
+                waitSeconds(0.25), // 0.333
                 runOnce(() -> {
                     Wrist.get().command(WristCommand.Horizontal);
                     Gripper.get().scheduleIntakeCommand();

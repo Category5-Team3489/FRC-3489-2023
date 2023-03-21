@@ -16,6 +16,8 @@ public class Inputs {
     private static final double XboxTeleoperationAxisThreshold = 0.1;
     private static final double ManGamePieceIndicatorAxisThreshold = 0.8;
 
+    public static final double ManButtonDebounceSeconds = 0.1;
+
     public static final int AutomateManButton = 5;
     public static final int GripperStopManButton = 1;
     public static final int GripperIntakeManButton = 2;

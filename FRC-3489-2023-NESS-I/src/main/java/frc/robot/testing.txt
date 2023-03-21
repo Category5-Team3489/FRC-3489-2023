@@ -1,31 +1,18 @@
 
 
 
-Cart Testing
-Get constants for wrist positions?
-Test wrist
-Camera widget shuffleboard?
-NavX2 headings changes?
-NavX2 zero yaw?
-Wheels drive correctly?
-Test arm positions
-Pickup cone?
-Place cone?
-Pickup cube?
-Place cube?
-Test game piece indicator? does shuffleboard update?
 
 
 
 
 
-Carpet Testing
-Do heading adjustment triggers work?
 
 
 
 
-Reintaking cone
+
+
+
 
 
 

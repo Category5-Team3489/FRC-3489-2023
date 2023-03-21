@@ -1,7 +1,6 @@
 package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Inputs;
@@ -25,9 +24,7 @@ public class Drive extends CommandBase {
             xRateLimiter.reset(0);
             yRateLimiter.reset(0);
 
-            Drivetrain.get().resetTargetHeading();
-
-            Drivetrain.get().driveFieldRelative(0, 0, 0);
+            Drivetrain.get().driveFieldRelative(0, 0, 0, 0, false);
             return;
         }
 
@@ -75,12 +72,10 @@ public class Drive extends CommandBase {
             double rightHeadingAdjustmentPercent = Inputs.getDriveRightHeadingAdjustmentPercent();
             double headingAdjustmentPercent = leftHeadingAdjustmentPercent - rightHeadingAdjustmentPercent;
             double headingAdjustmentDegrees = headingAdjustmentPercent * HeadingAdjustmentMaxDegreesPerSecond * Robot.kDefaultPeriod;
-            Drivetrain.get().adjustTargetHeading(Rotation2d.fromDegrees(headingAdjustmentDegrees));
-
-            Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, speedLimiter);
+            Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, speedLimiter, null, headingAdjustmentDegrees, null);
         }
         else {
-            Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiter);
+            Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiter, false);
         }
     }
 

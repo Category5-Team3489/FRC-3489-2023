@@ -56,7 +56,6 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     // State
     private Rotation2d targetHeading = null;
     private PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
-    private Command lastCurrentCommand = null;
 
     private Drivetrain() {
         super(i -> instance = i);
@@ -142,14 +141,6 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
     @Override
     public void periodic() {
-        Command currentCommand = getCurrentCommand();
-        if (currentCommand != lastCurrentCommand) {
-            lastCurrentCommand = currentCommand;
-
-            targetHeading = null;
-            omegaController.reset();
-        }
-
         if (!DriverStation.isTeleopEnabled()) {
             return;
         }
@@ -162,19 +153,17 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         }
     }
 
-    private void applyStates(SwerveModuleState[] states) {
-        double frontLeftSteerAngleRadians = states[0].angle.getRadians();
-        double frontRightSteerAngleRadians = states[1].angle.getRadians();
-        double backLeftSteerAngleRadians = states[2].angle.getRadians();
-        double backRightSteerAngleRadians = states[3].angle.getRadians();
-        
-        setFrontLeftSpeedAngle(states[0].speedMetersPerSecond, frontLeftSteerAngleRadians);
-        setFrontRightSpeedAngle(states[1].speedMetersPerSecond, frontRightSteerAngleRadians);
-        setBackLeftSpeedAngle(states[2].speedMetersPerSecond, backLeftSteerAngleRadians);
-        setBackRightSpeedAngle(states[3].speedMetersPerSecond, backRightSteerAngleRadians);
+    //#region Public
+    // targetHeading: increase - CCW
+    public void setTargetHeading(Rotation2d targetHeading) {
+        this.targetHeading = targetHeading;
     }
 
-    //#region Public
+    public void resetTargetHeading() {
+        targetHeading = null;
+        omegaController.reset();
+    }
+
     public void brakeTranslation() {
         setFrontLeftPercentAngle(0, Math.toRadians(45 + 90));
         setFrontRightPercentAngle(0, Math.toRadians(45));
@@ -189,7 +178,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         setBackRightPercentAngle(0, Math.toRadians(45));
     }
 
-    // angleDegrees: 0 - forward, 
+    // angleDegrees: 0 - forward, // TODO Check if increase in angle is CCW
     public void drivePercentAngle(double percent, double angleDegrees) {
         double angleRadians = Math.toRadians(angleDegrees);
         setFrontLeftPercentAngle(percent, angleRadians);
@@ -198,30 +187,40 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         setBackRightPercentAngle(percent, angleRadians);
     }
 
-    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double speedLimiter, Rotation2d targetHeading, double headingAdjustmentDegrees) {
-        double maxVelocityMetersPerSecond = maxVelocityConfig.getMaxVelocityMetersPerSecond();
-        
+    // xMetersPerSecond: positive - 
+    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double speedLimiter, Rotation2d targetHeadingOverride, double headingAdjustmentDegrees, Double omegaMaxDegreesPerSecondOverride) {
         Rotation2d theta = NavX2.get().getRotation();
 
         if (targetHeading == null) {
+            resetTargetHeading();
             targetHeading = theta;
         }
+        
+        if (targetHeadingOverride != null) {
+            targetHeading = targetHeadingOverride;
+        }
+
+        targetHeading.plus(Rotation2d.fromDegrees(headingAdjustmentDegrees));
 
         double outputDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetHeading.getDegrees());
-        outputDegreesPerSecond = MathUtil.clamp(outputDegreesPerSecond, -OmegaMaxDegreesPerSecond, OmegaMaxDegreesPerSecond);
+        double omegaMaxDegreesPerSecond = OmegaMaxDegreesPerSecond;
+        if (omegaMaxDegreesPerSecondOverride != null) {
+            omegaMaxDegreesPerSecond = omegaMaxDegreesPerSecondOverride;
+        }
+        outputDegreesPerSecond = MathUtil.clamp(outputDegreesPerSecond, -omegaMaxDegreesPerSecond, omegaMaxDegreesPerSecond);
 
         double omegaRadiansPerSecond = 0;
-
         if (!omegaController.atSetpoint()) {
             omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
         }
 
-        driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiter);
+        driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiter, true);
     }
 
-    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double omegaRadiansPerSecond, double speedLimiter) {
-        targetHeading = null;
-        omegaController.reset();
+    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double omegaRadiansPerSecond, double speedLimiter, boolean isKeepingHeading) {
+        if (!isKeepingHeading) {
+            resetTargetHeading();
+        }
         
         double maxVelocityMetersPerSecond = maxVelocityConfig.getMaxVelocityMetersPerSecond();
         
@@ -232,7 +231,15 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond * speedLimiter);
 
-        applyStates(states);
+        double frontLeftSteerAngleRadians = states[0].angle.getRadians();
+        double frontRightSteerAngleRadians = states[1].angle.getRadians();
+        double backLeftSteerAngleRadians = states[2].angle.getRadians();
+        double backRightSteerAngleRadians = states[3].angle.getRadians();
+        
+        setFrontLeftSpeedAngle(states[0].speedMetersPerSecond, frontLeftSteerAngleRadians);
+        setFrontRightSpeedAngle(states[1].speedMetersPerSecond, frontRightSteerAngleRadians);
+        setBackLeftSpeedAngle(states[2].speedMetersPerSecond, backLeftSteerAngleRadians);
+        setBackRightSpeedAngle(states[3].speedMetersPerSecond, backRightSteerAngleRadians);
     }
 
     // Front Left
