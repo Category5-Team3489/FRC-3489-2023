@@ -17,7 +17,10 @@ public class DrivePercentAngleSeconds extends CommandBase {
         this.percent = percent;
         this.angleDegrees = angleDegrees;
         this.seconds = seconds;
+    }
 
+    @Override
+    public void initialize() {
         timer.restart();
     }
 

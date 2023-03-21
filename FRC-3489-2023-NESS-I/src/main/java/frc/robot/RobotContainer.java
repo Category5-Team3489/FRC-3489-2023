@@ -97,7 +97,7 @@ public class RobotContainer {
                             case Cone:
                                 sequence(
                                     new MidConeNode(),
-                                    waitSeconds(1),
+                                    waitSeconds(0.5), // 1
                                     runOnce(() -> {
                                         Arm.get().command(ArmCommand.None);
                                         Arm.get().command(ArmCommand.ScoreMidCone);
@@ -114,6 +114,7 @@ public class RobotContainer {
                             case Cube:
                                 sequence(
                                     new MidCubeNode(),
+                                    waitSeconds(0.5),
                                     runOnce(() -> {
                                         Gripper.get().scheduleOuttakeCommand();
                                     })
@@ -131,7 +132,7 @@ public class RobotContainer {
                             case Cone:
                                 sequence(
                                     new HighConeNode(),
-                                    waitSeconds(1),
+                                    waitSeconds(0.5), // 1
                                     runOnce(() -> {
                                         Gripper.get().scheduleOuttakeCommand();
                                     })
@@ -143,7 +144,7 @@ public class RobotContainer {
                             case Cube:
                                 sequence(
                                     new HighCubeNode(),
-                                    waitSeconds(1),
+                                    waitSeconds(0.5), // 1
                                     runOnce(() -> {
                                         Gripper.get().scheduleOuttakeCommand();
                                     })
@@ -253,7 +254,7 @@ public class RobotContainer {
                 runOnce(() -> {
                     Arm.get().command(ArmCommand.Floor);
                 }),
-                waitSeconds(0.25), // 0.333
+                waitSeconds(0.4), // 0.333
                 runOnce(() -> {
                     Wrist.get().command(WristCommand.Horizontal);
                     Gripper.get().scheduleIntakeCommand();

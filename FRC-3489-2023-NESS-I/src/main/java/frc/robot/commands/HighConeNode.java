@@ -71,6 +71,8 @@ public class HighConeNode extends CommandBase {
         if (hasHitStrafeSetpoint) {
             xMetersPerSecond = distanceRateLimiter.calculate(WallSpeedMetersPerSecond);
         }
+
+        Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, SpeedLimiter, TargetAngle, 0, MaxOmegaDegreesPerSecond);
     }
 
     @Override
@@ -80,6 +82,8 @@ public class HighConeNode extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        Drivetrain.get().brakeTranslation();
+
         Cat5Utils.time();
         System.out.println(getName() + " end");
     }

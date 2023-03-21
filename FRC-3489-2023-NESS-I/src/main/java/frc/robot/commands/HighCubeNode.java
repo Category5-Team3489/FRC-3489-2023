@@ -18,8 +18,8 @@ public class HighCubeNode extends CommandBase {
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
     private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -6.2;
-    private static double TargetYSetpointDegrees = -19;
+    private static double TargetXSetpointDegrees = -4.16;
+    private static double TargetYSetpointDegrees = -19.28;
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
     private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
@@ -77,6 +77,8 @@ public class HighCubeNode extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        Drivetrain.get().brakeTranslation();
+        
         Cat5Utils.time();
         System.out.println(getName() + " end");
     }

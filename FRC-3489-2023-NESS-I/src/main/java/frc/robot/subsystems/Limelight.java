@@ -49,10 +49,15 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         activePipelineTimer.restart();
 
         //#region Shuffleboard
-        if (Constants.IsDebugShuffleboardEnabled) {
-            var subsystemLayout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
-                .withSize(2, 1);
+        var subsystemLayout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
+            .withSize(2, 1);
 
+        subsystemLayout.addInteger("Tag Id", () -> getTagId());
+        subsystemLayout.addDouble("Target X", () -> getTargetX());
+        subsystemLayout.addDouble("Target Y", () -> getTargetY());
+        subsystemLayout.addDouble("Target Area", () -> getTargetArea());
+        
+        if (Constants.IsDebugShuffleboardEnabled) {
             subsystemLayout.addBoolean("Is Campose Valid", () -> isCamposeValid());
             subsystemLayout.addString("Campose", () -> {
                 var campose = getCampose();
@@ -65,11 +70,6 @@ public class Limelight extends Cat5Subsystem<Limelight> {
             subsystemLayout.addDouble("Active Pipeline Timer", () -> activePipelineTimer.get());
             subsystemLayout.addString("Desired Pipeline", () -> desiredPipeline.toString());
             subsystemLayout.addInteger("Active Pipeline", () -> activePipeline);
-
-            subsystemLayout.addInteger("Tag Id", () -> getTagId());
-            subsystemLayout.addDouble("Target X", () -> getTargetX());
-            subsystemLayout.addDouble("Target Y", () -> getTargetY());
-            subsystemLayout.addDouble("Target Area", () -> getTargetArea());
         }
         //#endregion
     }

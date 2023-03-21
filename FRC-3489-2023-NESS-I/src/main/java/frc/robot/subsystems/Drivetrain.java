@@ -200,7 +200,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             targetHeading = targetHeadingOverride;
         }
 
-        targetHeading.plus(Rotation2d.fromDegrees(headingAdjustmentDegrees));
+        targetHeading = targetHeading.plus(Rotation2d.fromDegrees(headingAdjustmentDegrees));
 
         double outputDegreesPerSecond = omegaController.calculate(theta.getDegrees(), targetHeading.getDegrees());
         double omegaMaxDegreesPerSecond = OmegaMaxDegreesPerSecond;

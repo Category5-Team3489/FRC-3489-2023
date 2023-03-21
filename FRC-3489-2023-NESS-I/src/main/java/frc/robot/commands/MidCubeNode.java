@@ -18,8 +18,8 @@ public class MidCubeNode extends CommandBase {
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
     private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -4.16;
-    private static double TargetYSetpointDegrees = -11.57;
+    private static double TargetXSetpointDegrees = -0.14;
+    private static double TargetYSetpointDegrees = -11.49;
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
     private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
@@ -77,6 +77,8 @@ public class MidCubeNode extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        Drivetrain.get().brakeTranslation();
+        
         Cat5Utils.time();
         System.out.println(getName() + " end");
     }

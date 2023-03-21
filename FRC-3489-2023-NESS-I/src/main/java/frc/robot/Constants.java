@@ -7,7 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.robot.enums.LimelightPipeline;
 
 public final class Constants {
-    public static boolean IsDebugShuffleboardEnabled = false;
+    public static boolean IsDebugShuffleboardEnabled = true;
 
     public static class CameraConstants {
         public static final int PixelWidth = 160;
@@ -106,8 +106,8 @@ public final class Constants {
         public static final double MidOuttakeConeSeconds = 2; // good, 0.5
         public static final double MidOuttakeCubeSeconds = 0.5;
         public static final double MidOuttakeUnknownSeconds = (MidOuttakeConeSeconds + MidOuttakeCubeSeconds) / 2.0;
-        public static final double HighOuttakeConeSeconds = 1; // good, 0.5
-        public static final double HighOuttakeCubeSeconds = 1; // 0.5
+        public static final double HighOuttakeConeSeconds = 0.6; // 1
+        public static final double HighOuttakeCubeSeconds = 0.6; // 1
         public static final double HighOuttakeUnknownSeconds = (HighOuttakeConeSeconds + HighOuttakeCubeSeconds) / 2.0;
 
         public static final int LeftMotorDeviceId = 9;
@@ -136,7 +136,7 @@ public final class Constants {
     public static class ArmConstants {
         public static final double CorrectionMaxDegreesPerSecond = 25; // 0.5
     
-        public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (44.0 / 12.0);
+        public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (44.0 / 12.0); // (100.0 / 1.0) * (44.0 / 12.0)
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
@@ -172,7 +172,7 @@ public final class Constants {
         public static final double ClosedLoopSecondsToFull = 0.1;
         public static final double ProportionalGainPercentPerRevolutionOfError = 0.1; // 0.025
         public static final double MinOutputPercent = -0.5;
-        public static final double MaxOutputPercent = 0.75; // 0.85
+        public static final double MaxOutputPercent = 0.5; // 0.75
         
         public static final int MotorDeviceId = 11;
         public static final int LimitSwitchChannel = 0;
