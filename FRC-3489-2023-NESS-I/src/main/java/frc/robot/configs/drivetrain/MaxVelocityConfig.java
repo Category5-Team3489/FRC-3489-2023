@@ -2,6 +2,7 @@ package frc.robot.configs.drivetrain;
 
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import frc.robot.Constants;
 import frc.robot.configs.Cat5Config;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
@@ -17,6 +18,10 @@ public class MaxVelocityConfig extends Cat5Config {
 
     public MaxVelocityConfig() {
         maxVelocityMetersPerSecond = Preferences.getDouble(MaxVelocityMetersPerSecondPreferencesKey, TheoreticalMaxVelocityMetersPerSecond);
+
+        if (!Constants.IsDebugShuffleboardEnabled) {
+            return;
+        }
 
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)

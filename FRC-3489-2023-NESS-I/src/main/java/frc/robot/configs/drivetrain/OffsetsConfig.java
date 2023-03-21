@@ -3,6 +3,7 @@ package frc.robot.configs.drivetrain;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import frc.robot.Cat5Utils;
+import frc.robot.Constants;
 import frc.robot.configs.Cat5Config;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Drivetrain;
@@ -27,6 +28,10 @@ public class OffsetsConfig extends Cat5Config {
         frontRightOffsetRadians = Preferences.getDouble(FrontRightOffsetRadiansPreferencesKey, 0);
         backLeftOffsetRadians = Preferences.getDouble(BackLeftOffsetRadiansPreferencesKey, 0);
         backRightOffsetRadians = Preferences.getDouble(BackRightOffsetRadiansPreferencesKey, 0);
+
+        if (!Constants.IsDebugShuffleboardEnabled) {
+            return;
+        }
         
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)

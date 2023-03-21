@@ -8,6 +8,7 @@ import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Arm;
@@ -26,20 +27,14 @@ public class Robot extends TimedRobot {
             PortForwarder.add(port, "limelight.local", port);
         }
 
+        Shuffleboard.update();
+
         LiveWindow.setEnabled(false);
-        // LiveWindow.disableAllTelemetry();
+        LiveWindow.disableAllTelemetry();
         //#endregion
 
         RobotContainer.get();
         autos = new Autos();
-
-        //#region Callbacks
-        addPeriodic(() -> {
-            if (Arm.get().pollLimitSwitchRisingEdge()) {
-                Arm.get().notifyLimitSwitchRisingEdge();
-            }
-        }, 1.0 / 75.0);
-        //#endregion
     }
 
     @Override

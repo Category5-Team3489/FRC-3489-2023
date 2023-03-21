@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import frc.robot.Cat5Utils;
+import frc.robot.Constants;
 import frc.robot.configs.Cat5Config;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.ColorSensor;
@@ -25,6 +26,10 @@ public class ColorAndProximityConfig extends Cat5Config {
         coneColor = Cat5Utils.hexToColor(Preferences.getString(ConeColorPreferencesKey, "#000000"));
         cubeColor = Cat5Utils.hexToColor(Preferences.getString(CubeColorPreferencesKey, "#000000"));
         detectionProximity = Preferences.getInt(DetectionProximityPreferencesKey, 512);
+
+        if (!Constants.IsDebugShuffleboardEnabled) {
+            return;
+        }
 
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.ColorSensor, BuiltInLayouts.kList)

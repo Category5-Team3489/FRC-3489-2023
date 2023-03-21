@@ -76,17 +76,17 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             var subsystemLayout = getLayout(Cat5ShuffleboardTab.Gripper, BuiltInLayouts.kList)
                 .withSize(2, 1);
 
-            subsystemLayout.add(stopCommand);
-            subsystemLayout.add(intakeCommand);
-            subsystemLayout.add(lowOuttakeConeCommand);
-            subsystemLayout.add(midOuttakeConeCommand);
-            subsystemLayout.add(highOuttakeConeCommand);
-            subsystemLayout.add(lowOuttakeCubeCommand);
-            subsystemLayout.add(midOuttakeCubeCommand);
-            subsystemLayout.add(highOuttakeCubeCommand);
-            subsystemLayout.add(lowOuttakeUnknownCommand);
-            subsystemLayout.add(midOuttakeUnknownCommand);
-            subsystemLayout.add(highOuttakeUnknownCommand);
+            // subsystemLayout.add(stopCommand);
+            // subsystemLayout.add(intakeCommand);
+            // subsystemLayout.add(lowOuttakeConeCommand);
+            // subsystemLayout.add(midOuttakeConeCommand);
+            // subsystemLayout.add(highOuttakeConeCommand);
+            // subsystemLayout.add(lowOuttakeCubeCommand);
+            // subsystemLayout.add(midOuttakeCubeCommand);
+            // subsystemLayout.add(highOuttakeCubeCommand);
+            // subsystemLayout.add(lowOuttakeUnknownCommand);
+            // subsystemLayout.add(midOuttakeUnknownCommand);
+            // subsystemLayout.add(highOuttakeUnknownCommand);
         }
         //#endregion
     }

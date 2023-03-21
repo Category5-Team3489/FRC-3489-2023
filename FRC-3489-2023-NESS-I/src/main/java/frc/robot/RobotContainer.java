@@ -140,7 +140,7 @@ public class RobotContainer {
         //#region Wrist
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
-                Wrist.get().command(WristCommand.Starting);
+                Wrist.get().command(WristCommand.Carrying);
             }));
         //#endregion
 
@@ -153,12 +153,20 @@ public class RobotContainer {
         Man.button(HomeManButton)
             .onTrue(runOnce(() -> {
                 Arm.get().command(ArmCommand.Home);
+                Wrist.get().command(WristCommand.Carrying);
             }));
 
         Man.button(FloorManButton)
-            .onTrue(runOnce(() -> {
-                Arm.get().command(ArmCommand.Floor);
-            }));
+            .onTrue(sequence(
+                runOnce(() -> {
+                    Arm.get().command(ArmCommand.Floor);
+                }),
+                waitSeconds(0.25),//0.333
+                runOnce(() -> {
+                    Wrist.get().command(WristCommand.Horizontal);
+                    Gripper.get().scheduleIntakeCommand();
+                })
+            ));
 
         Man.button(LowManButton)
             .onTrue(runOnce(() -> {
@@ -179,6 +187,16 @@ public class RobotContainer {
         Man.button(DoubleSubstationManButton)
             .onTrue(runOnce(() -> {
                 Arm.get().command(ArmCommand.DoubleSubstation);
+            }));
+
+        Man.button(HorizontalWristManButton)
+            .onTrue(runOnce(() -> {
+                Wrist.get().command(WristCommand.Horizontal);
+            }));
+
+        Man.button(CarryingWristManButton)
+            .onTrue(runOnce(() -> {
+                Wrist.get().command(WristCommand.Carrying);
             }));
         //#endregion
 

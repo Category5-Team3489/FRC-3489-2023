@@ -7,7 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.robot.enums.LimelightPipeline;
 
 public final class Constants {
-    public static boolean IsDebugShuffleboardEnabled = true;
+    public static boolean IsDebugShuffleboardEnabled = false;
 
     public static class CameraConstants {
         public static final int PixelWidth = 160;
@@ -18,6 +18,8 @@ public final class Constants {
 
     public static class LimelightConstants {
         public static final LimelightPipeline DefaultPipeline = LimelightPipeline.Fiducial;
+
+        public static final long FiducialPipeline = 0;
 
         public static final double CamposeValidActivePipelineSeconds = 0.5;
         public static final double CamposeValidTargetArea = 0.005;
@@ -79,11 +81,11 @@ public final class Constants {
     }
 
     public static class GripperConstants {
-        public static final boolean IsConeReintakingEnabled = false;
+        public static final boolean IsConeReintakingEnabled = true;
         public static final boolean IsCubeReintakingEnabled = true;
-        public static final int ReintakeConeProximityThreshold = 300;
+        public static final int ReintakeConeProximityThreshold = 150;
         public static final int ReintakeCubeProximityThreshold = 150; // 200
-        public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
+        public static final double ReintakeAntiConeEatTimeout = 0.5; // 0.5
         public static final double ReintakeAntiCubeEatTimeout = 0.75;
 
         public static final double IntakePercent = -0.5;
@@ -113,18 +115,18 @@ public final class Constants {
     }
 
     public static class WristConstants {
-        public static final double MinRotations = 0;
-        public static final double MaxRotations = 0;
+        public static final double MinRotations = -13;
+        public static final double MaxRotations = 5;
         public static final double StartingRotations = 0;
-        public static final double HorizontalRotations = 0;
-        public static final double CarryingRotations = 0;
+        public static final double HorizontalRotations = -1;
+        public static final double CarryingRotations = -13; // 
 
         public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (2.0 / 1.0);
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
         public static final int StallSmartCurrentLimitAmps = 20;
-        public static final double ProportionalGainPercentPerRevolutionOfError = 0.025;
+        public static final double ProportionalGainPercentPerRevolutionOfError = 0.5; // 0.2
         public static final double MinOutputPercent = -0.15;
         public static final double MaxOutputPercent = 0.15; // 0.85
 
@@ -147,7 +149,7 @@ public final class Constants {
 
         public static final double DoubleSubstationDegrees = 5; // 4.5, 8.9, 3
 
-        public static final double FloorAngleDegrees = -94;
+        public static final double FloorAngleDegrees = -70;
 
         public static final double LowConeAngleDegrees = -70;
         public static final double LowCubeAngleDegrees = -70;

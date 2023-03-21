@@ -137,6 +137,10 @@ public class Arm extends Cat5Subsystem<Arm> {
 
     @Override
     public void periodic() {
+        if (pollLimitSwitchRisingEdge()) {
+            notifyLimitSwitchRisingEdge();
+        }
+
         if (!isHomed && limitSwitch.get() && lastLimitSwitchValue) {
             setEncoderAngleDegrees(MinAngleDegrees);
             isHomed = true;
@@ -341,7 +345,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         }
     }
 
-    public boolean pollLimitSwitchRisingEdge() {
+    private boolean pollLimitSwitchRisingEdge() {
         if (limitSwitch.get() && !lastLimitSwitchValue) {
             lastLimitSwitchValue = true;
 
@@ -353,9 +357,11 @@ public class Arm extends Cat5Subsystem<Arm> {
         return false;
     }
 
-    public void notifyLimitSwitchRisingEdge() {
+    private void notifyLimitSwitchRisingEdge() {
         setEncoderAngleDegrees(MinAngleDegrees);
         isHomed = true;
+
+        setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kBrake);
 
         Cat5Utils.time();
         System.out.println("Arm limit switch rising edge, homed");

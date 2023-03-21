@@ -61,7 +61,7 @@ public class Wrist extends Cat5Subsystem<Wrist> {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
 
-        layout.addDouble("Encoder Angle (deg)", () -> getEncoderAngleDegrees());
+        layout.addDouble("Encoder (rotations)", () -> encoder.getPosition());
         layout.addDouble("Target Angle (rotations)", () -> targetRotations);
         //#endregion
     }

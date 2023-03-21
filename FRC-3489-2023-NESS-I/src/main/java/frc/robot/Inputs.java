@@ -21,6 +21,9 @@ public class Inputs {
     public static final int GripperIntakeManButton = 2;
     public static final int GripperOuttakeManButton = 3;
 
+    public static final int HorizontalWristManButton = 4;
+    public static final int CarryingWristManButton = 8;
+
     public static final int HomeManButton = 10;
     public static final int DoubleSubstationManButton = 6;
     public static final int FloorManButton = 12;

@@ -138,9 +138,9 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             var subsystemLayout = getLayout(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList)
                 .withSize(2, 1);
 
-            subsystemLayout.add(driveCommand);
-            subsystemLayout.add(brakeTranslationCommand);
-            subsystemLayout.add(brakeRotationCommand);
+            // subsystemLayout.add(driveCommand);
+            // subsystemLayout.add(brakeTranslationCommand);
+            // subsystemLayout.add(brakeRotationCommand);
         }
         //#endregion
     }
