@@ -1,7 +1,11 @@
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.drivetrain.DrivePercentAngleSeconds;
 import frc.robot.commands.drivetrain.DriveRelativeMeters;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -10,29 +14,40 @@ import frc.robot.subsystems.Drivetrain;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class Autos {
-    // Constants
-    private static final String TaxiAuto = "Taxi";
-    private static final String TaxiFarAuto = "TaxiFar";
-    private static final String BalanceAuto = "Balance";
-    private static final String BumpBalanceAuto = "BumpBalance";
-    private static final String NothingAuto = "Nothing";
-    private static final String DriveRelMetersAuto = "DriveRelMeters";
-
-    // Shuffleboard
+    private final HashMap<String, Supplier<Command>> autos = new HashMap<String, Supplier<Command>>();
     private final SendableChooser<String> autoChooser = new SendableChooser<String>();
+    private int i = 0;
     private String currentAuto = "";
 
     public Autos() {
-        //#region Shuffleboard
-        autoChooser.setDefaultOption(TaxiAuto, TaxiAuto);
-        autoChooser.setDefaultOption(TaxiFarAuto, TaxiFarAuto);
-        autoChooser.addOption(BalanceAuto, BalanceAuto);
-        autoChooser.addOption(BumpBalanceAuto, BumpBalanceAuto);
-        autoChooser.addOption(NothingAuto, NothingAuto);
-        autoChooser.addOption(DriveRelMetersAuto, DriveRelMetersAuto);
+        addAuto("Taxi", () -> getTaxiAutoCommand());
+        addAuto("TaxiFar", () -> getTaxiFarAutoCommand());
+        addAuto("Balance", () -> getBalanceAutoCommand());
+        addAuto("BumpBalance", () -> getBumpBalanceAutoCommand());
+        addAuto("Nothing", () -> getNothingAutoCommand());
+        addAuto("DriveRelMeters", () -> getDriveRelMetersCommand());
         
         Cat5ShuffleboardTab.Auto.get().add(autoChooser);
-        //#endregion
+    }
+
+    private void addAuto(String name, Supplier<Command> auto) {
+        autos.put(name, auto);
+
+        if (i == 0) {
+            autoChooser.setDefaultOption(name, name);
+        }
+        else {
+            autoChooser.addOption(name, name);
+        }
+
+        i++;
+    }
+
+    private Command completed() {
+        return runOnce(() -> {
+            Cat5Utils.time();
+            System.out.println("Completed auto: \"" + currentAuto + "\"");
+        });
     }
     
     //#region Public
@@ -46,22 +61,13 @@ public class Autos {
         Cat5Utils.time();
         System.out.println("Running selected auto: \"" + currentAuto + "\"");
 
-        switch (currentAuto) {
-            case TaxiAuto:
-                return getTaxiAutoCommand();
-            case TaxiFarAuto:
-                return getTaxiFarAutoCommand();
-            case BalanceAuto:
-                return getBalanceAutoCommand();
-            case BumpBalanceAuto:
-                return getBumpBalanceAutoCommand();
-            case NothingAuto:
-                return getNothingAutoCommand();
-            case DriveRelMetersAuto:
-                return getDriveRelMetersCommand();
+        Command autoCommand = autos.get(currentAuto).get();
+
+        if (autoCommand != null) {
+            return autoCommand;
         }
 
-        return print("Unknown auto selected, doing nothing");
+        return Commands.print("Auto command was null");
     }
     //#endregion
 
@@ -114,15 +120,6 @@ public class Autos {
             new DriveRelativeMeters(1, 0, 0, 0.25, 0.05),
             completed()
         );
-    }
-    //#endregion
-
-    //#region Utils
-    private Command completed() {
-        return runOnce(() -> {
-            Cat5Utils.time();
-            System.out.println("Completed auto: \"" + currentAuto + "\"");
-        });
     }
     //#endregion
 }
