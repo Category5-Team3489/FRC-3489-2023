@@ -1,12 +1,24 @@
+List:
+    Auto placement
+    Gripper/arm angle pickup tuning
+    Carry position and pickup position transition
+    Gripper angles for placement
+    Verify existing autos
+    New auto?
+
+Determine:
+Standard way of starting wrist
+    Position of wrist on frame
+    Way to rotate motor to get rid of chain slop
+Can slow arm ramp rate even more now
 
 
 
 
-
-
-
-
-
+Eventually:
+Unplug color sensor, then power on robot
+Unplug color sensor when robot is already on
+Tune heading keeping more
 
 
 

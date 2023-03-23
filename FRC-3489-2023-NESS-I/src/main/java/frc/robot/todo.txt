@@ -1,38 +1,49 @@
-// Other
-Main
-Robot
-Inputs
+Bugs:
+Gyro is ignored when color sensor is broken??!?!?!??
 
-// Subsystems
-Camera
-NavX2
-Limelight
-Drivetrain
+Priorities:
 
-adjust gripper with arm corrections instead
+Perhaps:
+Use RobotCommands.java
+    Abstract robot commands
+    Pickup
+    Carry
+Limit switch instead of color sensor
+    Use game piece indicator on manipulator stick to detect game piece type
+No arm correction, just move wrist instead
+Some shuffleboard abstraction for suppliers that will register them somewhere
+    Semi random updates, so everything doesn't update at once
+    Provide update rate in hz
+Move to carry position after picking a game piece up automatically
+Only allow arm to home once unless force homed?
+    Only home on not homed and limit switch rising edge
+Manipulator POV for wrist control, bump up and down to go between two positions?
 
-Confetti when balances in endgame
+Eventually:
+Pickup position button toggles gripper position?
+Set drive motors to coast mode for offset config
+Pass odometry object into drive commands?
+Log high arm currents and low velocities?
+Confetti led pattern when robot is in endgame and balanced
+Limelight autoplacement controls led strips to indicate things
+Pure pursuit
+Sequence to pickup a tipped over cone with wrist, gripper and arm
+Tell robot how far cone has slipped down somehow
+Just point wheels towards point with odometry and drive
+    P control when within threshold distance
+    Use SlewRateLimiter to limit accel
+Can cubes be launched?
+    Create map for motor speed and distance
+    Drag and robot current robot velocity
+    Use campose from limelight
+    Kinematic equations
+Prevent arm from lowering on placement area
+Limit translation speed when arm is up
+Limit rotation speed when arm is up
+Slow down cardinal direction turning and heading keeping when arm is up
+    Use arm distance from center of robot to make proportional?
+Is rototation of robot finicky?
+Quick press of rotation trigger all the way down does an incremental rotation
+Offset arm constant force spring with model
 
-LEDS do stuff when autoplacement allignment is happening
 
-Wrist is in pickup mode at low position:
-    It uses pov, knock it up or down to select facing down or horizontal
-    and LED game piece indicator
-
-When there is a held game piece the wrist is always in closed position at low height
-
-pov top 3 up = gripper up 
-pov middle = gripper horizontal
-
-gripper up down, middle somehow????!?!??!
-
-Gripper position for picking up tipped over cones
-
-Move arm and gripper to carry position right after picking game piece up
-
-
-
-do gripper corrections somehow
-
-
-Low position button toggles gripper position
