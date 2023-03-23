@@ -115,20 +115,32 @@ public final class Constants {
     }
 
     public static class WristConstants {
-        public static final double MinRotations = -13;
-        public static final double MaxRotations = 5;
-        public static final double StartingRotations = 0;
-        public static final double HorizontalRotations = -1;
-        public static final double CarryingRotations = -13; // 
+        public enum WristState {
+            Min(-13),
+            Max(5),
+            Start(0),
+            Pickup(-1),
+            Carry(-13);
+
+            private final double rotations;
+
+            private WristState(double rotations) {
+                this.rotations = rotations;
+            }
+
+            public double getRotations() {
+                return rotations;
+            }
+        }
 
         public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (2.0 / 1.0);
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
         public static final int StallSmartCurrentLimitAmps = 20;
-        public static final double ProportionalGainPercentPerRevolutionOfError = 0.5; // 0.2
+        public static final double ProportionalGainPercentPerRevolutionOfError = 0.5;
         public static final double MinOutputPercent = -0.15;
-        public static final double MaxOutputPercent = 0.15; // 0.85
+        public static final double MaxOutputPercent = 0.15;
 
         public static final int MotorDeviceId = 12;
     }

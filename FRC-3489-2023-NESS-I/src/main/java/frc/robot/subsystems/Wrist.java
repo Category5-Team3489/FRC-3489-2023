@@ -8,10 +8,8 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.ControlType;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.enums.WristCommand;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.WristConstants.*;
@@ -26,7 +24,7 @@ public class Wrist extends Cat5Subsystem<Wrist> {
     //#endregion
     
     // Devices
-    private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless);
+    private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless); // Negative up
     private final SparkMaxPIDController pidController;
     private final RelativeEncoder encoder;
     
@@ -34,8 +32,7 @@ public class Wrist extends Cat5Subsystem<Wrist> {
     private final CommandBase gotoTargetCommand = getGotoTargetCommand();
 
     // State
-    private double targetRotations = StartingRotations;
-    private WristCommand activeCommand = WristCommand.None;
+    private WristState state = WristState.Start;
 
     private Wrist() {
         super(i -> instance = i);
@@ -48,7 +45,6 @@ public class Wrist extends Cat5Subsystem<Wrist> {
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(IdleMode.kBrake);
-        // motor.setInverted(true); FIXME Will inverting this overcomplicate stuff?
         motor.enableVoltageCompensation(12.0);
         motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20); // TODO Should this be done in other places or with other frames?
@@ -62,55 +58,34 @@ public class Wrist extends Cat5Subsystem<Wrist> {
             .withSize(2, 1);
 
         layout.addDouble("Encoder (rotations)", () -> encoder.getPosition());
-        layout.addDouble("Target Angle (rotations)", () -> targetRotations);
+        layout.addString("State", () -> state.toString());
+        layout.addDouble("State (rotations)", () -> state.getRotations());
         //#endregion
     }
 
-    //#region Control
-    private void setTargetRotations(double rotations) {
-        rotations = MathUtil.clamp(rotations, MinRotations, MaxRotations);
-        targetRotations = rotations;
-    }
-    //#endregion
-
-    //#region Encoder
+    // //#region Encoder
     // private double getEncoderAngleDegrees() {
     //     double rotations = encoder.getPosition();
     //     return rotations * DegreesPerMotorRevolution;
     // }
-    //#endregion
+    // //#endregion
 
     //#region Commands
     private CommandBase getGotoTargetCommand() {
         return run(() -> {
-            pidController.setReference(targetRotations, ControlType.kPosition, 0);
+            pidController.setReference(state.getRotations(), ControlType.kPosition, 0);
         })
             .withName("Goto Target");
     }
     //#endregion
 
     //#region Public
-    public void command(WristCommand command) {
-        activeCommand = command;
-
-        switch (command) {
-            case None:
-                setTargetRotations(StartingRotations);
-                break;
-            case Starting:
-                setTargetRotations(StartingRotations);
-                break;
-            case Horizontal:
-                setTargetRotations(HorizontalRotations);
-                break;
-            case Carrying:
-                setTargetRotations(CarryingRotations);
-                break;
-        }
+    public WristState getState() {
+        return state;
     }
-
-    public WristCommand getActiveCommand() {
-        return activeCommand;
+    
+    public void setState(WristState state) {
+        this.state = state;
     }
     //#endregion
 }

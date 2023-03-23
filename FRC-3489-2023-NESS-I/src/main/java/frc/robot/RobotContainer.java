@@ -11,6 +11,7 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.WristConstants.WristState;
 import frc.robot.commands.HighConeNode;
 import frc.robot.commands.HighCubeNode;
 import frc.robot.commands.MidConeNode;
@@ -18,7 +19,6 @@ import frc.robot.commands.MidCubeNode;
 import frc.robot.enums.ArmCommand;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.LedPattern;
-import frc.robot.enums.WristCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Cat5Subsystem;
@@ -232,7 +232,7 @@ public class RobotContainer {
         //#region Wrist
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
-                Wrist.get().command(WristCommand.Carrying);
+                Wrist.get().setState(WristState.Carry);
             }));
         //#endregion
 
@@ -245,7 +245,7 @@ public class RobotContainer {
         Man.button(HomeManButton)
             .onTrue(runOnce(() -> {
                 Arm.get().command(ArmCommand.Home);
-                Wrist.get().command(WristCommand.Carrying);
+                Wrist.get().setState(WristState.Carry);
                 Gripper.get().scheduleStopCommand();
             }));
 
@@ -256,7 +256,7 @@ public class RobotContainer {
                 }),
                 waitSeconds(0.4), // 0.333
                 runOnce(() -> {
-                    Wrist.get().command(WristCommand.Horizontal);
+                    Wrist.get().setState(WristState.Pickup);
                     Gripper.get().scheduleIntakeCommand();
                 })
             ));
@@ -284,12 +284,12 @@ public class RobotContainer {
 
         Man.button(HorizontalWristManButton)
             .onTrue(runOnce(() -> {
-                Wrist.get().command(WristCommand.Horizontal);
+                Wrist.get().setState(WristState.Pickup);
             }));
 
         Man.button(CarryingWristManButton)
             .onTrue(runOnce(() -> {
-                Wrist.get().command(WristCommand.Carrying);
+                Wrist.get().setState(WristState.Carry);
             }));
         //#endregion
 
