@@ -74,16 +74,15 @@ public class Wrist extends Cat5Subsystem<Wrist> {
     //#endregion
 
     //#region Encoder
-    private double getEncoderAngleDegrees() {
-        double rotations = encoder.getPosition();
-        return rotations * DegreesPerMotorRevolution;
-    }
+    // private double getEncoderAngleDegrees() {
+    //     double rotations = encoder.getPosition();
+    //     return rotations * DegreesPerMotorRevolution;
+    // }
     //#endregion
 
     //#region Commands
     private CommandBase getGotoTargetCommand() {
         return run(() -> {
-            // TODO Do you want to fight gravity with a calculated arb feedforward, around -2% when tested
             pidController.setReference(targetRotations, ControlType.kPosition, 0);
         })
             .withName("Goto Target");

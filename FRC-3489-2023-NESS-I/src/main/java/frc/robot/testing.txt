@@ -1,7 +1,8 @@
 List:
-    Auto placement
     Gripper/arm angle pickup tuning
     Carry position and pickup position transition
+    PRACTICE FIELD BELOW
+    Auto placement
     Gripper angles for placement
     Verify existing autos
     New auto?
