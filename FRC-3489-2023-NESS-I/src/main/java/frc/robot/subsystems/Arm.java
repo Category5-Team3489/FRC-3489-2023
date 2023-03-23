@@ -358,6 +358,10 @@ public class Arm extends Cat5Subsystem<Arm> {
     }
 
     private void notifyLimitSwitchRisingEdge() {
+        if (isHomed) {
+            return;
+        }
+
         setEncoderAngleDegrees(MinAngleDegrees);
         isHomed = true;
 
