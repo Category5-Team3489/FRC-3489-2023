@@ -136,5 +136,16 @@ public class Limelight extends Cat5Subsystem<Limelight> {
     public double getTargetArea() {
         return targetAreaEntry.getDouble(Double.NaN);
     }
+
+    public void log() {
+        Cat5Utils.time();
+        System.out.println(getTagId());
+
+        Cat5Utils.time();
+        System.out.println(getTargetX());
+
+        Cat5Utils.time();
+        System.out.println(getTargetY());
+    }
     //#endregion
 }
