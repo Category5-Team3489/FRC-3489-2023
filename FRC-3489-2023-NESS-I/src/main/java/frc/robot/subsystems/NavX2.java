@@ -19,7 +19,8 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     //#endregion
 
     // Devices
-    private final AHRS navx = new AHRS(Port.kMXP, (byte)66);
+    // private final AHRS navx = new AHRS(Port.kMXP, (byte)66);
+    private final AHRS navx = new AHRS(edu.wpi.first.wpilibj.SerialPort.Port.kUSB1);
 
     // Commands
     private final CommandBase zeroYawCommand = getZeroYawCommand();

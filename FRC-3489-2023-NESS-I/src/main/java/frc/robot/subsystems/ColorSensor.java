@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorSensorV3.ColorSensorMeasurementRate;
+import com.revrobotics.ColorSensorV3.ColorSensorResolution;
+import com.revrobotics.ColorSensorV3.GainFactor;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -41,6 +44,8 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
 
     private ColorSensor() {
         super(i -> instance = i);
+
+        colorSensor.configureColorSensor(ColorSensorResolution.kColorSensorRes20bit, ColorSensorMeasurementRate.kColorRate200ms, GainFactor.kGain1x);
 
         warningTimer.restart();
 
