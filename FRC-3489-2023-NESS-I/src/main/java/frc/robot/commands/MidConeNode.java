@@ -20,6 +20,7 @@ public class MidConeNode extends CommandBase {
     private static double MaxOmegaDegreesPerSecond = 90;
     private static double TargetXSetpointDegrees = -4.84;
     private static double TargetYSetpointDegrees = -4.85;
+    public static double FeedforwardMetersPerSecond = 0.3; // 0.4
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
     private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
@@ -52,6 +53,7 @@ public class MidConeNode extends CommandBase {
         double targetX = Limelight.get().getTargetX();
         if (!Double.isNaN(targetX)) {
             yMetersPerSecond = -strafeController.calculate(targetX, TargetXSetpointDegrees);
+            yMetersPerSecond += Cat5Utils.getSign(yMetersPerSecond) * FeedforwardMetersPerSecond;
             yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -MaxStrafeMetersPerSecond, MaxStrafeMetersPerSecond);
         }
         else {
@@ -61,6 +63,7 @@ public class MidConeNode extends CommandBase {
         double targetY = Limelight.get().getTargetY();
         if (!Double.isNaN(targetY)) {
             xMetersPerSecond = distanceController.calculate(targetY, TargetYSetpointDegrees);
+            xMetersPerSecond += Cat5Utils.getSign(xMetersPerSecond) * FeedforwardMetersPerSecond;
             xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -MaxDistanceMetersPerSecond, MaxDistanceMetersPerSecond);
         }
         else {

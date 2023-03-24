@@ -30,6 +30,13 @@ public class Cat5Utils {
             return 0.0;
         }
     }
+
+    public static double getSign(double value) {
+        if (value < 0) {
+            return -1;
+        }
+        return 1;
+    }
     
     public static Color hexToColor(String hex) {
         return new Color(
