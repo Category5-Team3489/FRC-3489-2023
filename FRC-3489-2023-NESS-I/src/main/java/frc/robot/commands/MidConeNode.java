@@ -14,7 +14,7 @@ public class MidConeNode extends CommandBase {
     private static double MaxStrafeMetersPerSecond = 0.5;
     private static double MaxDistanceMetersPerSecond = 0.75;
     private static double StrafeToleranceDegrees = 1.25;
-    private static double DistanceToleranceDegrees = 1.25 / 1.5;//1.25/2
+    private static double DistanceToleranceDegrees = 1.25 / 1.5;//1.25, 1.25 / 2 doesnt work
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
     private static double MaxOmegaDegreesPerSecond = 90;
