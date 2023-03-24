@@ -282,12 +282,12 @@ public class RobotContainer {
                 Arm.get().command(ArmCommand.DoubleSubstation);
             }));
 
-        Man.button(HorizontalWristManButton)
+        Man.button(WristPickupManButton)
             .onTrue(runOnce(() -> {
                 Wrist.get().setState(WristState.Pickup);
             }));
 
-        Man.button(CarryingWristManButton)
+        Man.button(WristCarryManButton)
             .onTrue(runOnce(() -> {
                 Wrist.get().setState(WristState.Carry);
             }));

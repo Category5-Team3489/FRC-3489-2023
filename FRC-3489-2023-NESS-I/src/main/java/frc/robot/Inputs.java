@@ -23,8 +23,8 @@ public class Inputs {
     public static final int GripperIntakeManButton = 2;
     public static final int GripperOuttakeManButton = 3;
 
-    public static final int HorizontalWristManButton = 4;
-    public static final int CarryingWristManButton = 8;
+    public static final int WristPickupManButton = 4;
+    public static final int WristCarryManButton = 8;
 
     public static final int HomeManButton = 10;
     public static final int DoubleSubstationManButton = 6;
@@ -32,8 +32,6 @@ public class Inputs {
     public static final int LowManButton = 11;
     public static final int MidManButton = 9;
     public static final int HighManButton = 7;
-
-    public static final int WristIndexManButton = 8;
 
     // Devices
     public static final CommandXboxController Xbox = new CommandXboxController(XboxPort);
