@@ -1,31 +1,35 @@
+At Comp:
+Lower arm height slightly at human player station
+When moving arm to human player station height, put wrist in pickup position
+Slow Intake Speed
+
+Delay wrist movement for low, mid, high, human player
+
+
+
+
 Bugs:
 Gyro is ignored when color sensor is broken??!?!?!??
 
-Priorities:
-
 Perhaps:
-Use RobotCommands.java
-    Abstract robot commands
-    Pickup
-    Carry
 Limit switch instead of color sensor
     Use game piece indicator on manipulator stick to detect game piece type
 No arm correction, just move wrist instead
 Some shuffleboard abstraction for suppliers that will register them somewhere
     Semi random updates, so everything doesn't update at once
     Provide update rate in hz
-Move to carry position after picking a game piece up automatically
+Move to carry position after picking a game piece up automatically // ISSUE WITH THIS IF AT HUMAN PLAYER STATION OR NOT FLOOR PICKUP POS
 Only allow arm to home once unless force homed?
     Only home on not homed and limit switch rising edge
 Manipulator POV for wrist control, bump up and down to go between two positions?
 
 Eventually:
+Limelight autoplacement controls led strips to indicate things
 Pickup position button toggles gripper position?
 Set drive motors to coast mode for offset config
 Pass odometry object into drive commands?
 Log high arm currents and low velocities?
 Confetti led pattern when robot is in endgame and balanced
-Limelight autoplacement controls led strips to indicate things
 Pure pursuit
 Sequence to pickup a tipped over cone with wrist, gripper and arm
 Tell robot how far cone has slipped down somehow

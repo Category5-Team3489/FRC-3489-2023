@@ -96,7 +96,7 @@ public final class Constants {
         public static final double MidOuttakeConePercent = 0.1; // good
         public static final double MidOuttakeCubePercent = 0.3;
         public static final double MidOuttakeUnknownPercent = (MidOuttakeConePercent + MidOuttakeCubePercent) / 2.0;
-        public static final double HighOuttakeConePercent = 1; // good
+        public static final double HighOuttakeConePercent = 0.35; // 0.6
         public static final double HighOuttakeCubePercent = 1; // good, 0.3
         public static final double HighOuttakeUnknownPercent = (HighOuttakeConePercent + HighOuttakeCubePercent) / 2.0;
 

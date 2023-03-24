@@ -18,7 +18,9 @@ public class Inputs {
 
     public static final double ManButtonDebounceSeconds = 0.1;
 
+    //#region Buttons
     public static final int AutomateManButton = 5;
+
     public static final int GripperStopManButton = 1;
     public static final int GripperIntakeManButton = 2;
     public static final int GripperOuttakeManButton = 3;
@@ -32,6 +34,7 @@ public class Inputs {
     public static final int LowManButton = 11;
     public static final int MidManButton = 9;
     public static final int HighManButton = 7;
+    //#endregion
 
     // Devices
     public static final CommandXboxController Xbox = new CommandXboxController(XboxPort);

@@ -12,10 +12,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.WristConstants.WristState;
-import frc.robot.commands.HighConeNode;
-import frc.robot.commands.HighCubeNode;
-import frc.robot.commands.MidConeNode;
-import frc.robot.commands.MidCubeNode;
 import frc.robot.enums.ArmCommand;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.LedPattern;
@@ -59,6 +55,10 @@ public class RobotContainer {
     }
     //#endregion
     
+    // Try out DataLogManager
+    // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html
+    // Combine with shuffleboard logging stuff?
+
     private RobotContainer() {
         instance = this;
         cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
@@ -77,7 +77,7 @@ public class RobotContainer {
 
         Leds.get();
 
-        RobotCommands.get();
+        RobotActions.get();
 
         configureBindings();
     }
@@ -87,77 +87,7 @@ public class RobotContainer {
         Man.button(AutomateManButton)
             .debounce(ManButtonDebounceSeconds, DebounceType.kBoth)
             .onTrue(runOnce(() -> {
-                switch (Arm.get().getGridPosition()) {
-                    case Low:
-                        Cat5Utils.time();
-                        System.out.println("Low automation not implemented");
-                        break;
-                    case Mid:
-                        switch (Gripper.get().getHeldGamePiece()) {
-                            case Cone:
-                                sequence(
-                                    new MidConeNode(),
-                                    waitSeconds(0.5), // 1
-                                    runOnce(() -> {
-                                        Arm.get().command(ArmCommand.None);
-                                        Arm.get().command(ArmCommand.ScoreMidCone);
-                                    }),
-                                    waitSeconds(0.5),
-                                    runOnce(() -> {
-                                        Gripper.get().scheduleOuttakeCommand();
-                                    })
-                                ).schedule();
-
-                                Cat5Utils.time();
-                                System.out.println("Mid cone automation");
-                                break;
-                            case Cube:
-                                sequence(
-                                    new MidCubeNode(),
-                                    waitSeconds(0.5),
-                                    runOnce(() -> {
-                                        Gripper.get().scheduleOuttakeCommand();
-                                    })
-                                ).schedule();
-
-                                Cat5Utils.time();
-                                System.out.println("Mid cube automation");
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    case High:
-                        switch (Gripper.get().getHeldGamePiece()) {
-                            case Cone:
-                                sequence(
-                                    new HighConeNode(),
-                                    waitSeconds(0.5), // 1
-                                    runOnce(() -> {
-                                        Gripper.get().scheduleOuttakeCommand();
-                                    })
-                                ).schedule();
-
-                                Cat5Utils.time();
-                                System.out.println("High cone automation");
-                                break;
-                            case Cube:
-                                sequence(
-                                    new HighCubeNode(),
-                                    waitSeconds(0.5), // 1
-                                    runOnce(() -> {
-                                        Gripper.get().scheduleOuttakeCommand();
-                                    })
-                                ).schedule();
-
-                                Cat5Utils.time();
-                                System.out.println("High cube automation");
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                }
+                RobotActions.get().scheduleAutomationCommand();
             }));
         //#endregion
 
@@ -244,42 +174,33 @@ public class RobotContainer {
 
         Man.button(HomeManButton)
             .onTrue(runOnce(() -> {
-                Arm.get().command(ArmCommand.Home);
-                Wrist.get().setState(WristState.Carry);
-                Gripper.get().scheduleStopCommand();
+                RobotActions.get().scheduleCarryCommand();
             }));
 
         Man.button(FloorManButton)
-            .onTrue(sequence(
-                runOnce(() -> {
-                    Arm.get().command(ArmCommand.Floor);
-                }),
-                waitSeconds(0.4), // 0.333
-                runOnce(() -> {
-                    Wrist.get().setState(WristState.Pickup);
-                    Gripper.get().scheduleIntakeCommand();
-                })
-            ));
+            .onTrue(runOnce(() -> {
+                RobotActions.get().schedulePickupCommand();
+            }));
 
         Man.button(LowManButton)
             .onTrue(runOnce(() -> {
-                Arm.get().command(ArmCommand.Low);
+                RobotActions.get().scheduleLowCommand();
             }));
 
         Man.button(MidManButton)
             .debounce(0.1, DebounceType.kBoth)
             .onTrue(runOnce(() -> {
-                Arm.get().command(ArmCommand.Mid);
+                RobotActions.get().scheduleMidCommand(true);
             }));
 
         Man.button(HighManButton)
             .onTrue(runOnce(() -> {
-                Arm.get().command(ArmCommand.High);
+                RobotActions.get().scheduleHighCommand();
             }));
 
         Man.button(DoubleSubstationManButton)
             .onTrue(runOnce(() -> {
-                Arm.get().command(ArmCommand.DoubleSubstation);
+                RobotActions.get().scheduleDoubleSubstationCommand();
             }));
 
         Man.button(WristPickupManButton)
@@ -300,8 +221,4 @@ public class RobotContainer {
             .onTrue(Leds.get().getCommand(LedPattern.Green, 1.0, false));
         //#endregion
     }
-
-    // Try out DataLogManager
-    // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html
-    // Combine with shuffleboard logging stuff?
 }

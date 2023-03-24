@@ -10,16 +10,16 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
 public class MidConeNode extends CommandBase {
-    private static double ProportionalGain = 0.18;
+    private static double ProportionalGain = 0.22;//0.18
     private static double MaxStrafeMetersPerSecond = 0.5;
     private static double MaxDistanceMetersPerSecond = 0.75;
     private static double StrafeToleranceDegrees = 1.25;
-    private static double DistanceToleranceDegrees = 1.25;
+    private static double DistanceToleranceDegrees = 1.25 / 1.5;//1.25/2
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
     private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -4.95;
-    private static double TargetYSetpointDegrees = -4.92;
+    private static double TargetXSetpointDegrees = -4.84;
+    private static double TargetYSetpointDegrees = -4.85;
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
     private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
