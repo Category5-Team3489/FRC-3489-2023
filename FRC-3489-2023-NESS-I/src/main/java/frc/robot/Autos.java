@@ -89,7 +89,7 @@ public class Autos {
     private Command getBalanceAutoCommand() {
         return sequence(
             new DrivePercentAngleSeconds(0.12, 0, 6.75),
-            runOnce(() -> {
+            run(() -> {
                 Drivetrain.get().brakeTranslation();
             }),
             completed()
@@ -102,7 +102,7 @@ public class Autos {
             new DrivePercentAngleSeconds(0.4, 0, 0.125),
             new DrivePercentAngleSeconds(0, 0, 4),
             new DrivePercentAngleSeconds(0.12, 0, 6.75),
-            runOnce(() -> {
+            run(() -> {
                 Drivetrain.get().brakeTranslation();
             }),
             completed()
