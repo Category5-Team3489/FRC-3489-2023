@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Cat5Utils;
 import frc.robot.enums.LimelightPipeline;
@@ -15,14 +16,20 @@ public class CenterFiducialWithHeading extends CommandBase {
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 1.0;
     private static double MaxOmegaDegreesPerSecond = 90;
+    public static double FeedforwardMetersPerSecond = 0.3;
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
 
-    private double xMetersPerSecond = 0;
+    private final double xMetersPerSecond;
     private double yMetersPerSecond = 0;
+    private final double seconds;
+    private final Timer timer = new Timer();
     
     public CenterFiducialWithHeading(double xMetersPerSecond, double seconds) {
         addRequirements(Drivetrain.get());
+
+        this.xMetersPerSecond = xMetersPerSecond;
+        this.seconds = seconds;
     }
 
     @Override
@@ -31,6 +38,8 @@ public class CenterFiducialWithHeading extends CommandBase {
 
         Cat5Utils.time();
         System.out.println(getName() + " init");
+
+        timer.restart();
     }
 
     @Override
@@ -54,7 +63,7 @@ public class CenterFiducialWithHeading extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return strafeController.atSetpoint() && distanceController.atSetpoint();
+        return timer.hasElapsed(seconds);
     }
 
     @Override
