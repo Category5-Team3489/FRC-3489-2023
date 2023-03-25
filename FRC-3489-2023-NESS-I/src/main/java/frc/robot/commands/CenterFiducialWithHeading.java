@@ -15,7 +15,7 @@ public class CenterFiducialWithHeading extends CommandBase {
     private static double MaxStrafeMetersPerSecond = 0.1;
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 1.0;
-    private static double MaxOmegaDegreesPerSecond = 90;
+    private static double MaxOmegaDegreesPerSecond = 180;
     public static double FeedforwardMetersPerSecond = 0.3;
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
@@ -34,7 +34,7 @@ public class CenterFiducialWithHeading extends CommandBase {
 
     @Override
     public void initialize() {
-        Limelight.get().setDesiredPipeline(LimelightPipeline.Fiducial);
+        Limelight.get().setDesiredPipeline(LimelightPipeline.ZoomFiducial);
 
         Cat5Utils.time();
         System.out.println(getName() + " init");
@@ -44,7 +44,7 @@ public class CenterFiducialWithHeading extends CommandBase {
 
     @Override
     public void execute() {
-        if (!Limelight.get().isActivePipeline(LimelightPipeline.Fiducial)) {
+        if (!Limelight.get().isActivePipeline(LimelightPipeline.ZoomFiducial)) {
             Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, SpeedLimiter, TargetAngle, 0, MaxOmegaDegreesPerSecond);
             return;
         }
@@ -52,6 +52,7 @@ public class CenterFiducialWithHeading extends CommandBase {
         double targetX = Limelight.get().getTargetX();
         if (!Double.isNaN(targetX)) {
             yMetersPerSecond = -strafeController.calculate(targetX, 0);
+            yMetersPerSecond += Cat5Utils.getSign(yMetersPerSecond) * FeedforwardMetersPerSecond;
             yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -MaxStrafeMetersPerSecond, MaxStrafeMetersPerSecond);
         }
         else {

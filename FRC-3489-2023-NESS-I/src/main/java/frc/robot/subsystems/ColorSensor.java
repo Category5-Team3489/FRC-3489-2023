@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.util.Color;
@@ -118,6 +119,10 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
         // return detectedGamePiece;
         if (oof.get()) { // color sensor inverted, not triggered here
             return GamePiece.Unknown;
+        }
+
+        if (DriverStation.isAutonomousEnabled()) {
+            return GamePiece.Cone;
         }
 
         GamePiece piece = Leds.get().getIndicatedGamePiece();

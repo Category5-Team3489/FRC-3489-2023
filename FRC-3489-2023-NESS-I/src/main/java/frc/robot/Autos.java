@@ -3,9 +3,11 @@ package frc.robot;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.CenterFiducialWithHeading;
 import frc.robot.commands.drivetrain.DrivePercentAngleSeconds;
 import frc.robot.commands.drivetrain.DriveRelativeMeters;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -126,6 +128,63 @@ public class Autos {
 
     private Command getTeamUmizoomiAutoCommand() {
         return sequence(
+            // Bump
+            new DrivePercentAngleSeconds(-0.4, 0, 0.125),
+            new DrivePercentAngleSeconds(0.4, 0, 0.125),
+            // Drive away from wall to clear
+            new DrivePercentAngleSeconds(0.12, 0, 1),
+            // Flip towards april tag
+            runEnd(() -> {
+                // run
+                Drivetrain.get().driveFieldRelative(0, 0, 1.0, Rotation2d.fromDegrees(180), 0, null);
+            },
+            () -> {
+                // end
+                Drivetrain.get().brakeTranslation();
+            }, Drivetrain.get())
+                .withTimeout(1.5),
+            // center april tag and move away from wall
+            new CenterFiducialWithHeading(0.6, 8),
+            // Face opposing alliance
+            runEnd(() -> {
+                // run
+                Drivetrain.get().driveFieldRelative(0, 0, 1.0, Rotation2d.fromDegrees(0), 0, null);
+            },
+            () -> {
+                // end
+                Drivetrain.get().brakeTranslation();
+            }, Drivetrain.get())
+                .withTimeout(1.5),
+            // Begin pickup
+            runOnce(() -> {
+                RobotActions.get().schedulePickupCommand();
+            }),
+            // Drive and pickup
+            runEnd(() -> {
+                // run
+                Drivetrain.get().driveFieldRelative(0.5, 0, 1.0, Rotation2d.fromDegrees(0), 0, null);
+            },
+            () -> {
+                // end
+                Drivetrain.get().brakeTranslation();
+            }, Drivetrain.get())
+                .withTimeout(1.5),
+            // Carry
+            runOnce(() -> {
+                RobotActions.get().scheduleCarryCommand();
+            }),
+            // Face wall
+            runEnd(() -> {
+                // run
+                Drivetrain.get().driveFieldRelative(0, 0, 1.0, Rotation2d.fromDegrees(180), 0, null);
+            },
+            () -> {
+                // end
+                Drivetrain.get().brakeTranslation();
+            }, Drivetrain.get())
+                .withTimeout(1.5),
+            new CenterFiducialWithHeading(0.5, 1),
+
             completed()
         );
     }
