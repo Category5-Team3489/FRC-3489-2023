@@ -128,9 +128,9 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
             GamePiece detectedGamePiece = GamePiece.Unknown;
 
-            if (!isColorSensorDisabled.getAsBoolean()) {
-                detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
-            }
+            // if (!isColorSensorDisabled.getAsBoolean()) {
+            detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
+            // }
 
             if (detectedGamePiece == GamePiece.Unknown) {
                 if (IsConeReintakingEnabled) {
