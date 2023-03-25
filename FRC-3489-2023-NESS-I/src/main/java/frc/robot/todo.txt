@@ -1,9 +1,5 @@
 At Comp:
-Lower arm height slightly at human player station
-When moving arm to human player station height, put wrist in pickup position
 Slow Intake Speed
-
-Delay wrist movement for low, mid, high, human player
 
 
 
@@ -12,6 +8,7 @@ Bugs:
 Gyro is ignored when color sensor is broken??!?!?!??
 
 Perhaps:
+Lower arm height slightly at human player station
 Limit switch instead of color sensor
     Use game piece indicator on manipulator stick to detect game piece type
 No arm correction, just move wrist instead
