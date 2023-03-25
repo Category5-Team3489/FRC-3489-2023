@@ -111,7 +111,11 @@ public class ColorSensor extends Cat5Subsystem<ColorSensor> {
     DigitalInput oof = new DigitalInput(2);
 
     public int getProximity() {
-        return proximity;
+        if (!oof.get()) {
+            return 2047;
+        }
+        return 0;
+        // return proximity;
     }
 
     public GamePiece getDetectedGamePiece() {

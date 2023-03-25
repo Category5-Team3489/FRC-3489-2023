@@ -81,8 +81,8 @@ public final class Constants {
     }
 
     public static class GripperConstants {
-        public static final boolean IsConeReintakingEnabled = false;
-        public static final boolean IsCubeReintakingEnabled = false;
+        public static final boolean IsConeReintakingEnabled = true;
+        public static final boolean IsCubeReintakingEnabled = true;
         public static final int ReintakeConeProximityThreshold = 400; // 90
         public static final int ReintakeCubeProximityThreshold = 150; // 200
         public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
