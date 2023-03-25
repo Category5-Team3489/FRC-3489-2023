@@ -25,7 +25,9 @@ public class Autos {
         addAuto("Balance", () -> getBalanceAutoCommand());
         addAuto("BumpBalance", () -> getBumpBalanceAutoCommand());
         addAuto("Nothing", () -> getNothingAutoCommand());
-        addAuto("DriveRelMeters", () -> getDriveRelMetersCommand());
+        addAuto("DriveRelMeters", () -> getDriveRelMetersAutoCommand());
+        addAuto("TeamUmizoomi", () -> getTeamUmizoomiAutoCommand());
+
         
         Cat5ShuffleboardTab.Auto.get().add(autoChooser);
     }
@@ -115,9 +117,15 @@ public class Autos {
         );
     }
 
-    private Command getDriveRelMetersCommand() {
+    private Command getDriveRelMetersAutoCommand() {
         return sequence(
             new DriveRelativeMeters(1, 0, 0, 0.25, 0.05),
+            completed()
+        );
+    }
+
+    private Command getTeamUmizoomiAutoCommand() {
+        return sequence(
             completed()
         );
     }
