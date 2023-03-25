@@ -12,6 +12,7 @@ import frc.robot.commands.drivetrain.DrivePercentAngleSeconds;
 import frc.robot.commands.drivetrain.DriveRelativeMeters;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Gripper;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -145,6 +146,10 @@ public class Autos {
                 .withTimeout(1.5),
             // center april tag and move away from wall
             new CenterFiducialWithHeading(0.6, 8),
+            // Begin pickup
+            runOnce(() -> {
+                RobotActions.get().schedulePickupCommand();
+            }),
             // Face opposing alliance
             runEnd(() -> {
                 // run
@@ -155,10 +160,6 @@ public class Autos {
                 Drivetrain.get().brakeTranslation();
             }, Drivetrain.get())
                 .withTimeout(1.5),
-            // Begin pickup
-            runOnce(() -> {
-                RobotActions.get().schedulePickupCommand();
-            }),
             // Drive and pickup
             runEnd(() -> {
                 // run
@@ -172,6 +173,7 @@ public class Autos {
             // Carry
             runOnce(() -> {
                 RobotActions.get().scheduleCarryCommand();
+                Gripper.get().scheduleStopCommand();
             }),
             // Face wall
             runEnd(() -> {
@@ -183,8 +185,14 @@ public class Autos {
                 Drivetrain.get().brakeTranslation();
             }, Drivetrain.get())
                 .withTimeout(1.5),
-            new CenterFiducialWithHeading(0.5, 1),
-
+            new CenterFiducialWithHeading(-0.6, 5),
+            runOnce(() -> {
+                RobotActions.get().scheduleMidCommand(false);
+            }),
+            waitSeconds(3),
+            runOnce(() -> {
+                RobotActions.get().scheduleAutomationCommand();
+            }),
             completed()
         );
     }

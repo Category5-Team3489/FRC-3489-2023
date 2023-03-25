@@ -15,7 +15,7 @@ public class CenterFiducialWithHeading extends CommandBase {
     private static double MaxStrafeMetersPerSecond = 0.1;
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 1.0;
-    private static double MaxOmegaDegreesPerSecond = 180;
+    private static double MaxOmegaDegreesPerSecond = 90;
     public static double FeedforwardMetersPerSecond = 0.3;
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
