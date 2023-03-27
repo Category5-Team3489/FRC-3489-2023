@@ -1,13 +1,5 @@
-At Comp:
-Slow Intake Speed
-
-
-
-
-Bugs:
-Gyro is ignored when color sensor is broken??!?!?!??
-
 Perhaps:
+Slow Intake Speed
 Lower arm height slightly at human player station
 Limit switch instead of color sensor
     Use game piece indicator on manipulator stick to detect game piece type
@@ -43,7 +35,7 @@ Limit translation speed when arm is up
 Limit rotation speed when arm is up
 Slow down cardinal direction turning and heading keeping when arm is up
     Use arm distance from center of robot to make proportional?
-Is rototation of robot finicky?
+Is rotation of robot finicky?
 Quick press of rotation trigger all the way down does an incremental rotation
 Offset arm constant force spring with model
 
