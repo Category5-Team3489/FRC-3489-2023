@@ -9,6 +9,6 @@ public abstract class Cat5Subsystem<T extends Cat5Subsystem<?>> extends Subsyste
     @SuppressWarnings("unchecked")
     protected Cat5Subsystem(Consumer<T> initSingleton) {
         initSingleton.accept((T)this);
-        RobotContainer.registerCat5Subsystem(this);
+        RobotContainer.registerSubsystem(this);
     }
 }

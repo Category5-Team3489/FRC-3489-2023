@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,24 +13,35 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Cat5Subsystem;
 
 public class RobotContainer {
-    //#region Cat 5 Subsystems
-    private static List<Cat5Subsystem<?>> cat5Subsystems;
+    //#region Singleton
+    private static RobotContainer instance = new RobotContainer();
 
-    public static void registerCat5Subsystem(Cat5Subsystem<?> cat5Subsystem) {
-        for (Cat5Subsystem<?> subsystem : cat5Subsystems) {
-            if (subsystem.getClass().getSimpleName() == cat5Subsystem.getClass().getSimpleName()) {
-                Cat5Utils.time();
-                DriverStation.reportError("Attempted to register subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\" twice", true);
-            }
-        }
-
-        cat5Subsystems.add(cat5Subsystem);
-        Cat5Utils.time();
-        System.out.println("Registered subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\"");
+    public static RobotContainer get() {
+        return instance;
     }
     //#endregion
     
-    public RobotContainer() {
+    //#region Subsystems
+    private static List<Cat5Subsystem<?>> subsystems;
+
+    public static void registerSubsystem(Cat5Subsystem<?> newSubsystem) {
+        for (Cat5Subsystem<?> subsystem : subsystems) {
+            if (subsystem.getClass().getSimpleName() == newSubsystem.getClass().getSimpleName()) {
+                Cat5Utils.time();
+                DriverStation.reportError("Attempted to register subsystem \"" + newSubsystem.getClass().getSimpleName() + "\" twice", true);
+            }
+        }
+
+        subsystems.add(newSubsystem);
+        Cat5Utils.time();
+        System.out.println("Registered subsystem \"" + newSubsystem.getClass().getSimpleName() + "\"");
+    }
+    //#endregion
+
+    private RobotContainer() {
+        instance = this;
+        subsystems = new ArrayList<Cat5Subsystem<?>>();
+        
         configureBindings();
     }
 
