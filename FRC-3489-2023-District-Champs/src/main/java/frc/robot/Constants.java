@@ -40,6 +40,7 @@ public class Constants {
 
         public static final int LeftMotorDeviceId = 9;
         public static final int RightMotorDeviceId = 10;
+        public static final int LimitSwitchChannel = 0;
      }
     
 }
