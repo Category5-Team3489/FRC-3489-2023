@@ -29,6 +29,8 @@ public final class Constants {
     public static class DrivetrainConstants {
         public static final double PovSpeedMetersPerSecond = 0.4;
 
+        public static final double OmegaFeedforwardDegreesPerSecond = 30; // TODO DANGER
+
         public static final double XYRateLimiterPercentPerSecond = 3;
 
         public static final double HeadingAdjustmentMaxDegreesPerSecond = 45;
@@ -183,7 +185,7 @@ public final class Constants {
         public static final double MaxOutputPercent = 0.5; // 0.75
         
         public static final int MotorDeviceId = 11;
-        public static final int LimitSwitchChannel = 0;
+        public static final int LimitSwitchChannel = 1;
     }
 
     public static class LedsConstants {

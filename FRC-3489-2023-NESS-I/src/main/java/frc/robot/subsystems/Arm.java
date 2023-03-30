@@ -141,10 +141,10 @@ public class Arm extends Cat5Subsystem<Arm> {
             notifyLimitSwitchRisingEdge();
         }
 
-        if (!isHomed && limitSwitch.get() && lastLimitSwitchValue) {
-            setEncoderAngleDegrees(MinAngleDegrees);
-            isHomed = true;
-        }
+        // if (!isHomed && limitSwitch.get() && lastLimitSwitchValue) {
+        //     setEncoderAngleDegrees(MinAngleDegrees);
+        //     isHomed = true;
+        // }
 
         if (isManualControlEnabled.getAsBoolean()) {
             manualControlCommand.schedule();
@@ -273,7 +273,9 @@ public class Arm extends Cat5Subsystem<Arm> {
             case None:
 				break;
             case ForceHome:
-                isHomed = false;
+                if (!limitSwitch.get()) {
+                    isHomed = false;
+                }
                 setTargetAngleDegrees(GridPosition.Low, MinAngleDegrees, IdleMode.kCoast);
 				break;
             case Home:

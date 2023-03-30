@@ -211,6 +211,9 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
         double omegaRadiansPerSecond = 0;
         if (!omegaController.atSetpoint()) {
+             // TODO DANGER
+            // outputDegreesPerSecond += Cat5Utils.getSign(outputDegreesPerSecond) * OmegaFeedforwardDegreesPerSecond;
+
             omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
         }
 
