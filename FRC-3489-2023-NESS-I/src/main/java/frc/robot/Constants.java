@@ -144,11 +144,11 @@ public final class Constants {
     public static class ArmConstants {
         public static final double CorrectionMaxDegreesPerSecond = 25; // 0.5
     
-        public static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (44.0 / 12.0); // (100.0 / 1.0) * (44.0 / 12.0)
+        public static final double MotorRevolutionsPerRevolution = 64.0 * (64.0 / 12.0); // (100.0 / 1.0) * (44.0 / 12.0)
         public static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
         public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
-        public static final double MinAngleDegrees = -114; // -111
+        public static final double MinAngleDegrees = -114;
         public static final double MaxAngleDegrees = 37.0;
 
         public static final double ManualControlMinAngleDegrees = -100;

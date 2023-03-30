@@ -31,7 +31,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(RightMotorDeviceId);
 
     // Suppliers
-    private final BooleanSupplier isColorSensorDisabled;
+    private final BooleanSupplier isLimitSwitchDisabled;
 
     // Commands
     private final CommandBase stopCommand = getStopCommand();
@@ -65,10 +65,10 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         layout.addString("Held Game Piece", () -> heldGamePiece.toString());
         layout.addBoolean("Can Reintake Again", () -> canReintakeAgain);
 
-        var isColorSensorDisabledEntry = layout.add("Disable Color Sensor", false)
+        var isLimitSwitchDisabledEntry = layout.add("Disable Limit Switch", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .getEntry();
-        isColorSensorDisabled = () -> isColorSensorDisabledEntry.getBoolean(false);
+        isLimitSwitchDisabled = () -> isLimitSwitchDisabledEntry.getBoolean(false);
 
         if (Constants.IsDebugShuffleboardEnabled) {
             layout.addDouble("Motor (%)", () -> motorPercent);
@@ -128,9 +128,9 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
             GamePiece detectedGamePiece = GamePiece.Unknown;
 
-            // if (!isColorSensorDisabled.getAsBoolean()) {
-            detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
-            // }
+            if (!isLimitSwitchDisabled.getAsBoolean()) {
+                detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
+            }
 
             if (detectedGamePiece == GamePiece.Unknown) {
                 if (IsConeReintakingEnabled) {
