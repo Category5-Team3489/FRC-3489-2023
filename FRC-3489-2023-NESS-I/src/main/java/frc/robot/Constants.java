@@ -179,10 +179,10 @@ public final class Constants {
         public static final double ResistStaticFrictionPercent = 0;
 
         public static final int StallSmartCurrentLimitAmps = 30;
-        public static final double ClosedLoopSecondsToFull = 0.1;
+        public static final double ClosedLoopSecondsToFull = 0.2; // 0.1
         public static final double ProportionalGainPercentPerRevolutionOfError = 0.1; // 0.025
         public static final double MinOutputPercent = -0.5;
-        public static final double MaxOutputPercent = 0.5; // 0.75
+        public static final double MaxOutputPercent = 0.8; // 0.75
         
         public static final int MotorDeviceId = 11;
         public static final int LimitSwitchChannel = 1;

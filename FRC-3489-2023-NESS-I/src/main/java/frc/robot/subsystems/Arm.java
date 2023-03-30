@@ -268,6 +268,12 @@ public class Arm extends Cat5Subsystem<Arm> {
         activeCommand = command;
 
         GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+
+        if ((lastCommand == ArmCommand.Home || lastCommand == ArmCommand.ForceHome) && (activeCommand != ArmCommand.Home && activeCommand != ArmCommand.ForceHome)) {
+            //if (heldGamePiece != GamePiece.Unknown) {
+                Gripper.get().fightFloorFrictionCommand.schedule();
+            //}
+        }
         
         switch (command) {
             case None:

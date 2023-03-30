@@ -45,6 +45,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private final CommandBase lowOuttakeUnknownCommand = getOuttakeCommand("Low Outtake Unknown", LowOuttakeUnknownPercent, LowOuttakeUnknownSeconds);
     private final CommandBase midOuttakeUnknownCommand = getOuttakeCommand("Mid Outtake Unknown", MidOuttakeUnknownPercent, MidOuttakeUnknownSeconds);
     private final CommandBase highOuttakeUnknownCommand = getOuttakeCommand("High Outtake Unknown", HighOuttakeUnknownPercent, HighOuttakeUnknownSeconds);
+    public final CommandBase fightFloorFrictionCommand = getOuttakeCommand("Fight Floor Friction", -0.2, 0.5);
 
     // State
     private GamePiece heldGamePiece = GamePiece.Unknown;

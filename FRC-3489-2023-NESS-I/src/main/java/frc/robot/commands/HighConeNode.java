@@ -21,6 +21,7 @@ public class HighConeNode extends CommandBase {
     private static double TargetXSetpointDegrees = -3.857;
     private static double WallSpeedMetersPerSecond = -0.5;
     private static double WallTimeoutSeconds = 2;
+    public static double FeedforwardMetersPerSecond = 0.1;
 
     private Timer wallTimer = new Timer();
 
@@ -56,6 +57,7 @@ public class HighConeNode extends CommandBase {
         double targetX = Limelight.get().getTargetX();
         if (!Double.isNaN(targetX)) {
             yMetersPerSecond = -strafeController.calculate(targetX, TargetXSetpointDegrees);
+            yMetersPerSecond = Cat5Utils.getSign(yMetersPerSecond) * FeedforwardMetersPerSecond;
             yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -MaxStrafeMetersPerSecond, MaxStrafeMetersPerSecond);
         }
         else {
