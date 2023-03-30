@@ -3,9 +3,11 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.util.Color;
 
 public class Cat5Utils {
+    public static final Random Rng = new Random();
+    public static final DataLog Log = DataLogManager.getLog();
+
     public static void time() {
         System.out.print("[" + ((int)(Timer.getMatchTime() * 100)) / 100.0 + "s] [" + ((int)(Timer.getFPGATimestamp() * 100)) / 100.0 + "s]: ");
     }
@@ -36,14 +38,6 @@ public class Cat5Utils {
             return -1;
         }
         return 1;
-    }
-    
-    public static Color hexToColor(String hex) {
-        return new Color(
-            Integer.valueOf(hex.substring(1, 3), 16),
-            Integer.valueOf(hex.substring(3, 5), 16),
-            Integer.valueOf(hex.substring(5, 7), 16)
-        );
     }
 
     public static double wrapAngle(double angleRadians) {

@@ -54,10 +54,6 @@ public class RobotContainer {
         System.out.println("Registered subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\"");
     }
     //#endregion
-    
-    // Try out DataLogManager
-    // https://docs.wpilib.org/en/stable/docs/software/telemetry/datalog.html
-    // Combine with shuffleboard logging stuff?
 
     private RobotContainer() {
         instance = this;
@@ -77,7 +73,7 @@ public class RobotContainer {
 
         Leds.get();
 
-        RobotActions.get();
+        Cat5Actions.get();
 
         configureBindings();
     }
@@ -87,7 +83,7 @@ public class RobotContainer {
         Man.button(AutomateManButton)
             .debounce(ManButtonDebounceSeconds, DebounceType.kBoth)
             .onTrue(runOnce(() -> {
-                RobotActions.get().scheduleAutomationCommand();
+                Cat5Actions.get().scheduleAutomationCommand();
             }));
         //#endregion
 
@@ -174,33 +170,33 @@ public class RobotContainer {
 
         Man.button(HomeManButton)
             .onTrue(runOnce(() -> {
-                RobotActions.get().scheduleCarryCommand();
+                Cat5Actions.get().scheduleCarryCommand();
             }));
 
         Man.button(FloorManButton)
             .onTrue(runOnce(() -> {
-                RobotActions.get().schedulePickupCommand();
+                Cat5Actions.get().schedulePickupCommand();
             }));
 
         Man.button(LowManButton)
             .onTrue(runOnce(() -> {
-                RobotActions.get().scheduleLowCommand();
+                Cat5Actions.get().scheduleLowCommand();
             }));
 
         Man.button(MidManButton)
             .debounce(0.1, DebounceType.kBoth)
             .onTrue(runOnce(() -> {
-                RobotActions.get().scheduleMidCommand(true);
+                Cat5Actions.get().scheduleMidCommand(true);
             }));
 
         Man.button(HighManButton)
             .onTrue(runOnce(() -> {
-                RobotActions.get().scheduleHighCommand();
+                Cat5Actions.get().scheduleHighCommand();
             }));
 
         Man.button(DoubleSubstationManButton)
             .onTrue(runOnce(() -> {
-                RobotActions.get().scheduleDoubleSubstationCommand();
+                Cat5Actions.get().scheduleDoubleSubstationCommand();
             }));
 
         Man.button(WristPickupManButton)

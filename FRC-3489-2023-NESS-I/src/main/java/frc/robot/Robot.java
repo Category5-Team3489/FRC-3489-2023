@@ -12,13 +12,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
+    private Cat5Autos autos;
     private Command autonomousCommand;
-
-    private Autos autos;
 
     @Override
     public void robotInit() {
-        //#region Config
         DriverStation.silenceJoystickConnectionWarning(isSimulation());
 
         for (int port = 5800; port <= 5805; port++) {
@@ -27,10 +25,9 @@ public class Robot extends TimedRobot {
 
         LiveWindow.setEnabled(false);
         LiveWindow.disableAllTelemetry();
-        //#endregion
 
         RobotContainer.get();
-        autos = new Autos();
+        autos = new Cat5Autos();
     }
 
     @Override

@@ -13,13 +13,13 @@ import frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-public class Autos {
+public class Cat5Autos {
+    // State
     private final HashMap<String, Supplier<Command>> autos = new HashMap<String, Supplier<Command>>();
     private final SendableChooser<String> autoChooser = new SendableChooser<String>();
-    private int i = 0;
     private String currentAuto = "";
 
-    public Autos() {
+    public Cat5Autos() {
         addAuto("Taxi", () -> getTaxiAutoCommand());
         addAuto("TaxiFar", () -> getTaxiFarAutoCommand());
         addAuto("Balance", () -> getBalanceAutoCommand());
@@ -28,21 +28,19 @@ public class Autos {
         addAuto("DriveRelMeters", () -> getDriveRelMetersAutoCommand());
         addAuto("TeamUmizoomi", () -> getTeamUmizoomiAutoCommand());
 
-        
+    
         Cat5ShuffleboardTab.Auto.get().add(autoChooser);
     }
 
     private void addAuto(String name, Supplier<Command> auto) {
         autos.put(name, auto);
 
-        if (i == 0) {
+        if (autos.size() == 1) {
             autoChooser.setDefaultOption(name, name);
         }
         else {
             autoChooser.addOption(name, name);
         }
-
-        i++;
     }
 
     private Command completed() {

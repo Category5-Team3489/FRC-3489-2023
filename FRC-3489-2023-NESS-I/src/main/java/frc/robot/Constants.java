@@ -76,10 +76,6 @@ public final class Constants {
         public static final int BackRightEncoderDeviceId = 23;
     }
 
-    public static class ColorSensorConstants {
-        public static final double WarningIntervalSeconds = 4.0;
-    }
-
     public static class GripperConstants {
         public static final boolean IsConeReintakingEnabled = true;
         public static final boolean IsCubeReintakingEnabled = true;

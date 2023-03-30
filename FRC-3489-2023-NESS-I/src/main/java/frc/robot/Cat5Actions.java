@@ -12,16 +12,16 @@ import frc.robot.subsystems.Wrist;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-public class RobotActions {
+public class Cat5Actions {
     //#region Singleton
-    private static RobotActions instance = new RobotActions();
+    private static Cat5Actions instance = new Cat5Actions();
 
-    public static RobotActions get() {
+    public static Cat5Actions get() {
         return instance;
     }
     //#endregion
 
-    private RobotActions() {
+    private Cat5Actions() {
         instance = this;
     }
 
