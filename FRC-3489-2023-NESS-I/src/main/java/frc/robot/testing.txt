@@ -1,28 +1,11 @@
 Before saturday:
 Copy over new auto code from comp
 
-// 15
-Update wpilib
-
-// 5
-SAVE LIMELIGHT PIPELINES
-Update limelight firmware
-
-// 10
-Test new arm homing, does it break anything?
-
-// 5
-Test arm positions, intaking game piece, driving
-
 // 10
 Determine drivetrain method parameter polarity
 
 // 20
 Tune gripper, arm and gripper angle, floor pickup testing
-
-// 10
-Arm speed tuning, up and down
-Arm ramp rate tuning, can it go slower, 0.1 -> 0.2 before, any higher?
 
 // 10
 Carry position - pickup position transition
@@ -49,3 +32,11 @@ Verify existing autos
 
 // alot
 start working on new auto
+
+// 10
+fix human player station pickup arm angle
+
+
+// 10
+Arm speed tuning, up and down
+Arm ramp rate tuning, can it go slower, 0.1 -> 0.2 before, any higher?

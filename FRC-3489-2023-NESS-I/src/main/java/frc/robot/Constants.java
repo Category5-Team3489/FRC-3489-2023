@@ -83,8 +83,8 @@ public final class Constants {
         public static final boolean IsCubeReintakingEnabled = true;
         public static final int ReintakeConeProximityThreshold = 400; // 90
         public static final int ReintakeCubeProximityThreshold = 150; // 200
-        public static final double ReintakeAntiConeEatTimeout = 0.75; // 0.5
-        public static final double ReintakeAntiCubeEatTimeout = 0.75;
+        public static final double ReintakeAntiConeEatTimeout = 1.75; // 0.75
+        public static final double ReintakeAntiCubeEatTimeout = 1.75; // 0.75
 
         public static final double IntakePercent = -0.5;
 
@@ -168,11 +168,11 @@ public final class Constants {
 
         public static final double MidConeAngleDegrees = 14; // 11
         public static final double ScoreMidConeAngleDegrees = -10; // -4
-        public static final double MidCubeAngleDegrees = 11;
+        public static final double MidCubeAngleDegrees = -4.5; // 11
         public static final double MidUnknownAngleDegrees = (MidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
         public static final double HighConeAngleDegrees = 27; // 36
-        public static final double HighCubeAngleDegrees = 25;
+        public static final double HighCubeAngleDegrees = 17; //22
         public static final double HighUnknownAngleDegrees = (HighConeAngleDegrees + HighCubeAngleDegrees) / 2.0;
 
         public static final double HomingPercent = -0.40; // -0.15

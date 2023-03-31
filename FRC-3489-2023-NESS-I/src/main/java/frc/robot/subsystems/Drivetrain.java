@@ -178,7 +178,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         setBackRightPercentAngle(0, Math.toRadians(45));
     }
 
-    // angleDegrees: 0 - forward, // TODO Check if increase in angle is CCW
+    // percent: postive forward, angleDegrees zero forward, 90 
     public void drivePercentAngle(double percent, double angleDegrees) {
         double angleRadians = Math.toRadians(angleDegrees);
         setFrontLeftPercentAngle(percent, angleRadians);

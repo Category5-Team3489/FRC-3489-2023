@@ -21,7 +21,7 @@ public class Robot extends TimedRobot {
 
         for (int port = 5800; port <= 5805; port++) {
             PortForwarder.add(port, "limelight.local", port);
-            // TODO Want to try 10.34.89.11 ip?
+            PortForwarder.add(port, "10.34.89.11", port);
         }
 
         LiveWindow.setEnabled(false);

@@ -123,6 +123,9 @@ public class Cat5Autos {
 
     private Command getTeamUmizoomiAutoCommand() {
         return sequence(
+            run(() -> {
+                Drivetrain.get().drivePercentAngle(0.2, 90);
+            }, Drivetrain.get()),
             completed()
         );
     }

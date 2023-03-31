@@ -106,13 +106,13 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
             if (DriverStation.isEnabled() && canReintakeAgain) {
                 if (IsConeReintakingEnabled) {
-                    if (heldGamePiece == GamePiece.Cone && !limitSwitch.get()) {
+                    if (heldGamePiece == GamePiece.Cone && limitSwitch.get()) {
                         intakeCommand.schedule();
                         reintakeAntiEatTimer.restart();
                     }
                 }
                 if (IsCubeReintakingEnabled) {
-                    if (heldGamePiece == GamePiece.Cube && !limitSwitch.get()) {
+                    if (heldGamePiece == GamePiece.Cube && limitSwitch.get()) {
                         intakeCommand.schedule();
                         reintakeAntiEatTimer.restart();
                     }

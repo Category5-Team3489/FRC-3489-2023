@@ -2,33 +2,38 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Cat5Utils;
 import frc.robot.enums.LimelightPipeline;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
-public class HighConeNode extends CommandBase {
-    private static double ProportionalGain = 0.05; // 0.25, 0.3,0.2, 0.1 too fast
-    private static double MaxStrafeMetersPerSecond = 0.75; // 0.5, // TODO Revert back to 0.5???
-    private static double MaxDistanceMetersPerSecond = 1; // 0.75
-    private static double StrafeToleranceDegrees = 0.2; // 0.5, 0.25
-    private static double DistanceToleranceDegrees = 0.2; // 0.5, 0.25
+public class HighConeNodeE extends CommandBase {
+    private static double ProportionalGain = 0.18;
+    private static double MaxStrafeMetersPerSecond = 0.75;
+    private static double StrafeToleranceDegrees = 1;
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
-    private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -4.26;
-    private static double TargetYSetpointDegrees = 20.66;
-    public static double FeedforwardMetersPerSecond = 0.15; // 0.1
+    private static double MaxOmegaDegreesPerSecond = 180; // 90
+    private static double TargetXSetpointDegrees = -3.857;
+    private static double WallSpeedMetersPerSecond = -0.5;
+    private static double WallTimeoutSeconds = 2;
+    public static double FeedforwardMetersPerSecond = 0.25; // 0.1
+
+    private Timer wallTimer = new Timer();
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
-    private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
+    private SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(5);
 
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
-    
-    public HighConeNode() {
+
+    private boolean hasHitStrafeSetpoint = false;
+
+    public HighConeNodeE() {
         addRequirements(Drivetrain.get());
     }
 
@@ -37,7 +42,6 @@ public class HighConeNode extends CommandBase {
         Limelight.get().setDesiredPipeline(LimelightPipeline.HighRetroreflective);
 
         strafeController.setTolerance(StrafeToleranceDegrees);
-        distanceController.setTolerance(DistanceToleranceDegrees);
 
         Cat5Utils.time();
         System.out.println(getName() + " init");
@@ -53,21 +57,21 @@ public class HighConeNode extends CommandBase {
         double targetX = Limelight.get().getTargetX();
         if (!Double.isNaN(targetX)) {
             yMetersPerSecond = -strafeController.calculate(targetX, TargetXSetpointDegrees);
-            yMetersPerSecond += Cat5Utils.getSign(yMetersPerSecond) * FeedforwardMetersPerSecond;
+            yMetersPerSecond = Cat5Utils.getSign(yMetersPerSecond) * FeedforwardMetersPerSecond;
             yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -MaxStrafeMetersPerSecond, MaxStrafeMetersPerSecond);
         }
         else {
             yMetersPerSecond = 0;
         }
 
-        double targetY = Limelight.get().getTargetY();
-        if (!Double.isNaN(targetY)) {
-            xMetersPerSecond = -distanceController.calculate(targetY, TargetYSetpointDegrees);
-            xMetersPerSecond += Cat5Utils.getSign(xMetersPerSecond) * FeedforwardMetersPerSecond;
-            xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -MaxDistanceMetersPerSecond, MaxDistanceMetersPerSecond);
+        if (strafeController.atSetpoint() && !hasHitStrafeSetpoint) {
+            hasHitStrafeSetpoint = true;
+
+            wallTimer.restart();
         }
-        else {
-            xMetersPerSecond = 0;
+
+        if (hasHitStrafeSetpoint) {
+            xMetersPerSecond = distanceRateLimiter.calculate(WallSpeedMetersPerSecond);
         }
 
         Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, SpeedLimiter, TargetAngle, 0, MaxOmegaDegreesPerSecond);
@@ -75,7 +79,7 @@ public class HighConeNode extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return strafeController.atSetpoint() && distanceController.atSetpoint();
+        return wallTimer.hasElapsed(WallTimeoutSeconds);
     }
 
     @Override
