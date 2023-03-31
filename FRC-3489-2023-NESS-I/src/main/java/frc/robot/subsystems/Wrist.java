@@ -24,7 +24,7 @@ public class Wrist extends Cat5Subsystem<Wrist> {
     //#endregion
     
     // Devices
-    private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless); // Negative up
+    private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless); // Negative up, positive down
     private final SparkMaxPIDController pidController;
     private final RelativeEncoder encoder;
     
@@ -57,9 +57,9 @@ public class Wrist extends Cat5Subsystem<Wrist> {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
 
-        layout.addDouble("Encoder (rotations)", () -> encoder.getPosition());
         layout.addString("State", () -> state.toString());
-        layout.addDouble("State (rotations)", () -> state.getRotations());
+        layout.addDouble("Target (rotations)", () -> state.getRotations());
+        layout.addDouble("Encoder (rotations)", () -> encoder.getPosition());
         //#endregion
     }
 

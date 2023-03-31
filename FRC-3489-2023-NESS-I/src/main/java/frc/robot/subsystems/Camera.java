@@ -40,7 +40,7 @@ public class Camera extends Cat5Subsystem<Camera> {
         }
         catch (Exception e) {
             Cat5Utils.time();
-            DriverStation.reportWarning("Camera not initialized", false);
+            DriverStation.reportWarning("Camera had trouble initializing", false);
         }
     }
 }

@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -29,6 +30,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     // Devices
     private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(LeftMotorDeviceId);
     private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(RightMotorDeviceId);
+    private final DigitalInput limitSwitch = new DigitalInput(LimitSwitchChannel);
 
     // Suppliers
     private final BooleanSupplier isLimitSwitchDisabled;
@@ -45,7 +47,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     private final CommandBase lowOuttakeUnknownCommand = getOuttakeCommand("Low Outtake Unknown", LowOuttakeUnknownPercent, LowOuttakeUnknownSeconds);
     private final CommandBase midOuttakeUnknownCommand = getOuttakeCommand("Mid Outtake Unknown", MidOuttakeUnknownPercent, MidOuttakeUnknownSeconds);
     private final CommandBase highOuttakeUnknownCommand = getOuttakeCommand("High Outtake Unknown", HighOuttakeUnknownPercent, HighOuttakeUnknownSeconds);
-    public final CommandBase fightFloorFrictionCommand = getOuttakeCommand("Fight Floor Friction", -0.2, 0.5);
+    private final CommandBase unstowPieceCommand = getOuttakeCommand("Unstow Piece", -0.2, 0.5);
 
     // State
     private GamePiece heldGamePiece = GamePiece.Unknown;
@@ -65,6 +67,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         layout.add("Subsystem Info", this);
         layout.addString("Held Game Piece", () -> heldGamePiece.toString());
         layout.addBoolean("Can Reintake Again", () -> canReintakeAgain);
+        layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 
         var isLimitSwitchDisabledEntry = layout.add("Disable Limit Switch", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
@@ -102,15 +105,14 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             setMotors(0);
 
             if (DriverStation.isEnabled() && canReintakeAgain) {
-                int proximity = ColorSensor.get().getProximity();
                 if (IsConeReintakingEnabled) {
-                    if (heldGamePiece == GamePiece.Cone && proximity < ReintakeConeProximityThreshold) {
+                    if (heldGamePiece == GamePiece.Cone && !limitSwitch.get()) {
                         intakeCommand.schedule();
                         reintakeAntiEatTimer.restart();
                     }
                 }
                 if (IsCubeReintakingEnabled) {
-                    if (heldGamePiece == GamePiece.Cube && proximity < ReintakeCubeProximityThreshold) {
+                    if (heldGamePiece == GamePiece.Cube && !limitSwitch.get()) {
                         intakeCommand.schedule();
                         reintakeAntiEatTimer.restart();
                     }
@@ -130,7 +132,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             GamePiece detectedGamePiece = GamePiece.Unknown;
 
             if (!isLimitSwitchDisabled.getAsBoolean()) {
-                detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
+                detectedGamePiece = getDetectedGamePiece();
             }
 
             if (detectedGamePiece == GamePiece.Unknown) {
@@ -169,12 +171,31 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     //#endregion
 
     //#region Public
+    public GamePiece getDetectedGamePiece() {
+        if (limitSwitch.get()) {
+            return GamePiece.Unknown;
+        }
+
+        GamePiece indicated = Leds.get().getIndicatedGamePiece();
+
+        // Default to cone
+        if (indicated == GamePiece.Unknown) {
+            indicated = GamePiece.Cone;
+        }
+
+        return indicated;
+    }
+
     public GamePiece getHeldGamePiece() {
         return heldGamePiece;
     }
 
     public void setHeldGamePiece(GamePiece heldGamePiece) {
         this.heldGamePiece = heldGamePiece;
+    }
+
+    public void scheduleUnstowPieceCommand() {
+        unstowPieceCommand.schedule();
     }
 
     public void scheduleStopCommand() {

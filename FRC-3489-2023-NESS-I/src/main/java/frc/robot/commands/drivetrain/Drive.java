@@ -3,7 +3,7 @@ package frc.robot.commands.drivetrain;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Inputs;
+import frc.robot.Cat5Inputs;
 import frc.robot.Robot;
 import frc.robot.subsystems.Drivetrain;
 
@@ -31,9 +31,9 @@ public class Drive extends CommandBase {
         double maxVelocityMetersPerSecond = Drivetrain.get().maxVelocityConfig.getMaxVelocityMetersPerSecond();
         double maxAngularVelocityRadiansPerSecond = Drivetrain.get().maxVelocityConfig.getMaxAngularVelocityRadiansPerSecond();
 
-        double speedLimiter = Inputs.getDriveSpeedLimiterPercent();
+        double speedLimiter = Cat5Inputs.getDriveSpeedLimiterPercent();
 
-        double xPercent = Inputs.getDriveXPercent();
+        double xPercent = Cat5Inputs.getDriveXPercent();
         if (speedLimiter == 1.0) {
             xPercent = xRateLimiter.calculate(xPercent);
         }
@@ -42,7 +42,7 @@ public class Drive extends CommandBase {
         }
         double xMetersPerSecond = xPercent * maxVelocityMetersPerSecond;
 
-        double yPercent = Inputs.getDriveYPercent();
+        double yPercent = Cat5Inputs.getDriveYPercent();
         if (speedLimiter == 1.0) {
             yPercent = yRateLimiter.calculate(yPercent);
         }
@@ -52,7 +52,7 @@ public class Drive extends CommandBase {
         double yMetersPerSecond = yPercent * maxVelocityMetersPerSecond;
 
         if (xMetersPerSecond == 0 && yMetersPerSecond == 0) {
-            int pov = Inputs.getDrivePovAngle();
+            int pov = Cat5Inputs.getDrivePovAngle();
             if (pov != -1) {
                 pov += 90;
 
@@ -64,12 +64,12 @@ public class Drive extends CommandBase {
             }
         }
 
-        double omegaPercent = Inputs.getDriveOmegaPercent();
+        double omegaPercent = Cat5Inputs.getDriveOmegaPercent();
         double omegaRadiansPerSecond = omegaPercent * maxAngularVelocityRadiansPerSecond;
 
         if (omegaRadiansPerSecond == 0) {
-            double leftHeadingAdjustmentPercent = Inputs.getDriveLeftHeadingAdjustmentPercent();
-            double rightHeadingAdjustmentPercent = Inputs.getDriveRightHeadingAdjustmentPercent();
+            double leftHeadingAdjustmentPercent = Cat5Inputs.getDriveLeftHeadingAdjustmentPercent();
+            double rightHeadingAdjustmentPercent = Cat5Inputs.getDriveRightHeadingAdjustmentPercent();
             double headingAdjustmentPercent = leftHeadingAdjustmentPercent - rightHeadingAdjustmentPercent;
             double headingAdjustmentDegrees = headingAdjustmentPercent * HeadingAdjustmentMaxDegreesPerSecond * Robot.kDefaultPeriod;
             Drivetrain.get().driveFieldRelative(xMetersPerSecond, yMetersPerSecond, speedLimiter, null, headingAdjustmentDegrees, null);

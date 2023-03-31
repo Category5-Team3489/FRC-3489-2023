@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants;
-import frc.robot.Inputs;
+import frc.robot.Cat5Inputs;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.LedPattern;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -74,7 +74,7 @@ public class Leds extends Cat5Subsystem<Leds> {
             cubeIndicatorCommand.cancel();
         }
         else {
-            indicatedGamePiece = Inputs.getIndicatedGamePiece();
+            indicatedGamePiece = Cat5Inputs.getIndicatedGamePiece();
 
             switch (indicatedGamePiece) {
                 case Cone:

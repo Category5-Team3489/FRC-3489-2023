@@ -18,7 +18,6 @@ import frc.robot.enums.LedPattern;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Cat5Subsystem;
-import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Leds;
@@ -27,7 +26,7 @@ import frc.robot.subsystems.NavX2;
 import frc.robot.subsystems.Wrist;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
-import static frc.robot.Inputs.*;
+import static frc.robot.Cat5Inputs.*;
 
 public class RobotContainer {
     //#region Singleton
@@ -66,7 +65,6 @@ public class RobotContainer {
         Limelight.get();
         Drivetrain.get();
 
-        ColorSensor.get();
         Gripper.get();
         Wrist.get();
         Arm.get();
@@ -90,11 +88,11 @@ public class RobotContainer {
         //#region ColorSensor and Gripper
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
-                GamePiece detectedGamePiece = ColorSensor.get().getDetectedGamePiece();
-                Gripper.get().setHeldGamePiece(detectedGamePiece);
+                GamePiece detected = Gripper.get().getDetectedGamePiece();
+                Gripper.get().setHeldGamePiece(detected);
 
                 Cat5Utils.time();
-                System.out.println("Detected game piece: \"" + detectedGamePiece.toString() + "\" on enable, set as held game piece in gripper");
+                System.out.println("Detected game piece: \"" + detected.toString() + "\" on enable, set as held game piece in gripper");
             }));
         //#endregion
 
@@ -165,6 +163,8 @@ public class RobotContainer {
         //#region Arm
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
+                Arm.get().readyToHome();
+
                 Arm.get().command(ArmCommand.ForceHome);
             }));
 

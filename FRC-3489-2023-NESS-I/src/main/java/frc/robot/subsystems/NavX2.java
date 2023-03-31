@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
@@ -19,7 +20,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
 
     // Devices
     // private final AHRS navx = new AHRS(Port.kMXP, (byte)66);
-    private final AHRS navx = new AHRS(edu.wpi.first.wpilibj.SerialPort.Port.kUSB1);
+    private final AHRS navx = new AHRS(Port.kUSB1);
 
     // Commands
     private final CommandBase zeroYawCommand = getZeroYawCommand();

@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Cat5Utils;
 import frc.robot.Constants;
-import frc.robot.Inputs;
+import frc.robot.Cat5Inputs;
 import frc.robot.commands.drivetrain.BrakeRotation;
 import frc.robot.commands.drivetrain.BrakeTranslation;
 import frc.robot.commands.drivetrain.Drive;
@@ -145,7 +145,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
             return;
         }
 
-        if (getCurrentCommand() != driveCommand && Inputs.isBeingDriven()) {
+        if (getCurrentCommand() != driveCommand && Cat5Inputs.isBeingDriven()) {
             driveCommand.schedule();
 
             Cat5Utils.time();

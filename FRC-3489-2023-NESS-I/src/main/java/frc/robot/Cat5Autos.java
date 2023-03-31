@@ -28,7 +28,6 @@ public class Cat5Autos {
         addAuto("DriveRelMeters", () -> getDriveRelMetersAutoCommand());
         addAuto("TeamUmizoomi", () -> getTeamUmizoomiAutoCommand());
 
-    
         Cat5ShuffleboardTab.Auto.get().add(autoChooser);
     }
 

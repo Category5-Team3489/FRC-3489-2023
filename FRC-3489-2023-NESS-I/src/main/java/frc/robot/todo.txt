@@ -1,16 +1,15 @@
+Priority:
+Super slow accel button
+
 Perhaps:
-Slow Intake Speed
-Lower arm height slightly at human player station
-Limit switch instead of color sensor
-    Use game piece indicator on manipulator stick to detect game piece type
-No arm correction, just move wrist instead
+Use states for arm and wrist
+Slow this everywhere motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20); // TODO Should this be done in other places or with other frames?
+History of arm commands with Stack, have max size
 Some shuffleboard abstraction for suppliers that will register them somewhere
     Semi random updates, so everything doesn't update at once
     Provide update rate in hz
-Move to carry position after picking a game piece up automatically // ISSUE WITH THIS IF AT HUMAN PLAYER STATION OR NOT FLOOR PICKUP POS
 Only allow arm to home once unless force homed?
     Only home on not homed and limit switch rising edge
-Manipulator POV for wrist control, bump up and down to go between two positions?
 
 Eventually:
 Limelight autoplacement controls led strips to indicate things
@@ -38,5 +37,13 @@ Slow down cardinal direction turning and heading keeping when arm is up
 Is rotation of robot finicky?
 Quick press of rotation trigger all the way down does an incremental rotation
 Offset arm constant force spring with model
+
+
+Idea Archive:
+Lower arm height slightly at human player station
+No arm correction, just move wrist instead
+Move to carry position after picking a game piece up automatically // ISSUE WITH THIS IF AT HUMAN PLAYER STATION OR NOT FLOOR PICKUP POS
+Manipulator POV for wrist control, bump up and down to go between two positions?
+
 
 

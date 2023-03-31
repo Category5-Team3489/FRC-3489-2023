@@ -1,28 +1,51 @@
-List:
-    Gripper/arm angle pickup tuning
-    Carry position and pickup position transition
-    PRACTICE FIELD BELOW
-    Auto placement
-    Gripper angles for placement
-    Verify existing autos
-    New auto?
+Before saturday:
+Copy over new auto code from comp
 
-Determine:
-Can slow arm ramp rate even more now
+// 15
+Update wpilib
+
+// 5
+SAVE LIMELIGHT PIPELINES
+Update limelight firmware
+
+// 10
+Test new arm homing, does it break anything?
+
+// 5
+Test arm positions, intaking game piece, driving
+
+// 10
+Determine drivetrain method parameter polarity
+
+// 20
+Tune gripper, arm and gripper angle, floor pickup testing
+
+// 10
+Arm speed tuning, up and down
+Arm ramp rate tuning, can it go slower, 0.1 -> 0.2 before, any higher?
+
+// 10
+Carry position - pickup position transition
+
+// alot
+gripper angles for placement
+auto placement
+
+// alot
+test teleop cycling, iterate with improvements
+
+// 20
+test auto new auto commands
+
+// Quick
+test out new heading keeping feature with feedforward
 
 
 
-Eventually:
-Unplug color sensor, then power on robot
-Unplug color sensor when robot is already on
-Tune heading keeping more
-Standard way of starting wrist
-    Position of wrist on frame
-    Way to rotate motor to get rid of chain slop
 
 
+// alot
+Verify existing autos
 
-
-
-
-
+// alot
+start working on new auto

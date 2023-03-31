@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.enums.GamePiece;
 
-public class Inputs {
+public class Cat5Inputs {
     // Constants
     private static final int XboxPort = 0;
     private static final int ManPort = 1;

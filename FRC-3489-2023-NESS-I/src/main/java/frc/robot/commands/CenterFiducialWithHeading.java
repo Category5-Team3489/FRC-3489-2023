@@ -73,6 +73,6 @@ public class CenterFiducialWithHeading extends CommandBase {
         Cat5Utils.time();
         System.out.println(getName() + " end");
 
-        Limelight.get().log();
+        Limelight.get().printTargetingData();
     }
 }

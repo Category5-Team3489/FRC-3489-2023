@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Cat5Utils;
 import frc.robot.Constants;
-import frc.robot.Inputs;
+import frc.robot.Cat5Inputs;
 import frc.robot.Robot;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.enums.ArmCommand;
@@ -42,7 +42,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     //#endregion
 
     // Devices
-    private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless);
+    private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless); // Negative down, positive up
     private final DigitalInput limitSwitch = new DigitalInput(LimitSwitchChannel);
     private final SparkMaxPIDController pidController;
     private final RelativeEncoder encoder;
@@ -155,7 +155,7 @@ public class Arm extends Cat5Subsystem<Arm> {
                     setTargetAngleDegrees(GridPosition.Mid, debugTargetAngleDegrees.getAsDouble(), IdleMode.kBrake);
                 }
 
-                double correctionPercent = Inputs.getArmCorrectionPercent();
+                double correctionPercent = Cat5Inputs.getArmCorrectionPercent();
                 targetAngleDegrees += correctionPercent * CorrectionMaxDegreesPerSecond * Robot.kDefaultPeriod;
                 targetAngleDegrees = MathUtil.clamp(targetAngleDegrees, MinAngleDegrees, MaxAngleDegrees);
 
@@ -239,7 +239,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     
     private CommandBase getManualControlCommand() {
         return run(() -> {
-            double percent = Inputs.getArmManualControlPercent();
+            double percent = Cat5Inputs.getArmManualControlPercent();
 
             if (percent < 0) {
                 percent = MathUtil.interpolate(0, ArmConstants.ManualControlMaxDownPercent, -percent);
@@ -270,9 +270,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
 
         if ((lastCommand == ArmCommand.Home || lastCommand == ArmCommand.ForceHome) && (activeCommand != ArmCommand.Home && activeCommand != ArmCommand.ForceHome)) {
-            //if (heldGamePiece != GamePiece.Unknown) {
-                Gripper.get().fightFloorFrictionCommand.schedule();
-            //}
+            Gripper.get().scheduleUnstowPieceCommand();
         }
         
         switch (command) {
@@ -370,15 +368,38 @@ public class Arm extends Cat5Subsystem<Arm> {
         //     return;
         // }
 
-        setEncoderAngleDegrees(MinAngleDegrees);
+        if (readyToHome || initForceHome) {
+            initForceHome = false;
+            setEncoderAngleDegrees(MinAngleDegrees);
+
+            Cat5Utils.time();
+            System.out.println("Arm limit switch rising edge, homed");
+            Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
+                .schedule();
+        }
+
+        if (readyToHome) {
+            readyToHome = false;
+
+            Commands.waitSeconds(0.5)
+                .andThen(() -> {
+                    initForceHome = true;
+
+                    command(ArmCommand.ForceHome);
+                });
+        }
+
         isHomed = true;
 
         setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kBrake);
+    }
 
-        Cat5Utils.time();
-        System.out.println("Arm limit switch rising edge, homed");
-        Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
-            .schedule();
+    private boolean initForceHome = false;
+
+    private boolean readyToHome = false;
+
+    public void readyToHome() {
+        readyToHome = true;
     }
 
     public GridPosition getGridPosition() {
