@@ -24,6 +24,7 @@ import frc.robot.commands.drivetrain.Drive;
 import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.MaxVelocityConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
+import frc.robot.enums.GridPosition;
 import frc.robot.enums.ModulePosition;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
@@ -141,6 +142,13 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
     @Override
     public void periodic() {
+        if (Arm.get().getGridPosition() == GridPosition.High || Arm.get().getGridPosition() == GridPosition.Mid) {
+            omegaController.setTolerance(OmegaToleranceDegrees * 3);
+        }
+        else {
+            omegaController.setTolerance(OmegaToleranceDegrees);
+        }
+
         if (!DriverStation.isTeleopEnabled()) {
             return;
         }
@@ -154,6 +162,10 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     }
 
     //#region Public
+    public boolean isDriveCommandActive() {
+        return getCurrentCommand().getName() == "Drive";
+    }
+
     // targetHeading: increase - CCW
     public void setTargetHeading(Rotation2d targetHeading) {
         this.targetHeading = targetHeading;
@@ -212,10 +224,10 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         double omegaRadiansPerSecond = 0;
         if (!omegaController.atSetpoint()) {
              // TODO DANGER
-            // outputDegreesPerSecond += Cat5Utils.getSign(outputDegreesPerSecond) * OmegaFeedforwardDegreesPerSecond;
-
-            omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
+            outputDegreesPerSecond += Cat5Utils.getSign(outputDegreesPerSecond) * OmegaFeedforwardDegreesPerSecond;
         }
+
+        omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
 
         driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiter, true);
     }

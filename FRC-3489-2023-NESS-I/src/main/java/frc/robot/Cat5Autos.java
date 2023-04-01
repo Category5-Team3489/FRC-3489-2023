@@ -116,18 +116,37 @@ public class Cat5Autos {
 
     private Command getDriveRelMetersAutoCommand() {
         return sequence(
-            new DriveRelativeMeters(1, 0, 0, 0.25, 0.05),
+            new DriveRelativeMeters(0, 1, 0, 0.25, 0.05),
+            new DriveRelativeMeters(0, 0, 0, 0.25, 0.05),
+            new DriveRelativeMeters(0, 1, 0, 0.25, 0.05),
+            new DriveRelativeMeters(0, 1, 0, 0.25, 0.05),
             completed()
         );
     }
 
     private Command getTeamUmizoomiAutoCommand() {
         return sequence(
-            run(() -> {
-                Drivetrain.get().drivePercentAngle(0.2, 90);
-            }, Drivetrain.get()),
+            waitSeconds(2),
+            runOnce(() -> {
+                Cat5Actions.get().scheduleMidCommand(false);
+            }),
+            waitSeconds(1),
+            print("AAAAAAAAAAAAA"),
+            runOnce(() -> {
+                Cat5Actions.get().scheduleAutomationCommand();
+            }),
+            print("BBBBBBBBBBB"),
+            waitSeconds(10),
+            print("LLLLLLLLLLLL"),
+            new DrivePercentAngleSeconds(-0.12, 0, 5),
+            // new DriveRelativeMeters(0, 5, -180, 1.0, 0.05),
+            // new DriveRelativeMeters(0, 1, 0, 1.0, 0.05),
             completed()
         );
     }
+
+    // run(() -> {
+    //     Drivetrain.get().drivePercentAngle(0.2, 90);
+    // }, Drivetrain.get()),
     //#endregion
 }

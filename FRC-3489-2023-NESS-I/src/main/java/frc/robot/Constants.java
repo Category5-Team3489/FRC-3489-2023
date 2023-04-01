@@ -29,16 +29,16 @@ public final class Constants {
     public static class DrivetrainConstants {
         public static final double PovSpeedMetersPerSecond = 0.4;
 
-        public static final double OmegaFeedforwardDegreesPerSecond = 30; // TODO DANGER
+        public static final double OmegaFeedforwardDegreesPerSecond = 35; // 30, 45, 40 fast TODO DANGER
 
         public static final double XYRateLimiterPercentPerSecond = 3;
 
         public static final double HeadingAdjustmentMaxDegreesPerSecond = 45;
 
-        public static final double OmegaProportionalGainDegreesPerSecondPerDegreeOfError = 180.0 / 30.0;
+        public static final double OmegaProportionalGainDegreesPerSecondPerDegreeOfError = 8.0; // 6.0, 7
         public static final double OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError = 0;
-        public static final double OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError = 0;
-        public static final double OmegaToleranceDegrees = 0.0;
+        public static final double OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError = 0.2; // 0.6
+        public static final double OmegaToleranceDegrees = 2.5; // 2 bad?
         public static final double OmegaMaxDegreesPerSecond = 720; // FIXME This is around 2 times the max rotation speed of the robot
 
         public static final double MaxVoltage = 12;
@@ -81,8 +81,6 @@ public final class Constants {
     public static class GripperConstants {
         public static final boolean IsConeReintakingEnabled = true;
         public static final boolean IsCubeReintakingEnabled = true;
-        public static final int ReintakeConeProximityThreshold = 400; // 90
-        public static final int ReintakeCubeProximityThreshold = 150; // 200
         public static final double ReintakeAntiConeEatTimeout = 1.75; // 0.75
         public static final double ReintakeAntiCubeEatTimeout = 1.75; // 0.75
 
