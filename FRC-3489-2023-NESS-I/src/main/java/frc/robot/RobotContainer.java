@@ -49,6 +49,7 @@ public class RobotContainer {
         }
 
         cat5Subsystems.add(cat5Subsystem);
+        
         Cat5Utils.time();
         System.out.println("Registered subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\"");
     }

@@ -49,7 +49,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
     public final SwerveModule backRightModule;
 
     // Commands
-    public final Drive driveCommand;
+    private final Drive driveCommand;
     public final BrakeTranslation brakeTranslationCommand;
     public final BrakeRotation brakeRotationCommand;
 
@@ -67,7 +67,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         setDefaultCommand(driveCommand);
 
         omegaController.enableContinuousInput(-180, 180);
-        omegaController.setTolerance(OmegaToleranceDegrees / 2.0);
+        omegaController.setTolerance(OmegaToleranceDegrees);
 
         //#region Devices
         ShuffleboardTab tab = Shuffleboard.getTab("SDS Debug");

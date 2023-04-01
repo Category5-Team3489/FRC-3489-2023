@@ -38,16 +38,16 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     // Commands
     private final CommandBase stopCommand = getStopCommand();
     private final CommandBase intakeCommand = getIntakeCommand();
-    private final CommandBase lowOuttakeConeCommand = getOuttakeCommand("Low Outtake Cone", LowOuttakeConePercent, LowOuttakeConeSeconds);
-    private final CommandBase midOuttakeConeCommand = getOuttakeCommand("Mid Outtake Cone", MidOuttakeConePercent, MidOuttakeConeSeconds);
-    private final CommandBase highOuttakeConeCommand = getOuttakeCommand("High Outtake Cone", HighOuttakeConePercent, HighOuttakeConeSeconds);
-    private final CommandBase lowOuttakeCubeCommand = getOuttakeCommand("Low Outtake Cube", LowOuttakeCubePercent, LowOuttakeCubeSeconds);
-    private final CommandBase midOuttakeCubeCommand = getOuttakeCommand("Mid Outtake Cube", MidOuttakeCubePercent, MidOuttakeCubeSeconds);
-    private final CommandBase highOuttakeCubeCommand = getOuttakeCommand("High Outtake Cube", HighOuttakeCubePercent, HighOuttakeCubeSeconds);
-    private final CommandBase lowOuttakeUnknownCommand = getOuttakeCommand("Low Outtake Unknown", LowOuttakeUnknownPercent, LowOuttakeUnknownSeconds);
-    private final CommandBase midOuttakeUnknownCommand = getOuttakeCommand("Mid Outtake Unknown", MidOuttakeUnknownPercent, MidOuttakeUnknownSeconds);
-    private final CommandBase highOuttakeUnknownCommand = getOuttakeCommand("High Outtake Unknown", HighOuttakeUnknownPercent, HighOuttakeUnknownSeconds);
-    private final CommandBase unstowPieceCommand = getOuttakeCommand("Unstow Piece", -0.2, 0.5);
+    private final CommandBase lowOuttakeConeCommand = getNamePercentSecondsCommand("Low Outtake Cone", LowOuttakeConePercent, LowOuttakeConeSeconds);
+    private final CommandBase midOuttakeConeCommand = getNamePercentSecondsCommand("Mid Outtake Cone", MidOuttakeConePercent, MidOuttakeConeSeconds);
+    private final CommandBase highOuttakeConeCommand = getNamePercentSecondsCommand("High Outtake Cone", HighOuttakeConePercent, HighOuttakeConeSeconds);
+    private final CommandBase lowOuttakeCubeCommand = getNamePercentSecondsCommand("Low Outtake Cube", LowOuttakeCubePercent, LowOuttakeCubeSeconds);
+    private final CommandBase midOuttakeCubeCommand = getNamePercentSecondsCommand("Mid Outtake Cube", MidOuttakeCubePercent, MidOuttakeCubeSeconds);
+    private final CommandBase highOuttakeCubeCommand = getNamePercentSecondsCommand("High Outtake Cube", HighOuttakeCubePercent, HighOuttakeCubeSeconds);
+    private final CommandBase lowOuttakeUnknownCommand = getNamePercentSecondsCommand("Low Outtake Unknown", LowOuttakeUnknownPercent, LowOuttakeUnknownSeconds);
+    private final CommandBase midOuttakeUnknownCommand = getNamePercentSecondsCommand("Mid Outtake Unknown", MidOuttakeUnknownPercent, MidOuttakeUnknownSeconds);
+    private final CommandBase highOuttakeUnknownCommand = getNamePercentSecondsCommand("High Outtake Unknown", HighOuttakeUnknownPercent, HighOuttakeUnknownSeconds);
+    private final CommandBase unstowPieceCommand = getNamePercentSecondsCommand("Unstow Piece", -0.2, 0.5);
 
     // State
     private GamePiece heldGamePiece = GamePiece.Unknown;
@@ -161,7 +161,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
             .withName("Intake");
     }
 
-    private CommandBase getOuttakeCommand(String name, double percent, double seconds) {
+    private CommandBase getNamePercentSecondsCommand(String name, double percent, double seconds) {
         return run(() -> {
             setMotors(percent);
         })

@@ -21,6 +21,7 @@ public class DriveRelativeMeters extends CommandBase {
     private PIDController xController = new PIDController(6, 0, 0);
     private PIDController yController = new PIDController(6, 0, 0);
 
+    // xMeters: positive forward, 
     public DriveRelativeMeters(double xMeters, double yMeters, double targetHeadingDegrees, double maxAxialSpeedMetersPerSecond, double axialToleranceMeters) {
         addRequirements(Drivetrain.get());
 
