@@ -27,6 +27,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
 
     // State
     private Rotation2d heading = new Rotation2d();
+    private Rotation2d offset = new Rotation2d();
 
     private NavX2() {
         super(i -> instance = i);
@@ -46,6 +47,8 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
     //#region Commands
     private CommandBase getZeroYawCommand() {
         return runOnce(() -> {
+            offset = new Rotation2d();
+            
             navx.zeroYaw();
 
             Drivetrain.get().resetTargetHeading();
@@ -57,13 +60,17 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
 
     //#region Public
     public Rotation2d getRotation() {
-        heading = Rotation2d.fromDegrees(360.0 - navx.getYaw());
+        heading = Rotation2d.fromDegrees(360.0 - navx.getYaw()).plus(offset);
 
         return heading;
     }
 
     public void scheduleZeroYawCommand() {
         zeroYawCommand.schedule();
+    }
+
+    public void setOffset(Rotation2d offset) {
+        this.offset = offset;
     }
     //#endregion
 }

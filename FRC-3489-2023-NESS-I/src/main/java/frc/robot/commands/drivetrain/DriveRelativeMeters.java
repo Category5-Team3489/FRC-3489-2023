@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.NavX2;
 
 public class DriveRelativeMeters extends CommandBase {
     // State
@@ -16,13 +17,14 @@ public class DriveRelativeMeters extends CommandBase {
     private final double targetHeadingDegrees;
     private final double maxAxialSpeedMetersPerSecond;
     private final double axialToleranceMeters;
+    private final double startingHeadingDegrees;
 
     private SwerveDriveOdometry odometry;
     private PIDController xController = new PIDController(6, 0, 0);
     private PIDController yController = new PIDController(6, 0, 0);
 
     // xMeters: positive forward, yMeters: positive left
-    public DriveRelativeMeters(double xMeters, double yMeters, double targetHeadingDegrees, double maxAxialSpeedMetersPerSecond, double axialToleranceMeters) {
+    public DriveRelativeMeters(double xMeters, double yMeters, double targetHeadingDegrees, double maxAxialSpeedMetersPerSecond, double axialToleranceMeters, double startingHeadingDegrees) {
         addRequirements(Drivetrain.get());
 
         this.xMeters = yMeters;
@@ -30,11 +32,12 @@ public class DriveRelativeMeters extends CommandBase {
         this.targetHeadingDegrees = targetHeadingDegrees;
         this.maxAxialSpeedMetersPerSecond = maxAxialSpeedMetersPerSecond;
         this.axialToleranceMeters = axialToleranceMeters;
+        this.startingHeadingDegrees = startingHeadingDegrees;
     }
 
     @Override
     public void initialize() {
-        odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, new Rotation2d(), Drivetrain.get().getModulePositions());
+        odometry = new SwerveDriveOdometry(DrivetrainConstants.Kinematics, NavX2.get().getRotation(), Drivetrain.get().getModulePositions(), new Pose2d(0, 0, Rotation2d.fromDegrees(startingHeadingDegrees)));
     
         xController.setTolerance(axialToleranceMeters);
         yController.setTolerance(axialToleranceMeters);
@@ -42,7 +45,7 @@ public class DriveRelativeMeters extends CommandBase {
 
     @Override
     public void execute() {
-        Pose2d poseMeters = odometry.update(new Rotation2d(), Drivetrain.get().getModulePositions());
+        Pose2d poseMeters = odometry.update(NavX2.get().getRotation(), Drivetrain.get().getModulePositions());
 
         double xMetersPerSecond = xController.calculate(poseMeters.getX(), xMeters);
         xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -maxAxialSpeedMetersPerSecond, maxAxialSpeedMetersPerSecond);
