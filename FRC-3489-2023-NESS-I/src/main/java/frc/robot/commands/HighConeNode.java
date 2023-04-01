@@ -18,8 +18,8 @@ public class HighConeNode extends CommandBase {
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
     private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -4.26;
-    private static double TargetYSetpointDegrees = 20.66;
+    private static double TargetXSetpointDegrees = -4.146; // -4.26
+    private static double TargetYSetpointDegrees = 20.85; // 20.66
     public static double FeedforwardMetersPerSecond = 0.15; // 0.1
 
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);

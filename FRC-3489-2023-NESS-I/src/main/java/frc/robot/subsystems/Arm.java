@@ -129,8 +129,8 @@ public class Arm extends Cat5Subsystem<Arm> {
                 .withName("Force Home")
             );
     
-            subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
-            subsystemLayout.addDouble("Motor Temperature (deg F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
+            // subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
+            // subsystemLayout.addDouble("Motor Temperature (deg F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
         }
         //#endregion
     }

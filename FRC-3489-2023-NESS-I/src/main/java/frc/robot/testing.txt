@@ -4,26 +4,11 @@ Copy over new auto code from comp
 // 10
 Determine drivetrain method parameter polarity
 
-// 20
-Tune gripper, arm and gripper angle, floor pickup testing
-
-// 10
-Carry position - pickup position transition
-
-// alot
-gripper angles for placement
-auto placement
-
 // alot
 test teleop cycling, iterate with improvements
 
 // 20
 test auto new auto commands
-
-// Quick
-test out new heading keeping feature with feedforward
-
-
 
 
 

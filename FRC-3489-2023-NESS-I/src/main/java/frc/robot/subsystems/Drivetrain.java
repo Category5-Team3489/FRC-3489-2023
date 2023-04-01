@@ -163,7 +163,7 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
 
     //#region Public
     public boolean isDriveCommandActive() {
-        return getCurrentCommand().getName() == "Drive";
+        return getCurrentCommand() == driveCommand;
     }
 
     // targetHeading: increase - CCW

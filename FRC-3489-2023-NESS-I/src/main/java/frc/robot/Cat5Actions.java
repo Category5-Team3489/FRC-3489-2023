@@ -109,12 +109,12 @@ public class Cat5Actions {
                     case Cone:
                         sequence(
                             new MidConeNode(),
-                            waitSeconds(0.5), // 1
+                            // waitSeconds(0.2), // 0.5
                             runOnce(() -> {
                                 Arm.get().command(ArmCommand.None);
                                 Arm.get().command(ArmCommand.ScoreMidCone);
                             }),
-                            waitSeconds(0.5),
+                            waitSeconds(0.3), // 0.5
                             runOnce(() -> {
                                 Gripper.get().scheduleOuttakeCommand();
                             })

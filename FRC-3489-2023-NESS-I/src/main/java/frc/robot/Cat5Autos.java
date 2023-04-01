@@ -132,13 +132,12 @@ public class Cat5Autos {
             runOnce(() -> {
                 NavX2.get().setOffset(Rotation2d.fromDegrees(180));
             }),
-            waitSeconds(2),
             print("Move arm to mid position"),
             runOnce(() -> {
-                Cat5Actions.get().scheduleMidCommand(false);
+                Cat5Actions.get().scheduleHighCommand();
             }),
             print("Wait for arm to raise some"),
-            waitSeconds(1),
+            waitSeconds(1.5), // 1
             print("Start auto placement"),
             runOnce(() -> {
                 Cat5Actions.get().scheduleAutomationCommand();
@@ -147,10 +146,73 @@ public class Cat5Autos {
             waitUntil(() -> {
                 return Drivetrain.get().isDriveCommandActive();
             }),
+            waitSeconds(0.3), // 1
             print("Start drive rel meters"),
             runOnce(() -> {
-                new DriveRelativeMeters(0, 3, -180, 0.75, 0.05, 180).schedule();
+                // new DriveRelativeMeters(0, 5.3, 0, 0.75, 0.05, -180).schedule();
+                new DriveRelativeMeters(0, 5.08, -180, 4.0, 0.05, -180).schedule();
             }),
+            print("REEEEEEEEEEEEEEEEEEEEEEEEEEE"),
+            runOnce(() -> {
+                Cat5Actions.get().scheduleCarryCommand();
+            }),
+            print("OOOOOOOOOOOOOOOOOOOOOOO"),
+            waitUntil(() -> {
+                return Drivetrain.get().isDriveCommandActive();
+            }),
+            print("AAAAAAAAAAAAAAAAAA"),
+            runOnce(() -> {
+                Commands.run(() -> {
+                    // -10.5
+                    Drivetrain.get().driveFieldRelative(0, 0, 1.0, Rotation2d.fromDegrees(-9), 0, Double.valueOf(180));
+                }, Drivetrain.get())
+                .withTimeout(1)
+                .schedule();
+            }),
+            waitUntil(() -> {
+                return Drivetrain.get().isDriveCommandActive();
+            }),
+            runOnce(() -> {
+                Cat5Actions.get().schedulePickupCommand();
+                // Cat5Actions.get().schedulePickupCommand();
+            }),
+            waitSeconds(2),
+            runOnce(() -> {
+                Commands.run(() -> {
+                    Drivetrain.get().drivePercentAngle(0.15, 0); // 0.1
+                }, Drivetrain.get())
+                .withTimeout(1) // 1.5
+                .schedule();
+            }),
+            waitUntil(() -> {
+                return Drivetrain.get().isDriveCommandActive();
+            }),
+            runOnce(() -> {
+                Cat5Actions.get().scheduleCarryCommand();
+            }),
+            waitSeconds(0.75), // 1
+            runOnce(() -> {
+                // 0.5, -4.75
+                // 0.5, -4.6
+                new DriveRelativeMeters(0.75, -4.6, -180, 4.0, 0.05, -9).schedule();
+            }),
+            waitUntil(() -> {
+                return Drivetrain.get().isDriveCommandActive();
+            }),
+            runOnce(() -> {
+                Cat5Actions.get().scheduleMidCommand(false);
+            }),
+            waitSeconds(1),
+            runOnce(() -> {
+                Cat5Actions.get().scheduleAutomationCommand();
+            }),
+            // waitUntil(() -> {
+            //     return Drivetrain.get().isDriveCommandActive();
+            // }),
+            // runOnce(() -> {
+            //     // new DriveRelativeMeters(0, 5.3, 0, 0.75, 0.05, -180).schedule();
+            //     new DriveRelativeMeters(0, -3, -180, 4.0, 0.05, -180).schedule();
+            // }),
             // new DrivePercentAngleSeconds(-0.12, 0, 5),
             // new DriveRelativeMeters(0, 5, -180, 1.0, 0.05),
             // new DriveRelativeMeters(0, 1, 0, 1.0, 0.05),

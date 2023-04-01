@@ -187,9 +187,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
     }
 
     public GamePiece getHeldGamePiece() {
-        return GamePiece.Cone;
-
-        // return heldGamePiece;
+        return heldGamePiece;
     }
 
     public void setHeldGamePiece(GamePiece heldGamePiece) {
