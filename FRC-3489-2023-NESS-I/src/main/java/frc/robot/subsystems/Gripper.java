@@ -80,6 +80,16 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         //#endregion
     }
 
+    @Override
+    public void periodic() {
+        if (heldGamePiece != GamePiece.Unknown) {
+            var indicated = Leds.get().getIndicatedGamePiece();
+            if (indicated != GamePiece.Unknown) {
+                heldGamePiece = indicated;
+            }
+        }
+    }
+
     //#region Control
     private void setMotors(double percent) {
         motorPercent = percent;
