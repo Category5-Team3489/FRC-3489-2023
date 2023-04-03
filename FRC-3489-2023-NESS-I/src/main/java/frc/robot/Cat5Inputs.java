@@ -95,6 +95,22 @@ public class Cat5Inputs {
     }
     //#endregion
 
+    //#region Wrist
+    public static double getWristCorrectionPercent() {
+        int pov = Man.getHID().getPOV();
+
+        if (pov == 315 || pov == 0 || pov == 45) {
+            return 1;
+        }
+
+        if (pov == 135 || pov == 180 || pov == 225) {
+            return -1;
+        }
+
+        return 0;
+    }
+    //#endregion
+
     //#region Leds
     public static GamePiece getIndicatedGamePiece() {
         double value = Man.getThrottle();

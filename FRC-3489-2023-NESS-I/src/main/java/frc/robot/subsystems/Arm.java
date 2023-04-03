@@ -15,9 +15,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Cat5Inputs;
 import frc.robot.Cat5Utils;
 import frc.robot.Constants;
-import frc.robot.Cat5Inputs;
 import frc.robot.Robot;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.enums.ArmCommand;
@@ -42,7 +42,7 @@ public class Arm extends Cat5Subsystem<Arm> {
     //#endregion
 
     // Devices
-    private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless); // Negative down, positive up
+    private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless);
     private final DigitalInput limitSwitch = new DigitalInput(LimitSwitchChannel);
     private final SparkMaxPIDController pidController;
     private final RelativeEncoder encoder;
@@ -129,8 +129,8 @@ public class Arm extends Cat5Subsystem<Arm> {
                 .withName("Force Home")
             );
     
-            // subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
-            // subsystemLayout.addDouble("Motor Temperature (deg F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
+            subsystemLayout.addDouble("Motor Applied Output (V)", () -> motor.getAppliedOutput());
+            subsystemLayout.addDouble("Motor Temperature (deg F)", () -> (motor.getMotorTemperature() * (9.0 / 5.0)) + 32);
         }
         //#endregion
     }
@@ -141,10 +141,10 @@ public class Arm extends Cat5Subsystem<Arm> {
             notifyLimitSwitchRisingEdge();
         }
 
-        // if (!isHomed && limitSwitch.get() && lastLimitSwitchValue) {
-        //     setEncoderAngleDegrees(MinAngleDegrees);
-        //     isHomed = true;
-        // }
+        if (!isHomed && limitSwitch.get() && lastLimitSwitchValue) {
+            setEncoderAngleDegrees(MinAngleDegrees);
+            isHomed = true;
+        }
 
         if (isManualControlEnabled.getAsBoolean()) {
             manualControlCommand.schedule();
@@ -277,9 +277,7 @@ public class Arm extends Cat5Subsystem<Arm> {
             case None:
 				break;
             case ForceHome:
-                if (!limitSwitch.get()) {
-                    isHomed = false;
-                }
+                isHomed = false;
                 setTargetAngleDegrees(GridPosition.Low, MinAngleDegrees, IdleMode.kCoast);
 				break;
             case Home:
@@ -368,38 +366,15 @@ public class Arm extends Cat5Subsystem<Arm> {
         //     return;
         // }
 
-        if (readyToHome || initForceHome) {
-            initForceHome = false;
-            setEncoderAngleDegrees(MinAngleDegrees);
-
-            Cat5Utils.time();
-            System.out.println("Arm limit switch rising edge, homed");
-            Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
-                .schedule();
-        }
-
-        if (readyToHome) {
-            readyToHome = false;
-
-            Commands.waitSeconds(0.5)
-                .andThen(() -> {
-                    initForceHome = true;
-
-                    command(ArmCommand.ForceHome);
-                });
-        }
-
+        setEncoderAngleDegrees(MinAngleDegrees);
         isHomed = true;
 
         setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kBrake);
-    }
 
-    private boolean initForceHome = false;
-
-    private boolean readyToHome = false;
-
-    public void readyToHome() {
-        readyToHome = true;
+        Cat5Utils.time();
+        System.out.println("Arm limit switch rising edge, homed");
+        Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
+            .schedule();
     }
 
     public GridPosition getGridPosition() {

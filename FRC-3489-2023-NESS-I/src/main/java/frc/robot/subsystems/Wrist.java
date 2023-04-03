@@ -8,8 +8,12 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.ControlType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Cat5Inputs;
+import frc.robot.Robot;
+import frc.robot.enums.GridPosition;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 
 import static frc.robot.Constants.WristConstants.*;
@@ -33,6 +37,7 @@ public class Wrist extends Cat5Subsystem<Wrist> {
 
     // State
     private WristState state = WristState.Start;
+    private double rotations = WristState.Start.getRotations();
 
     private Wrist() {
         super(i -> instance = i);
@@ -58,9 +63,21 @@ public class Wrist extends Cat5Subsystem<Wrist> {
             .withSize(2, 1);
 
         layout.addString("State", () -> state.toString());
-        layout.addDouble("Target (rotations)", () -> state.getRotations());
+        layout.addDouble("Target (rotations)", () -> rotations);
         layout.addDouble("Encoder (rotations)", () -> encoder.getPosition());
         //#endregion
+    }
+
+    @Override
+    public void periodic() {
+        double correctionPercent = Cat5Inputs.getWristCorrectionPercent();
+        rotations -= correctionPercent * 7.5 * Robot.kDefaultPeriod;
+        if (Arm.get().getGridPosition() == GridPosition.High) {
+            rotations = MathUtil.clamp(rotations, WristState.MinAtHigh.getRotations(), WristState.Max.getRotations());
+        }
+        else {
+            rotations = MathUtil.clamp(rotations, WristState.Min.getRotations(), WristState.Max.getRotations());
+        }
     }
 
     // //#region Encoder
@@ -73,7 +90,7 @@ public class Wrist extends Cat5Subsystem<Wrist> {
     //#region Commands
     private CommandBase getGotoTargetCommand() {
         return run(() -> {
-            pidController.setReference(state.getRotations(), ControlType.kPosition, 0);
+            pidController.setReference(rotations, ControlType.kPosition, 0);
         })
             .withName("Goto Target");
     }
@@ -86,6 +103,8 @@ public class Wrist extends Cat5Subsystem<Wrist> {
     
     public void setState(WristState state) {
         this.state = state;
+
+        rotations = state.getRotations();
     }
     //#endregion
 }

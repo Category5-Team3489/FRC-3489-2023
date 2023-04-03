@@ -164,8 +164,6 @@ public class RobotContainer {
         //#region Arm
         new Trigger(() -> DriverStation.isEnabled())
             .onTrue(runOnce(() -> {
-                Arm.get().readyToHome();
-
                 Arm.get().command(ArmCommand.ForceHome);
             }));
 

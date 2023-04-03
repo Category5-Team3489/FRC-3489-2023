@@ -115,6 +115,7 @@ public final class Constants {
         public enum WristState {
             Min(-13),
             Max(5),
+            MinAtHigh(-30),
             Start(0),
             Pickup(-1),
             Carry(-13);
@@ -136,8 +137,8 @@ public final class Constants {
 
         public static final int StallSmartCurrentLimitAmps = 20;
         public static final double ProportionalGainPercentPerRevolutionOfError = 0.5;
-        public static final double MinOutputPercent = -0.15;
-        public static final double MaxOutputPercent = 0.15;
+        public static final double MinOutputPercent = -0.30; // 15
+        public static final double MaxOutputPercent = 0.30; // 15
 
         public static final int MotorDeviceId = 12;
     }
@@ -180,7 +181,7 @@ public final class Constants {
         public static final int StallSmartCurrentLimitAmps = 30;
         public static final double ClosedLoopSecondsToFull = 0.2; // 0.1
         public static final double ProportionalGainPercentPerRevolutionOfError = 0.1; // 0.025
-        public static final double MinOutputPercent = -0.5;
+        public static final double MinOutputPercent = -0.8;
         public static final double MaxOutputPercent = 0.8; // 0.75
         
         public static final int MotorDeviceId = 11;
