@@ -92,7 +92,7 @@ public final class Constants {
         public static final double MidOuttakeConePercent = 0.1; // good
         public static final double MidOuttakeCubePercent = 0.3;
         public static final double MidOuttakeUnknownPercent = (MidOuttakeConePercent + MidOuttakeCubePercent) / 2.0;
-        public static final double HighOuttakeConePercent = 0.6; // 0.5
+        public static final double HighOuttakeConePercent = 0.5; // 0.6
         public static final double HighOuttakeCubePercent = 1; // good, 0.3
         public static final double HighOuttakeUnknownPercent = (HighOuttakeConePercent + HighOuttakeCubePercent) / 2.0;
 
@@ -115,6 +115,7 @@ public final class Constants {
         public enum WristState {
             Min(-13),
             Max(5),
+            HighCone(-20.05),
             MinAtHigh(-30),
             Start(0),
             Pickup(-1),
@@ -165,13 +166,13 @@ public final class Constants {
         public static final double LowCubeAngleDegrees = -70;
         public static final double LowUnknownAngleDegrees = (LowConeAngleDegrees + LowCubeAngleDegrees) / 2.0;
 
-        public static final double MidConeAngleDegrees = 14; // 11
-        public static final double ScoreMidConeAngleDegrees = -10; // -4
-        public static final double MidCubeAngleDegrees = -4.5; // 11
+        public static final double MidConeAngleDegrees = 11.5; // 14
+        public static final double ScoreMidConeAngleDegrees = -11; // -10
+        public static final double MidCubeAngleDegrees = 7; // 11
         public static final double MidUnknownAngleDegrees = (MidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
-        public static final double HighConeAngleDegrees = 27; // 36
-        public static final double HighCubeAngleDegrees = 17; //22
+        public static final double HighConeAngleDegrees = 26.13; // 27
+        public static final double HighCubeAngleDegrees = 28.5; //22
         public static final double HighUnknownAngleDegrees = (HighConeAngleDegrees + HighCubeAngleDegrees) / 2.0;
 
         public static final double HomingPercent = -0.40; // -0.15

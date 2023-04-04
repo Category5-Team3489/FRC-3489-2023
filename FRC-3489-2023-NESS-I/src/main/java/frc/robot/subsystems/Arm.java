@@ -365,16 +365,17 @@ public class Arm extends Cat5Subsystem<Arm> {
         // if (isHomed) {
         //     return;
         // }
+        if (!isHomed) {
+            setEncoderAngleDegrees(MinAngleDegrees);
+            isHomed = true;
 
-        setEncoderAngleDegrees(MinAngleDegrees);
-        isHomed = true;
+            Cat5Utils.time();
+            System.out.println("Arm limit switch rising edge, homed");
+            Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
+                .schedule();
+        }
 
         setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kBrake);
-
-        Cat5Utils.time();
-        System.out.println("Arm limit switch rising edge, homed");
-        Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
-            .schedule();
     }
 
     public GridPosition getGridPosition() {

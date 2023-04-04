@@ -72,7 +72,7 @@ public class Wrist extends Cat5Subsystem<Wrist> {
     public void periodic() {
         double correctionPercent = Cat5Inputs.getWristCorrectionPercent();
         rotations -= correctionPercent * 7.5 * Robot.kDefaultPeriod;
-        if (Arm.get().getGridPosition() == GridPosition.High) {
+        if (Arm.get().getGridPosition() == GridPosition.High || Arm.get().getGridPosition() == GridPosition.Mid) {
             rotations = MathUtil.clamp(rotations, WristState.MinAtHigh.getRotations(), WristState.Max.getRotations());
         }
         else {
