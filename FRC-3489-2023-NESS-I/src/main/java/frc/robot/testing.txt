@@ -1,27 +1,2 @@
-Before saturday:
-Copy over new auto code from comp
-
 // 10
 Determine drivetrain method parameter polarity
-
-// alot
-test teleop cycling, iterate with improvements
-
-// 20
-test auto new auto commands
-
-
-
-// alot
-Verify existing autos
-
-// alot
-start working on new auto
-
-// 10
-fix human player station pickup arm angle
-
-
-// 10
-Arm speed tuning, up and down
-Arm ramp rate tuning, can it go slower, 0.1 -> 0.2 before, any higher?

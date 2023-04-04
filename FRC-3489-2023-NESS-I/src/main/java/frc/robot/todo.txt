@@ -1,7 +1,7 @@
 Priority:
-Super slow accel button
 
 Perhaps:
+Super slow accel button
 Use states for arm and wrist
 Slow this everywhere motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20); // TODO Should this be done in other places or with other frames?
 History of arm commands with Stack, have max size
@@ -34,12 +34,12 @@ Limit translation speed when arm is up
 Limit rotation speed when arm is up
 Slow down cardinal direction turning and heading keeping when arm is up
     Use arm distance from center of robot to make proportional?
-Is rotation of robot finicky?
 Quick press of rotation trigger all the way down does an incremental rotation
 Offset arm constant force spring with model
 
 
 Idea Archive:
+Is rotation of robot finicky?
 Lower arm height slightly at human player station
 No arm correction, just move wrist instead
 Move to carry position after picking a game piece up automatically // ISSUE WITH THIS IF AT HUMAN PLAYER STATION OR NOT FLOOR PICKUP POS
