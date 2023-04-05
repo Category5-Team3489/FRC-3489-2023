@@ -137,9 +137,9 @@ public class Arm extends Cat5Subsystem<Arm> {
 
     @Override
     public void periodic() {
-        // if (pollLimitSwitchRisingEdge()) {
-        //     notifyLimitSwitchRisingEdge();
-        // }
+        if (pollLimitSwitchRisingEdge()) {
+            notifyLimitSwitchRisingEdge();
+        }
 
         if (!isHomed && limitSwitch.get() && lastLimitSwitchValue) {
             setEncoderAngleDegrees(MinAngleDegrees);
@@ -349,33 +349,34 @@ public class Arm extends Cat5Subsystem<Arm> {
         }
     }
 
-    // private boolean pollLimitSwitchRisingEdge() {
-    //     if (limitSwitch.get() && !lastLimitSwitchValue) {
-    //         lastLimitSwitchValue = true;
+    private boolean pollLimitSwitchRisingEdge() {
+        if (limitSwitch.get() && !lastLimitSwitchValue) {
+            lastLimitSwitchValue = true;
 
-    //         return true;
-    //     }
+            return true;
+        }
 
-    //     lastLimitSwitchValue = limitSwitch.get();
+        lastLimitSwitchValue = limitSwitch.get();
 
-    //     return false;
-    // }
+        return false;
+    }
 
-    // private void notifyLimitSwitchRisingEdge() {
-    //     // if (isHomed) {
-    //     //     return;
-    //     // }
+    private void notifyLimitSwitchRisingEdge() {
+        // if (isHomed) {
+        //     return;
+        // }
+        if (!isHomed) {
+            setEncoderAngleDegrees(MinAngleDegrees);
+            isHomed = true;
 
-    //     setEncoderAngleDegrees(MinAngleDegrees);
-    //     isHomed = true;
+            Cat5Utils.time();
+            System.out.println("Arm limit switch rising edge, homed");
+            Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
+                .schedule();
+        }
 
-    //     setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kBrake);
-
-    //     Cat5Utils.time();
-    //     System.out.println("Arm limit switch rising edge, homed");
-    //     Leds.get().getCommand(LedPattern.StrobeBlue, 0.5, true)
-    //         .schedule();
-    // }
+        setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kBrake);
+    }
 
     public GridPosition getGridPosition() {
         return gridPosition;

@@ -29,6 +29,7 @@ public class Cat5Actions {
     public void scheduleLowCommand() {
         sequence(
             runOnce(() -> {
+                Arm.get().command(ArmCommand.None);
                 Arm.get().command(ArmCommand.Low);
             }),
             waitSeconds(0.4),
@@ -57,11 +58,12 @@ public class Cat5Actions {
     public void scheduleHighCommand() {
         sequence(
             runOnce(() -> {
+                Arm.get().command(ArmCommand.None);
                 Arm.get().command(ArmCommand.High);
             }),
             waitSeconds(0.4),
             runOnce(() -> {
-                Wrist.get().setState(WristState.Carry);
+                Wrist.get().setState(WristState.HighCone);
             })
         ).schedule();
     }
@@ -69,6 +71,7 @@ public class Cat5Actions {
     public void scheduleDoubleSubstationCommand() {
         sequence(
             runOnce(() -> {
+                Arm.get().command(ArmCommand.None);
                 Arm.get().command(ArmCommand.DoubleSubstation);
             }),
             waitSeconds(0.4),
@@ -82,6 +85,7 @@ public class Cat5Actions {
     public void schedulePickupCommand() {
         sequence(
             runOnce(() -> {
+                Arm.get().command(ArmCommand.None);
                 Arm.get().command(ArmCommand.Floor);
             }),
             waitSeconds(0.4),
@@ -93,6 +97,7 @@ public class Cat5Actions {
     }
 
     public void scheduleCarryCommand() {
+        Arm.get().command(ArmCommand.None);
         Arm.get().command(ArmCommand.Home);
         Wrist.get().setState(WristState.Carry);
         Gripper.get().scheduleStopCommand();
