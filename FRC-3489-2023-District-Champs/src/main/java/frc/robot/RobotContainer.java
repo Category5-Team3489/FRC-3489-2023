@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,7 +13,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Cat5Subsystem;
 
 public class RobotContainer {
+    //#region Singleton
+    private static RobotContainer instance = new RobotContainer();
 
+    public static RobotContainer get() {
+        return instance;
+    }
+    //#endregion
+    
     //#region Cat 5 Subsystems
     private static List<Cat5Subsystem<?>> cat5Subsystems;
 
@@ -25,12 +33,18 @@ public class RobotContainer {
         }
 
         cat5Subsystems.add(cat5Subsystem);
+        
         Cat5Utils.time();
         System.out.println("Registered subsystem \"" + cat5Subsystem.getClass().getSimpleName() + "\"");
     }
     //#endregion
     
-    public RobotContainer() {
+    private RobotContainer() {
+        instance = this;
+        cat5Subsystems = new ArrayList<Cat5Subsystem<?>>();
+
+        // Subsystem initialization
+
         configureBindings();
     }
 
