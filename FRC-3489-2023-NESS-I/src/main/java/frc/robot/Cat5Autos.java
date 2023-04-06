@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.drivetrain.DrivePercentAngleSeconds;
 import frc.robot.commands.drivetrain.DriveRelativeMeters;
+import frc.robot.enums.GamePiece;
 import frc.robot.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.NavX2;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -167,6 +169,10 @@ public class Cat5Autos {
 
     private Command getPlaceMidConeThenPickupAutoCommand() {
         return sequence(
+            waitSeconds(0.1),
+            runOnce(() -> {
+                Gripper.get().setHeldGamePiece(GamePiece.Cone);
+            }),
             print("Start and wait"),
             runOnce(() -> {
                 NavX2.get().setOffset(Rotation2d.fromDegrees(180));

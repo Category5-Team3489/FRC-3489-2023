@@ -104,7 +104,7 @@ public class Cat5Actions {
     }
 
     public void scheduleCarryCommand() {
-        Arm.get().command(ArmCommand.None);
+        // Arm.get().command(ArmCommand.None);
         Arm.get().command(ArmCommand.Home);
         Wrist.get().setState(WristState.Carry);
         Gripper.get().scheduleStopCommand();

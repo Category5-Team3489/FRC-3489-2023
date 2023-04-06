@@ -264,6 +264,9 @@ public class Arm extends Cat5Subsystem<Arm> {
 
     //#region Public
     public void command(ArmCommand command) {
+        Cat5Utils.time();
+        System.out.println("Enter arm command: " + activeCommand.toString());
+
         ArmCommand lastCommand = activeCommand;
         activeCommand = command;
 
@@ -278,11 +281,16 @@ public class Arm extends Cat5Subsystem<Arm> {
 				break;
             case ForceHome:
                 isHomed = false;
+                lastLimitSwitchValue = false;
                 setTargetAngleDegrees(GridPosition.Low, MinAngleDegrees, IdleMode.kCoast);
 				break;
             case Home:
                 if (lastCommand == ArmCommand.Home) {
-                    command(ArmCommand.ForceHome);
+                    isHomed = false;
+                    lastLimitSwitchValue = false;
+                    setTargetAngleDegrees(GridPosition.Low, MinAngleDegrees, IdleMode.kCoast);
+
+                    activeCommand = ArmCommand.ForceHome;
                 }
                 else {
                     setTargetAngleDegrees(GridPosition.Low, ArmConstants.MinAngleDegrees, IdleMode.kCoast);
@@ -308,7 +316,9 @@ public class Arm extends Cat5Subsystem<Arm> {
                 switch (heldGamePiece) {
                     case Cone:
                         if (lastCommand == ArmCommand.Mid) {
-                            command(ArmCommand.ScoreMidCone);
+                            setTargetAngleDegrees(GridPosition.Mid, ArmConstants.ScoreMidConeAngleDegrees, IdleMode.kBrake);
+
+                            activeCommand = ArmCommand.ScoreMidCone;
                         }
                         else {
                             setTargetAngleDegrees(GridPosition.Mid, ArmConstants.MidConeAngleDegrees, IdleMode.kBrake);
@@ -324,7 +334,9 @@ public class Arm extends Cat5Subsystem<Arm> {
 				break;
             case ScoreMidCone:
                 if (lastCommand == ArmCommand.ScoreMidCone) {
-                    command(ArmCommand.Mid);
+                    setTargetAngleDegrees(GridPosition.Mid, ArmConstants.MidConeAngleDegrees, IdleMode.kBrake);
+
+                    activeCommand = ArmCommand.ScoreMidCone;
                 }
                 else {
                     setTargetAngleDegrees(GridPosition.Mid, ArmConstants.ScoreMidConeAngleDegrees, IdleMode.kBrake);
@@ -347,6 +359,9 @@ public class Arm extends Cat5Subsystem<Arm> {
                 setTargetAngleDegrees(GridPosition.High, ArmConstants.DoubleSubstationDegrees, IdleMode.kBrake);
 				break;
         }
+
+        Cat5Utils.time();
+        System.out.println("Exit arm command: " + activeCommand.toString());
     }
 
     private boolean pollLimitSwitchRisingEdge() {
