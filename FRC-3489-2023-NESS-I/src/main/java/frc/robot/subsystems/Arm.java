@@ -396,5 +396,9 @@ public class Arm extends Cat5Subsystem<Arm> {
     public GridPosition getGridPosition() {
         return gridPosition;
     }
+
+    public double getTargetAngleDegrees() {
+        return targetAngleDegrees;
+    }
     //#endregion
 }

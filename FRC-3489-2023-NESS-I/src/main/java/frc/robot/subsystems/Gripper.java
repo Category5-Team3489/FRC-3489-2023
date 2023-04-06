@@ -164,6 +164,10 @@ public class Gripper extends Cat5Subsystem<Gripper> {
                 setMotors(IntakePercent);
             }
             else {
+                Cat5Utils.time();
+                System.out.println("Now holding game piece: " + detectedGamePiece);
+                System.out.println("Arm angle degrees: " + Arm.get().getTargetAngleDegrees());
+
                 heldGamePiece = detectedGamePiece;
                 stopCommand.schedule();
             }
