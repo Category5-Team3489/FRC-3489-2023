@@ -82,6 +82,7 @@ public class Gripper extends Cat5Subsystem<Gripper> {
 
     @Override
     public void periodic() {
+        // Allow held game piece to be changed with indicator after pickup
         if (heldGamePiece != GamePiece.Unknown) {
             var indicated = Leds.get().getIndicatedGamePiece();
             if (indicated != GamePiece.Unknown) {

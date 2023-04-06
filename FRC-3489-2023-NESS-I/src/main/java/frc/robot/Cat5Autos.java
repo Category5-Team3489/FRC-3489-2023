@@ -22,6 +22,10 @@ public class Cat5Autos {
     private String currentAuto = "";
 
     public Cat5Autos() {
+        // Place mid, taxi
+        // Place mid, balance
+        // Place mid
+
         addAuto("Taxi", () -> getTaxiAutoCommand());
         addAuto("TaxiFar", () -> getTaxiFarAutoCommand());
         addAuto("Balance", () -> getBalanceAutoCommand());

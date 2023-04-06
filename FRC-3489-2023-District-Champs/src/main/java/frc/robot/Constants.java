@@ -37,4 +37,13 @@ public final class Constants {
         public static final int RightMotorDeviceId = 10;
         public static final int LimitSwitchChannel = 2;
     }
+
+    public static class LedsConstants {
+        public static final int GamePieceIndicatorManAxis = 3;
+
+        public static final double GamePieceIndicatorThreshold = 0.8;
+
+        public static final int LeftChannel = 1;
+        public static final int RightChannel = 0;
+    }
 }

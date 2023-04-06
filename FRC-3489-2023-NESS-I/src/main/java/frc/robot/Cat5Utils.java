@@ -23,6 +23,7 @@ public class Cat5Utils {
         value = Math.copySign(value * value, value);
         return value;
     }
+    
     public static double deadband(double value, double deadband) {
         if (Math.abs(value) > deadband) {
             if (value > 0.0) {
