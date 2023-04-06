@@ -115,8 +115,10 @@ public final class Constants {
         public enum WristState {
             Min(-13),
             Max(5),
-            HighCone(-20.05),
+            HighCone(-18.05), // -20.05
             MinAtHigh(-30),
+            DoubleSubstation(-6.29),
+            HighCube(-8.65),
             Start(0),
             Pickup(-1),
             Carry(-13);
@@ -158,7 +160,7 @@ public final class Constants {
         public static final double ManualControlMaxDownPercent = -0.3;
         public static final double ManualControlMaxUpPercent = 0.3;
 
-        public static final double DoubleSubstationDegrees = 20.43; // 5
+        public static final double DoubleSubstationDegrees = 1.21; // 20.43
 
         public static final double FloorAngleDegrees = -70;
 
@@ -166,13 +168,13 @@ public final class Constants {
         public static final double LowCubeAngleDegrees = -70;
         public static final double LowUnknownAngleDegrees = (LowConeAngleDegrees + LowCubeAngleDegrees) / 2.0;
 
-        public static final double MidConeAngleDegrees = 11.5; // 14
-        public static final double ScoreMidConeAngleDegrees = -11; // -10
-        public static final double MidCubeAngleDegrees = 7; // 11
+        public static final double MidConeAngleDegrees = 10.77; // 7.32
+        public static final double ScoreMidConeAngleDegrees = -13.33; // -11
+        public static final double MidCubeAngleDegrees = -4.08; // 7
         public static final double MidUnknownAngleDegrees = (MidConeAngleDegrees + MidCubeAngleDegrees) / 2.0;
 
-        public static final double HighConeAngleDegrees = 26.13; // 27
-        public static final double HighCubeAngleDegrees = 28.5; //22
+        public static final double HighConeAngleDegrees = 22.86; // 26.13
+        public static final double HighCubeAngleDegrees = 21.12; // 28.5
         public static final double HighUnknownAngleDegrees = (HighConeAngleDegrees + HighCubeAngleDegrees) / 2.0;
 
         public static final double HomingPercent = -0.40; // -0.15

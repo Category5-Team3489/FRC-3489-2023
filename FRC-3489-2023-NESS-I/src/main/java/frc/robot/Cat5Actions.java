@@ -6,6 +6,7 @@ import frc.robot.commands.HighCubeNode;
 import frc.robot.commands.MidConeNode;
 import frc.robot.commands.MidCubeNode;
 import frc.robot.enums.ArmCommand;
+import frc.robot.enums.GamePiece;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Wrist;
@@ -63,7 +64,13 @@ public class Cat5Actions {
             }),
             waitSeconds(0.4),
             runOnce(() -> {
-                Wrist.get().setState(WristState.HighCone);
+                GamePiece heldGamePiece = Gripper.get().getHeldGamePiece();
+                if (heldGamePiece == GamePiece.Cube) {
+                    Wrist.get().setState(WristState.HighCube);
+                }
+                else {
+                    Wrist.get().setState(WristState.HighCone);
+                }
             })
         ).schedule();
     }
@@ -76,7 +83,7 @@ public class Cat5Actions {
             }),
             waitSeconds(0.4),
             runOnce(() -> {
-                Wrist.get().setState(WristState.Pickup);
+                Wrist.get().setState(WristState.DoubleSubstation);
                 Gripper.get().scheduleIntakeCommand();
             })
         ).schedule();
