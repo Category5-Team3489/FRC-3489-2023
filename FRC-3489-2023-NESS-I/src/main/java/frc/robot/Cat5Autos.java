@@ -227,7 +227,7 @@ public class Cat5Autos {
                 Cat5Actions.get().scheduleMidCommand(false);
             }),
             print("Wait for arm to raise some"),
-            waitSeconds(1),
+            waitSeconds(2), // 1 TODO
             print("Start auto placement"),
             runOnce(() -> {
                 Cat5Actions.get().scheduleAutomationCommand();

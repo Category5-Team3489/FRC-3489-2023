@@ -160,7 +160,7 @@ public final class Constants {
         public static final double ManualControlMaxDownPercent = -0.3;
         public static final double ManualControlMaxUpPercent = 0.3;
 
-        public static final double DoubleSubstationDegrees = 1.21; // 20.43
+        public static final double DoubleSubstationDegrees = 12.76; // 1.21
 
         public static final double FloorAngleDegrees = -70;
 
