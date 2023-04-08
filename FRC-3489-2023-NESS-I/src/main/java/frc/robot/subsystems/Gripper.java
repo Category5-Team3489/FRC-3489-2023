@@ -64,10 +64,10 @@ public class Gripper extends Cat5Subsystem<Gripper> {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
 
-        layout.add("Subsystem Info", this);
-        layout.addString("Held Game Piece", () -> heldGamePiece.toString());
-        layout.addBoolean("Can Reintake Again", () -> canReintakeAgain);
-        layout.addBoolean("Limit Switch", () -> limitSwitch.get());
+        // layout.add("Subsystem Info", this);
+        // layout.addString("Held Game Piece", () -> heldGamePiece.toString());
+        // layout.addBoolean("Can Reintake Again", () -> canReintakeAgain);
+        // layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 
         var isLimitSwitchDisabledEntry = layout.add("Disable Limit Switch", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)

@@ -33,11 +33,11 @@ public class Cat5Autos {
         addAuto("Balance", () -> getBalanceAutoCommand());
         addAuto("BumpBalance", () -> getBumpBalanceAutoCommand());
         addAuto("Nothing", () -> getNothingAutoCommand());
-        addAuto("DriveRelMeters", () -> getDriveRelMetersAutoCommand());
+        // addAuto("DriveRelMeters", () -> getDriveRelMetersAutoCommand());
         // addAuto("TeamUmizoomi", () -> getTeamUmizoomiAutoCommand());
-        addAuto("PlaceMidConeThenPickup", () -> getPlaceMidConeThenPickupAutoCommand());
-        addAuto("PlaceMidConeOnly", () -> getPlaceMidConeAutoCommand());
-        addAuto("PlaceMidConeThenTaxi", () -> getPlaceMidConeThenTaxiAutoCommand());
+        // addAuto("PlaceMidConeThenPickup", () -> getPlaceMidConeThenPickupAutoCommand());
+        // addAuto("PlaceMidConeOnly", () -> getPlaceMidConeAutoCommand());
+        // addAuto("PlaceMidConeThenTaxi", () -> getPlaceMidConeThenTaxiAutoCommand());
         addAuto("PlaceMidConeThenBalance", () -> getPlaceMidConeThenBalanceAutoCommand());
 
         Cat5ShuffleboardTab.Auto.get().add(autoChooser);

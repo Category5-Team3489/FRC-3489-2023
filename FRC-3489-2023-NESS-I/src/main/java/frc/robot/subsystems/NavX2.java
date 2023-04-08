@@ -36,7 +36,7 @@ public class NavX2 extends Cat5Subsystem<NavX2> {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
 
-        layout.addDouble("Heading (deg)", () -> heading.getDegrees());
+        // layout.addDouble("Heading (deg)", () -> heading.getDegrees());
         
         if (Constants.IsDebugShuffleboardEnabled) {
             layout.addBoolean("Is Calibrating", () -> navx.isCalibrating());

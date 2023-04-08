@@ -62,9 +62,9 @@ public class Wrist extends Cat5Subsystem<Wrist> {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
 
-        layout.addString("State", () -> state.toString());
-        layout.addDouble("Target (rotations)", () -> rotations);
-        layout.addDouble("Encoder (rotations)", () -> encoder.getPosition());
+        // layout.addString("State", () -> state.toString());
+        // layout.addDouble("Target (rotations)", () -> rotations);
+        // layout.addDouble("Encoder (rotations)", () -> encoder.getPosition());
         //#endregion
     }
 

@@ -52,10 +52,10 @@ public class Limelight extends Cat5Subsystem<Limelight> {
         var subsystemLayout = getLayout(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList)
             .withSize(2, 1);
 
-        subsystemLayout.addInteger("Tag Id", () -> getTagId());
-        subsystemLayout.addDouble("Target X", () -> getTargetX());
-        subsystemLayout.addDouble("Target Y", () -> getTargetY());
-        subsystemLayout.addDouble("Target Area", () -> getTargetArea());
+        // subsystemLayout.addInteger("Tag Id", () -> getTagId());
+        // subsystemLayout.addDouble("Target X", () -> getTargetX());
+        // subsystemLayout.addDouble("Target Y", () -> getTargetY());
+        // subsystemLayout.addDouble("Target Area", () -> getTargetArea());
         
         if (Constants.IsDebugShuffleboardEnabled) {
             subsystemLayout.addBoolean("Is Campose Valid", () -> isCamposeValid());

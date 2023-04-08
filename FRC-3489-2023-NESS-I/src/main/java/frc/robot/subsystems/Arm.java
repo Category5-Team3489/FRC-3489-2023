@@ -89,18 +89,18 @@ public class Arm extends Cat5Subsystem<Arm> {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
         
-        layout.add("Subsystem Info", this);
+        // layout.add("Subsystem Info", this);
 
-        layout.addBoolean("Is Homed", () -> isHomed);
-        layout.addDouble("Encoder Angle (deg)", () -> getEncoderAngleDegrees());
-        layout.addDouble("Target Angle (deg)", () -> targetAngleDegrees);
+        // layout.addBoolean("Is Homed", () -> isHomed);
+        // layout.addDouble("Encoder Angle (deg)", () -> getEncoderAngleDegrees());
+        // layout.addDouble("Target Angle (deg)", () -> targetAngleDegrees);
 
-        layout.addString("Grid Position", () -> gridPosition.toString());
-        layout.addString("Idle Mode", () -> idleMode.toString());
+        // layout.addString("Grid Position", () -> gridPosition.toString());
+        // layout.addString("Idle Mode", () -> idleMode.toString());
 
-        layout.addBoolean("Limit Switch", () -> limitSwitch.get());
+        // layout.addBoolean("Limit Switch", () -> limitSwitch.get());
 
-        layout.addString("Active Command", () -> activeCommand.toString());
+        // layout.addString("Active Command", () -> activeCommand.toString());
 
         var subsystemLayout = getLayout(Cat5ShuffleboardTab.Arm, BuiltInLayouts.kList)
             .withSize(2, 1);

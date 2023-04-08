@@ -7,7 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.robot.enums.LimelightPipeline;
 
 public final class Constants {
-    public static boolean IsDebugShuffleboardEnabled = true;
+    public static boolean IsDebugShuffleboardEnabled = false;
 
     public static class CameraConstants {
         public static final int PixelWidth = 160;

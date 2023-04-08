@@ -122,9 +122,9 @@ public class Drivetrain extends Cat5Subsystem<Drivetrain> {
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
 
-        layout.add("Subsystem Info", this);
+        // layout.add("Subsystem Info", this);
 
-        layout.addDouble("Average (m per s)", () -> getAverageDriveVelocityMetersPerSecond());
+        // layout.addDouble("Average (m per s)", () -> getAverageDriveVelocityMetersPerSecond());
 
         if (Constants.IsDebugShuffleboardEnabled) {
             layout.addDouble("Front Left (m per s)", () -> frontLeftModule.getDriveVelocity());
