@@ -64,12 +64,12 @@ public class Wrist extends Cat5Subsystem{
     public void periodic() {
         double correctionPercent = robotContainer.input.getWristCorrectionPercent();
         rotations -= correctionPercent * 7.5 * Robot.kDefaultPeriod;
-        if (Arm.get().getGridPosition() == GridPosition.High || Arm.get().getGridPosition() == GridPosition.Mid) {
-            rotations = MathUtil.clamp(rotations, WristState.MinAtHigh.getRotations(), WristState.Max.getRotations());
-        }
-        else {
-            rotations = MathUtil.clamp(rotations, WristState.Min.getRotations(), WristState.Max.getRotations());
-        }
+        // if (Arm.get().getGridPosition() == GridPosition.High || Arm.get().getGridPosition() == GridPosition.Mid) {
+        //     rotations = MathUtil.clamp(rotations, WristState.MinAtHigh.getRotations(), WristState.Max.getRotations());
+        // }
+        // else {
+        //     rotations = MathUtil.clamp(rotations, WristState.Min.getRotations(), WristState.Max.getRotations());
+        // }
     }
 
     // //#region Encoder

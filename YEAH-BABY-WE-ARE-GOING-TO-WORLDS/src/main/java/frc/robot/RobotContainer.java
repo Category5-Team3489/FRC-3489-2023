@@ -87,6 +87,19 @@ public class RobotContainer implements Cat5Updatable {
         // TODO When outtaking with gripper, always set held game piece to Unknown
 
         // TODO Leds and prints for actions
+
+        // TODO Human player station pickup, 30.315in, 0.77m to left and right of april tag is good position to center robot on
+    
+        // TODO x = 0.254m / tan(10deg - ty), mid cone node distance from limelight
+        // TODO x = 0.403098m / tan(10deg - ty), mid cube node distance from limelight
+        // TODO x = 0.695452 / tan(10deg - ty), human player station
+
+        // TODO 18.13 in to center of cube node tag
+
+        // TODO 27.38in to center of HP station tag from floor
+
+        // limelight 10deg down from horizontal
+        // limelight 34in off of floor
     }
 
     private void configureBindings() {
