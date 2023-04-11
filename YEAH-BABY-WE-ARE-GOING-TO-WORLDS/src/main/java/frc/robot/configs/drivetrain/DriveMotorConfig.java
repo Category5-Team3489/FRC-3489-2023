@@ -19,10 +19,6 @@ public class DriveMotorConfig {
     }
     
     public static TalonFX getDriveMotor(ModulePosition position) {
-        return driveMotors[position.index];
-    }
-
-    public static boolean isConfigured() {
-        return driveMotorIndex == 4;
+        return driveMotors[position.getIndex()];
     }
 }

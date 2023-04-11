@@ -18,7 +18,7 @@ public class Limelight extends Cat5Subsystem {
     private final static LimelightPipeline DefaultPipeline = LimelightPipeline.Fiducial;
     private static final double CamposeValidActivePipelineSeconds = 0.5;
     private static final double CamposeValidTargetArea = 0.005;
-    // private static final double CamposeValidAverageDriveVelocityLimitMetersPerSecond = 0.25;
+    private static final double CamposeValidAverageDriveVelocityLimitMetersPerSecond = 0.25;
 
     // Devices
     private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
@@ -43,7 +43,7 @@ public class Limelight extends Cat5Subsystem {
 
         activePipelineTimer.restart();
 
-        robotContainer.layouts.vitals.addBoolean("Limelight Updating", () -> isActivePipeline(desiredPipeline));
+        // TODO robotContainer.layouts.vitals.addBoolean("Limelight Updating", () -> isActivePipeline(desiredPipeline));
     }
     
     @Override
@@ -68,8 +68,8 @@ public class Limelight extends Cat5Subsystem {
     public boolean isCamposeValid() {
         return isActivePipeline(LimelightPipeline.Fiducial) &&
             activePipelineTimer.get() > CamposeValidActivePipelineSeconds &&
-            getTargetArea() > CamposeValidTargetArea;
-            // TODO Drivetrain.get().getAverageDriveVelocityMetersPerSecond() < LimelightConstants.CamposeValidAverageDriveVelocityLimitMetersPerSecond;
+            getTargetArea() > CamposeValidTargetArea &&
+            robotContainer.getAverageDriveVelocityMetersPerSecond() < CamposeValidAverageDriveVelocityLimitMetersPerSecond;
     }
     public Pose3d getCampose() {
         double[] campose = camerapose_targetspaceSubscriber.get();

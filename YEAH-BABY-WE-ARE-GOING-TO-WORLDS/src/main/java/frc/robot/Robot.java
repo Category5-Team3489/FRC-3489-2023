@@ -8,6 +8,7 @@ import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -19,16 +20,20 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        // No warnings for joysticks during simulations
         DriverStation.silenceJoystickConnectionWarning(isSimulation());
 
+        // Allow limelight dashboard access through roboRIO usb
         for (int port = 5800; port <= 5805; port++) {
             PortForwarder.add(port, "limelight.local", port);
             PortForwarder.add(port, "10.34.89.11", port);
         }
 
+        // No live window loop overruns
         LiveWindow.setEnabled(false);
         LiveWindow.disableAllTelemetry();
 
+        // Configure logging
         DataLogManager.logNetworkTables(false);
         var dataLog = DataLogManager.getLog();
         DriverStation.startDataLog(dataLog, true);
@@ -39,6 +44,8 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+
+        robotContainer.update(Timer.getFPGATimestamp());
     }
 
     @Override
@@ -54,7 +61,9 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {}
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+        robotContainer.disabledExit();
+    }
 
     @Override
     public void autonomousInit() {

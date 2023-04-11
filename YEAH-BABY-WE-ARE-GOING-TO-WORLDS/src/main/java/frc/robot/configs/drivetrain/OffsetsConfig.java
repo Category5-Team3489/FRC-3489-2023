@@ -1,11 +1,10 @@
 package frc.robot.configs.drivetrain;
 
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import frc.robot.Cat5Utils;
+import frc.robot.Cat5;
 import frc.robot.Constants;
-import frc.robot.configs.Cat5Config;
-import frc.robot.data.Cat5ShuffleboardTab;
+import frc.robot.RobotContainer;
+import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -18,15 +17,12 @@ public class OffsetsConfig {
     private static final String BackRightOffsetRadiansPreferencesKey = "Drivetrain/BackRightOffsetRadians";
 
     // State
-    private Drivetrain drivetrain;
     private double frontLeftOffsetRadians = 0;
     private double frontRightOffsetRadians = 0;
     private double backLeftOffsetRadians = 0;
     private double backRightOffsetRadians = 0;
 
-    public OffsetsConfig(Drivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-
+    public OffsetsConfig(RobotContainer robotContainer, Drivetrain drivetrain) {
         frontLeftOffsetRadians = Preferences.getDouble(FrontLeftOffsetRadiansPreferencesKey, 0);
         frontRightOffsetRadians = Preferences.getDouble(FrontRightOffsetRadiansPreferencesKey, 0);
         backLeftOffsetRadians = Preferences.getDouble(BackLeftOffsetRadiansPreferencesKey, 0);
@@ -36,122 +32,107 @@ public class OffsetsConfig {
             return;
         }
         
-        //#region Shuffleboard
-        var layout = Cat5ShuffleboardTab.Drivetrain.get().getLayout(getClass().getName())
+        var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Offsets_Config)
             .withSize(2, 1);
 
-        layout.addDouble("Front Left", () -> Math.toDegrees(getFrontLeftOffsetRadians()));
-        layout.addDouble("Front Right", () -> Math.toDegrees(getFrontRightOffsetRadians()));
-        layout.addDouble("Back Left", () -> Math.toDegrees(getBackLeftOffsetRadians()));
-        layout.addDouble("Back Right", () -> Math.toDegrees(getBackRightOffsetRadians()));
+        // layout.addDouble("Front Left", () -> Math.toDegrees(getFrontLeftOffsetRadians()));
+        // layout.addDouble("Front Right", () -> Math.toDegrees(getFrontRightOffsetRadians()));
+        // layout.addDouble("Back Left", () -> Math.toDegrees(getBackLeftOffsetRadians()));
+        // layout.addDouble("Back Right", () -> Math.toDegrees(getBackRightOffsetRadians()));
 
         layout.add(drivetrain.run(() -> {
             frontLeftOffsetRadians = 0;
 
-            Drivetrain.get().setFrontLeftPercentAngle(0, 0);
+            drivetrain.setFrontLeftPercentAngle(0, 0);
 
-            Cat5Utils.time();
-            System.out.println("Zero Front Left");
+            Cat5.print("Zeroed Front Left");
         })
             .ignoringDisable(true)
             .withName("Zero Front Left")
         );
-        layout.add(Drivetrain.get().run(() -> {
+        layout.add(drivetrain.run(() -> {
             frontRightOffsetRadians = 0;
 
-            Drivetrain.get().setFrontRightPercentAngle(0, 0);
+            drivetrain.setFrontRightPercentAngle(0, 0);
 
-            Cat5Utils.time();
-            System.out.println("Zero Front Right");
+            Cat5.print("Zeroed Front Right");
         })
             .ignoringDisable(true)
             .withName("Zero Front Right")
         );
-        layout.add(Drivetrain.get().run(() -> {
+        layout.add(drivetrain.run(() -> {
             backLeftOffsetRadians = 0;
 
-            Drivetrain.get().setBackLeftPercentAngle(0, 0);
+            drivetrain.setBackLeftPercentAngle(0, 0);
 
-            Cat5Utils.time();
-            System.out.println("Zero Back Left");
+            Cat5.print("Zeroed Back Left");
         })
             .ignoringDisable(true)
             .withName("Zero Back Left")
         );
-        layout.add(Drivetrain.get().run(() -> {
+        layout.add(drivetrain.run(() -> {
             backRightOffsetRadians = 0;
 
-            Drivetrain.get().setBackRightPercentAngle(0, 0);
+            drivetrain.setBackRightPercentAngle(0, 0);
 
-            Cat5Utils.time();
-            System.out.println("Zero Back Right");
+            Cat5.print("Zeroed Back Right");
         })
             .ignoringDisable(true)
             .withName("Zero Back Right")
         );
 
         layout.add(runOnce(() -> {
-            frontLeftOffsetRadians = Drivetrain.get().frontLeftModule.getSteerAngle();
+            frontLeftOffsetRadians = drivetrain.frontLeftModule.getSteerAngle();
 
             Preferences.setDouble(FrontLeftOffsetRadiansPreferencesKey, frontLeftOffsetRadians);
 
-            Cat5Utils.time();
-            System.out.println("Save Front Left (rad): " + frontLeftOffsetRadians);
+            Cat5.print("Saved Front Left (deg): " + Math.toDegrees(frontLeftOffsetRadians));
         })
             .ignoringDisable(true)
             .withName("Save Front Left")
         );
         layout.add(runOnce(() -> {
-            frontRightOffsetRadians = Drivetrain.get().frontRightModule.getSteerAngle();
+            frontRightOffsetRadians = drivetrain.frontRightModule.getSteerAngle();
 
             Preferences.setDouble(FrontRightOffsetRadiansPreferencesKey, frontRightOffsetRadians);
 
-            Cat5Utils.time();
-            System.out.println("Save Front Right (rad): " + frontRightOffsetRadians);
+            Cat5.print("Saved Front Right (deg): " + Math.toDegrees(frontRightOffsetRadians));
         })
             .ignoringDisable(true)
             .withName("Save Front Right")
         );
         layout.add(runOnce(() -> {
-            backLeftOffsetRadians = Drivetrain.get().backLeftModule.getSteerAngle();
+            backLeftOffsetRadians = drivetrain.backLeftModule.getSteerAngle();
 
             Preferences.setDouble(BackLeftOffsetRadiansPreferencesKey, backLeftOffsetRadians);
 
-            Cat5Utils.time();
-            System.out.println("Save Back Left (rad): " + backLeftOffsetRadians);
+            Cat5.print("Saved Back Left (deg): " + Math.toDegrees(backLeftOffsetRadians));
         })
             .ignoringDisable(true)
             .withName("Save Back Left")
         );
         layout.add(runOnce(() -> {
-            backRightOffsetRadians = Drivetrain.get().backRightModule.getSteerAngle();
+            backRightOffsetRadians = drivetrain.backRightModule.getSteerAngle();
 
             Preferences.setDouble(BackRightOffsetRadiansPreferencesKey, backRightOffsetRadians);
 
-            Cat5Utils.time();
-            System.out.println("Save Back Right (rad): " + backRightOffsetRadians);
+            Cat5.print("Saved Back Right (deg): " + Math.toDegrees(backRightOffsetRadians));
         })
             .ignoringDisable(true)
             .withName("Save Back Right")
         );
-        //#endregion
     }
 
-    //#region Public
     public double getFrontLeftOffsetRadians() {
         return frontLeftOffsetRadians;
     }
-
     public double getFrontRightOffsetRadians() {
         return frontRightOffsetRadians;
     }
-
     public double getBackLeftOffsetRadians() {
         return backLeftOffsetRadians;
     }
-
     public double getBackRightOffsetRadians() {
         return backRightOffsetRadians;
     }
-    //#endregion
 }

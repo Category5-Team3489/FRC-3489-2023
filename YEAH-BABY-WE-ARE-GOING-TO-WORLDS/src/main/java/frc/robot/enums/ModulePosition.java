@@ -6,9 +6,13 @@ public enum ModulePosition {
     BackLeft(2),
     BackRight(3);
 
-    public final int index;
+    private final int index;
 
     private ModulePosition(int index) {
         this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }

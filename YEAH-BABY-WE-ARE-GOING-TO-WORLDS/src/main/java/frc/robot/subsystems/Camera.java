@@ -7,7 +7,7 @@ import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import frc.robot.Cat5;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.data.Cat5ShuffleboardTab;
+import frc.robot.data.shuffleboard.Cat5ShuffleboardTab;
 
 public class Camera extends Cat5Subsystem {
     // Constants
@@ -26,6 +26,7 @@ public class Camera extends Cat5Subsystem {
             UsbCamera camera = CameraServer.startAutomaticCapture(0);
             VideoSink server = CameraServer.getServer();
 
+            // Configure camera
             camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
             camera.setResolution(PixelWidth, PixelHeight);
             camera.setFPS(FPS);
