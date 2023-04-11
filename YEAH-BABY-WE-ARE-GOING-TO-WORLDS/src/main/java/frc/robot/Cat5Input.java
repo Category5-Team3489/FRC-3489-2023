@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -95,6 +96,10 @@ public class Cat5Input {
     }
 
     public GamePiece getIndicatedGamePiece() {
+        if (!DriverStation.isTeleopEnabled()) {
+            return GamePiece.Unknown;
+        }
+
         double value = man.getThrottle();
         if (value > 0.8) {
             return GamePiece.Cone;

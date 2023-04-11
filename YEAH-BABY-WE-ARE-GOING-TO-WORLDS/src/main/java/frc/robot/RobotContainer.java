@@ -14,6 +14,8 @@ import frc.robot.data.shuffleboard.Cat5ShuffleboardLayouts;
 import frc.robot.interfaces.Cat5Updatable;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Gripper;
+import frc.robot.subsystems.Indicator;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
 
@@ -48,6 +50,10 @@ public class RobotContainer implements Cat5Updatable {
     @SuppressWarnings("unused")
     private final Limelight limelight;
     private final Drivetrain drivetrain;
+    @SuppressWarnings("unused")
+    private final Indicator indicator;
+    private final Gripper gripper;
+
 
     public RobotContainer(Robot robot, DataLog dataLog) {
         this.robot = robot;
@@ -61,9 +67,15 @@ public class RobotContainer implements Cat5Updatable {
         navx = new NavX2(this);
         limelight = new Limelight(this);
         drivetrain = new Drivetrain(this, navx);
+        indicator = new Indicator(this);
+        gripper = new Gripper(this, indicator);
         Cat5.print("Initialization complete!");
 
         configureBindings();
+
+        // TODO When outtaking with gripper, always set held game piece to Unknown
+
+        // TODO Leds and prints for actions
     }
 
     private void configureBindings() {
@@ -71,9 +83,7 @@ public class RobotContainer implements Cat5Updatable {
 
         }));
 
-        input.gripperStop.onTrue(runOnce(() -> {
-
-        }));
+        input.gripperStop.onTrue(gripper.stopCommand);
         input.gripperIntake.onTrue(runOnce(() -> {
 
         }));

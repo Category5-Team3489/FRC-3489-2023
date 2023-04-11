@@ -25,6 +25,8 @@ public class Cat5Datapoint<T> implements Cat5Updatable {
 
         shuffleboardTime = Timer.getFPGATimestamp();
         logTime = Timer.getFPGATimestamp();
+
+        // TODO Optimization: cache last set shuffleboard or log and only update if changed, use Comparable interface
     }
 
     public Cat5Datapoint<T> withShuffleboardUpdater(Consumer<T> updateShuffleboard) {

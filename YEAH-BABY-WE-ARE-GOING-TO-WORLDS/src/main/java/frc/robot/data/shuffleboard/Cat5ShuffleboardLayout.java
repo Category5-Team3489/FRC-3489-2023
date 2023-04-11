@@ -6,7 +6,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
 public enum Cat5ShuffleboardLayout {
     Vitals(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList),
-    Offsets_Config(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList);
+    Offsets_Config(Cat5ShuffleboardTab.Drivetrain, BuiltInLayouts.kList),
+    Workarounds(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList);
 
     private final Cat5ShuffleboardTab tab;
     private final LayoutType type;
