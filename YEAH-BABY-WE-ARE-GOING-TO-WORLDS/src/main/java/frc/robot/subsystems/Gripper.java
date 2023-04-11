@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Cat5;
 import frc.robot.RobotContainer;
+import frc.robot.data.Cat5DeltaTracker;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.enums.GamePiece;
 
@@ -60,11 +61,26 @@ public class Gripper extends Cat5Subsystem {
         setDefaultCommand(stopCommand);
 
         var isLimitSwitchDisabledEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Workarounds)
+            .withSize(2, 4)
             .add("Disable Limit Switch", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
-            .withSize(2, 1)
             .getEntry();
         isLimitSwitchDisabled = () -> isLimitSwitchDisabledEntry.getBoolean(false);
+
+        new Cat5DeltaTracker<GamePiece>(robotContainer, heldGamePiece,
+        (last) -> {
+            return last != heldGamePiece;
+        }, (last) -> {
+            Cat5.print("Held game piece: " + last.toString() + " -> " + heldGamePiece.toString());
+            return heldGamePiece;
+        });
+        new Cat5DeltaTracker<Boolean>(robotContainer, canReintakeAgain,
+        (last) -> {
+            return last != canReintakeAgain;
+        }, (last) -> {
+            Cat5.print("Can reintake again: " + last.toString() + " -> " + canReintakeAgain);
+            return canReintakeAgain;
+        });
     }
 
     @Override

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import edu.wpi.first.util.datalog.DataLog;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.data.Cat5Data;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayouts;
+import frc.robot.enums.GamePiece;
 import frc.robot.interfaces.Cat5Updatable;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Drivetrain;
@@ -43,6 +45,14 @@ public class RobotContainer implements Cat5Updatable {
     }
     //#endregion
 
+    //#region Updatables
+    private ArrayList<Cat5Updatable> updatables = new ArrayList<Cat5Updatable>();
+
+    public void registerUpdatable(Cat5Updatable updatable) {
+        updatables.add(updatable);
+    }
+    //#endregion
+
     // Subsystems
     @SuppressWarnings("unused")
     private final Camera camera;
@@ -50,7 +60,6 @@ public class RobotContainer implements Cat5Updatable {
     @SuppressWarnings("unused")
     private final Limelight limelight;
     private final Drivetrain drivetrain;
-    @SuppressWarnings("unused")
     private final Indicator indicator;
     private final Gripper gripper;
 
@@ -61,6 +70,8 @@ public class RobotContainer implements Cat5Updatable {
         layouts = new Cat5ShuffleboardLayouts();
         data = new Cat5Data();
         input = new Cat5Input();
+
+        registerUpdatable(data);
 
         Cat5.print("Initializing...");
         camera = new Camera(this);
@@ -154,9 +165,11 @@ public class RobotContainer implements Cat5Updatable {
     public void autonomousInit() {
         // TODO
         // Leds.get().getCommand(LedPattern.Blue, 1.0, false)
+
+        indicator.setIndicatedGamePiece(GamePiece.Cone);
     }
 
-    public void teleopInit() {
+    public void teleopInit() {        
         // TODO
         // Leds.get().getCommand(LedPattern.Green, 1.0, false)
     }
@@ -178,6 +191,8 @@ public class RobotContainer implements Cat5Updatable {
 
     @Override
     public void update(double time) {
-        data.update(time);
+        for (Cat5Updatable updatable : updatables) {
+            updatable.update(time);
+        }
     }
 }

@@ -33,7 +33,7 @@ public class OffsetsConfig {
         }
         
         var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Offsets_Config)
-            .withSize(2, 1);
+            .withSize(2, 4);
 
         // layout.addDouble("Front Left", () -> Math.toDegrees(getFrontLeftOffsetRadians()));
         // layout.addDouble("Front Right", () -> Math.toDegrees(getFrontRightOffsetRadians()));

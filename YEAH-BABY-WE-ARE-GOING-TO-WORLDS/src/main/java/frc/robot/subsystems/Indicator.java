@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Cat5;
 import frc.robot.RobotContainer;
+import frc.robot.data.Cat5DeltaTracker;
 import frc.robot.enums.GamePiece;
 
 public class Indicator extends Cat5Subsystem {
@@ -10,6 +11,14 @@ public class Indicator extends Cat5Subsystem {
 
     public Indicator(RobotContainer robotContainer) {
         super(robotContainer);
+
+        new Cat5DeltaTracker<GamePiece>(robotContainer, indicatedGamePiece,
+        (last) -> {
+            return last != indicatedGamePiece;
+        }, (last) -> {
+            Cat5.print("Indicated game piece: " + last.toString() + " -> " + indicatedGamePiece.toString());
+            return indicatedGamePiece;
+        });
     }
 
     @Override
@@ -24,8 +33,8 @@ public class Indicator extends Cat5Subsystem {
     }
 
     public void setIndicatedGamePiece(GamePiece indicatedGamePiece) {
-        if (!DriverStation.isTeleopEnabled()) {
-            Cat5.print("Attempted to set indicated game piece to " + indicatedGamePiece.toString() + " while not teleop");
+        if (DriverStation.isTeleopEnabled()) {
+            Cat5.print("Attempted to set indicated game piece to " + indicatedGamePiece.toString() + " while in teleop");
             return;
         }
 
