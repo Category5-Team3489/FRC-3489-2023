@@ -146,6 +146,10 @@ public class RobotContainer implements Cat5Updatable {
         // TODO Delta trackers on subsystem active commands enums
 
         // TODO Implement LEDS and use leds... EVERYWHERE, + priority stuff for them, game piece indicator default
+
+        // TODO Increase logging and shuffleboard frequencies?
+
+        // TODO Arm, DeltaTracker, shuffleboard vitals and shuffleboard debug
     }
 
     private void configureBindings() {

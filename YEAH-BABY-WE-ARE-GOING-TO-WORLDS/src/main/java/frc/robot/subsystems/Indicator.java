@@ -1,9 +1,12 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Cat5;
 import frc.robot.RobotContainer;
 import frc.robot.data.Cat5DeltaTracker;
+import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.enums.GamePiece;
 
 public class Indicator extends Cat5Subsystem {
@@ -11,6 +14,19 @@ public class Indicator extends Cat5Subsystem {
 
     public Indicator(RobotContainer robotContainer) {
         super(robotContainer);
+
+        GenericEntry indicatedGamePieceEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.More_Vitals)
+            .add("Indicator Indicated Game Piece", indicatedGamePiece.toString())
+            .getEntry();
+        StringLogEntry indicatedGamePieceLogEntry = new StringLogEntry(robotContainer.dataLog, "/indicator/indicated-game-piece");
+        robotContainer.data.createDatapoint(() -> indicatedGamePiece.toString())
+            .withShuffleboardUpdater(data -> {
+                indicatedGamePieceEntry.setString(data);
+            })
+            .withShuffleboardHz(4)
+            .withLogUpdater(data -> {
+                indicatedGamePieceLogEntry.append(data);
+            });
 
         new Cat5DeltaTracker<GamePiece>(robotContainer, indicatedGamePiece,
         last -> {
