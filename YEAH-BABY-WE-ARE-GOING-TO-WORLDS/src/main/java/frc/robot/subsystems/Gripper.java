@@ -68,16 +68,16 @@ public class Gripper extends Cat5Subsystem {
         isLimitSwitchDisabled = () -> isLimitSwitchDisabledEntry.getBoolean(false);
 
         new Cat5DeltaTracker<GamePiece>(robotContainer, heldGamePiece,
-        (last) -> {
+        last -> {
             return last != heldGamePiece;
-        }, (last) -> {
+        }, last -> {
             Cat5.print("Held game piece: " + last.toString() + " -> " + heldGamePiece.toString());
             return heldGamePiece;
         });
         new Cat5DeltaTracker<Boolean>(robotContainer, canReintakeAgain,
-        (last) -> {
+        last -> {
             return last != canReintakeAgain;
-        }, (last) -> {
+        }, last -> {
             Cat5.print("Can reintake again: " + last.toString() + " -> " + canReintakeAgain);
             return canReintakeAgain;
         });

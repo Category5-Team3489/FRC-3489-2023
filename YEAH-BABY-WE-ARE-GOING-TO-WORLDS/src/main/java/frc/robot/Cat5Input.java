@@ -48,23 +48,23 @@ public class Cat5Input {
 
         ArrayList<Pair<String, Pair<Trigger, Consumer<Trigger>>>> triggers = new ArrayList<Pair<String, Pair<Trigger, Consumer<Trigger>>>>();
 
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("automate", new Pair<Trigger, Consumer<Trigger>>(automate, (automate) -> this.automate = automate)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperStop", new Pair<Trigger, Consumer<Trigger>>(gripperStop, (gripperStop) -> this.gripperStop = gripperStop)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperIntake", new Pair<Trigger, Consumer<Trigger>>(gripperIntake, (gripperIntake) -> this.gripperIntake = gripperIntake)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperOuttake", new Pair<Trigger, Consumer<Trigger>>(gripperOuttake, (gripperOuttake) -> this.gripperOuttake = gripperOuttake)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristLow", new Pair<Trigger, Consumer<Trigger>>(wristLow, (wristLow) -> this.wristLow = wristLow)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristHigh", new Pair<Trigger, Consumer<Trigger>>(wristHigh, (wristHigh) -> this.wristHigh = wristHigh)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armDoubleSubstation", new Pair<Trigger, Consumer<Trigger>>(armDoubleSubstation, (armDoubleSubstation) -> this.armDoubleSubstation = armDoubleSubstation)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armHome", new Pair<Trigger, Consumer<Trigger>>(armHome, (armHome) -> this.armHome = armHome)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armPickup", new Pair<Trigger, Consumer<Trigger>>(armPickup, (armPickup) -> this.armPickup = armPickup)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armLow", new Pair<Trigger, Consumer<Trigger>>(armLow, (armLow) -> this.armLow = armLow)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armMid", new Pair<Trigger, Consumer<Trigger>>(armMid, (armMid) -> this.armMid = armMid)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armHigh", new Pair<Trigger, Consumer<Trigger>>(armHigh, (armHigh) -> this.armHigh = armHigh)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("navxZeroYaw", new Pair<Trigger, Consumer<Trigger>>(navxZeroYaw, (navxZeroYaw) -> this.navxZeroYaw = navxZeroYaw)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainNorth", new Pair<Trigger, Consumer<Trigger>>(drivetrainNorth, (drivetrainNorth) -> this.drivetrainNorth = drivetrainNorth)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainEast", new Pair<Trigger, Consumer<Trigger>>(drivetrainEast, (drivetrainEast) -> this.drivetrainEast = drivetrainEast)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainSouth", new Pair<Trigger, Consumer<Trigger>>(drivetrainSouth, (drivetrainSouth) -> this.drivetrainSouth = drivetrainSouth)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainWest", new Pair<Trigger, Consumer<Trigger>>(drivetrainWest, (drivetrainWest) -> this.drivetrainWest = drivetrainWest)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("automate", new Pair<Trigger, Consumer<Trigger>>(automate, automate -> this.automate = automate)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperStop", new Pair<Trigger, Consumer<Trigger>>(gripperStop, gripperStop -> this.gripperStop = gripperStop)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperIntake", new Pair<Trigger, Consumer<Trigger>>(gripperIntake, gripperIntake -> this.gripperIntake = gripperIntake)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperOuttake", new Pair<Trigger, Consumer<Trigger>>(gripperOuttake, gripperOuttake -> this.gripperOuttake = gripperOuttake)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristLow", new Pair<Trigger, Consumer<Trigger>>(wristLow, wristLow -> this.wristLow = wristLow)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristHigh", new Pair<Trigger, Consumer<Trigger>>(wristHigh, wristHigh -> this.wristHigh = wristHigh)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armDoubleSubstation", new Pair<Trigger, Consumer<Trigger>>(armDoubleSubstation, armDoubleSubstation -> this.armDoubleSubstation = armDoubleSubstation)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armHome", new Pair<Trigger, Consumer<Trigger>>(armHome, armHome -> this.armHome = armHome)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armPickup", new Pair<Trigger, Consumer<Trigger>>(armPickup, armPickup -> this.armPickup = armPickup)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armLow", new Pair<Trigger, Consumer<Trigger>>(armLow, armLow -> this.armLow = armLow)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armMid", new Pair<Trigger, Consumer<Trigger>>(armMid, armMid -> this.armMid = armMid)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armHigh", new Pair<Trigger, Consumer<Trigger>>(armHigh, armHigh -> this.armHigh = armHigh)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("navxZeroYaw", new Pair<Trigger, Consumer<Trigger>>(navxZeroYaw, navxZeroYaw -> this.navxZeroYaw = navxZeroYaw)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainNorth", new Pair<Trigger, Consumer<Trigger>>(drivetrainNorth, drivetrainNorth -> this.drivetrainNorth = drivetrainNorth)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainEast", new Pair<Trigger, Consumer<Trigger>>(drivetrainEast, drivetrainEast -> this.drivetrainEast = drivetrainEast)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainSouth", new Pair<Trigger, Consumer<Trigger>>(drivetrainSouth, drivetrainSouth -> this.drivetrainSouth = drivetrainSouth)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainWest", new Pair<Trigger, Consumer<Trigger>>(drivetrainWest, drivetrainWest -> this.drivetrainWest = drivetrainWest)));
 
         for (Pair<String, Pair<Trigger, Consumer<Trigger>>> e : triggers) {
             GenericEntry entry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Buttons)
@@ -101,16 +101,16 @@ public class Cat5Input {
     }
 
     public double getDriveSpeedLimiterPercent() {
-        double speedLimiter = 1.0 / 2.0;
+        double speedLimiterPercent = 1.0 / 2.0;
 
         if (xbox.leftBumper().getAsBoolean()) {
-            speedLimiter = 1.0 / 3.0;
+            speedLimiterPercent = 1.0 / 3.0;
         }
         else if (xbox.rightBumper().getAsBoolean()) {
-            speedLimiter = 1.0;
+            speedLimiterPercent = 1.0;
         }
 
-        return speedLimiter;
+        return speedLimiterPercent;
     }
 
     public int getDrivePovAngleDegrees() {

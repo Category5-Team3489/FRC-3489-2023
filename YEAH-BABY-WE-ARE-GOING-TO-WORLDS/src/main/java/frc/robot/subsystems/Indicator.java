@@ -13,9 +13,9 @@ public class Indicator extends Cat5Subsystem {
         super(robotContainer);
 
         new Cat5DeltaTracker<GamePiece>(robotContainer, indicatedGamePiece,
-        (last) -> {
+        last -> {
             return last != indicatedGamePiece;
-        }, (last) -> {
+        }, last -> {
             Cat5.print("Indicated game piece: " + last.toString() + " -> " + indicatedGamePiece.toString());
             return indicatedGamePiece;
         });

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Cat5;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.drivetrain.Drive;
 import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
@@ -32,14 +33,15 @@ public class Drivetrain extends Cat5Subsystem {
     private static final double WheelsLeftToRightMeters = 0.54;
     private static final double WheelsFrontToBackMeters = 0.54;
     private static final double MetersPerRotation = SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
-    private static final double TheoreticalMaxVelocityMetersPerSecond = 6380.0 / 60.0 * MetersPerRotation;
-    private static final double TheoreticalMaxAngularVelocityRadiansPerSecond = TheoreticalMaxVelocityMetersPerSecond / Math.hypot(WheelsLeftToRightMeters / 2.0, WheelsFrontToBackMeters / 2.0);
-    
-    public static final Translation2d FrontLeftMeters = new Translation2d(WheelsLeftToRightMeters / 2.0, WheelsFrontToBackMeters / 2.0);
-    public static final Translation2d FrontRightMeters = new Translation2d(WheelsLeftToRightMeters / 2.0, -WheelsFrontToBackMeters / 2.0);
-    public static final Translation2d BackLeftMeters = new Translation2d(-WheelsLeftToRightMeters / 2.0, WheelsFrontToBackMeters / 2.0);
-    public static final Translation2d BackRightMeters = new Translation2d(-WheelsLeftToRightMeters / 2.0, -WheelsFrontToBackMeters / 2.0);
-        
+
+    private static final Translation2d FrontLeftMeters = new Translation2d(WheelsLeftToRightMeters / 2.0, WheelsFrontToBackMeters / 2.0);
+    private static final Translation2d FrontRightMeters = new Translation2d(WheelsLeftToRightMeters / 2.0, -WheelsFrontToBackMeters / 2.0);
+    private static final Translation2d BackLeftMeters = new Translation2d(-WheelsLeftToRightMeters / 2.0, WheelsFrontToBackMeters / 2.0);
+    private static final Translation2d BackRightMeters = new Translation2d(-WheelsLeftToRightMeters / 2.0, -WheelsFrontToBackMeters / 2.0);
+
+    public static final double TheoreticalMaxVelocityMetersPerSecond = 6380.0 / 60.0 * MetersPerRotation;
+    public static final double TheoreticalMaxAngularVelocityRadiansPerSecond = TheoreticalMaxVelocityMetersPerSecond / Math.hypot(WheelsLeftToRightMeters / 2.0, WheelsFrontToBackMeters / 2.0);
+
     public static final SwerveDriveKinematics Kinematics = new SwerveDriveKinematics(
         FrontLeftMeters,
         FrontRightMeters,
@@ -83,6 +85,7 @@ public class Drivetrain extends Cat5Subsystem {
     public final SwerveModule backRightModule;
 
     // Commands
+    private final Drive driveCommand;
     
     // State
     private final NavX2 navx;
@@ -94,6 +97,10 @@ public class Drivetrain extends Cat5Subsystem {
         this.navx = navx;
 
         offsetsConfig = new OffsetsConfig(robotContainer, this);
+
+        driveCommand = new Drive(robotContainer, this);
+
+        setDefaultCommand(driveCommand);
         
         omegaController.enableContinuousInput(-180.0, 180.0);
         omegaController.setTolerance(OmegaToleranceDegrees);
@@ -219,9 +226,9 @@ public class Drivetrain extends Cat5Subsystem {
         // }
     }
 
-    // public boolean isDriveCommandActive() {
-    //     return getCurrentCommand() == driveCommand;
-    // }
+    public boolean isDriveCommandActive() {
+        return getCurrentCommand() == driveCommand;
+    }
 
     // targetHeading: increase - CCW
     public void setTargetHeading(Rotation2d targetHeading) {
@@ -256,7 +263,7 @@ public class Drivetrain extends Cat5Subsystem {
         setBackRightPercentAngle(percent, angleRadians);
     }
 
-    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double speedLimiter, Rotation2d targetHeadingOverride, Double omegaMaxDegreesPerSecondOverride) {
+    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double speedLimiterPercent, Rotation2d targetHeadingOverride, Double omegaMaxDegreesPerSecondOverride) {
         Rotation2d theta = navx.getRotation();
 
         if (targetHeading == null) {
@@ -282,10 +289,10 @@ public class Drivetrain extends Cat5Subsystem {
 
         omegaRadiansPerSecond = Math.toRadians(outputDegreesPerSecond);
 
-        driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiter, true);
+        driveFieldRelative(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, speedLimiterPercent, true);
     }
     
-    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double omegaRadiansPerSecond, double speedLimiter, boolean isKeepingHeading) {
+    public void driveFieldRelative(double xMetersPerSecond, double yMetersPerSecond, double omegaRadiansPerSecond, double speedLimiterPercent, boolean isKeepingHeading) {
         if (!isKeepingHeading) {
             resetTargetHeading();
         }
@@ -295,7 +302,7 @@ public class Drivetrain extends Cat5Subsystem {
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSecond, yMetersPerSecond, omegaRadiansPerSecond, theta);
     
         SwerveModuleState[] states = Kinematics.toSwerveModuleStates(chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, TheoreticalMaxVelocityMetersPerSecond * speedLimiter);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, TheoreticalMaxVelocityMetersPerSecond * speedLimiterPercent);
 
         double frontLeftSteerAngleRadians = states[0].angle.getRadians();
         double frontRightSteerAngleRadians = states[1].angle.getRadians();

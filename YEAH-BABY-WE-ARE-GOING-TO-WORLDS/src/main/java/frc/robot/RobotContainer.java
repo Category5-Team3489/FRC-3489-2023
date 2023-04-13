@@ -82,18 +82,22 @@ public class RobotContainer implements Cat5Updatable {
         registerUpdatable(data);
 
         Cat5.print("Initializing...");
+
         camera = new Camera(this);
         initComplete();
+
         navx = new NavX2(this);
         initComplete();
         limelight = new Limelight(this);
         initComplete();
         drivetrain = new Drivetrain(this, navx);
         initComplete();
+
         indicator = new Indicator(this);
         initComplete();
         gripper = new Gripper(this, indicator);
         initComplete();
+        
         Cat5.print("Initialization complete!");
 
         configureBindings();
@@ -122,6 +126,10 @@ public class RobotContainer implements Cat5Updatable {
         // TODO Go through district champs code
 
         // TODO Use Limelight.printTargetData
+
+        // TODO Drive command, set default command
+
+        // TODO Delta trackers on subsystem active commands enums
     }
 
     private void configureBindings() {
