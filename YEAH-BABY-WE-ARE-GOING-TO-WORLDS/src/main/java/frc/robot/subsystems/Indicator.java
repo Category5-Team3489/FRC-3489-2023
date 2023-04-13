@@ -16,7 +16,7 @@ public class Indicator extends Cat5Subsystem {
         last -> {
             return last != indicatedGamePiece;
         }, last -> {
-            Cat5.print("Indicated game piece: " + last.toString() + " -> " + indicatedGamePiece.toString());
+            Cat5.print("Indicator indicated game piece: " + last.toString() + " -> " + indicatedGamePiece.toString());
             return indicatedGamePiece;
         });
     }

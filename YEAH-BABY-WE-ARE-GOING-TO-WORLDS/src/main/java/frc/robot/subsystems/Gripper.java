@@ -5,11 +5,15 @@ import java.util.function.BooleanSupplier;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Cat5;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.data.Cat5DeltaTracker;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
@@ -50,7 +54,6 @@ public class Gripper extends Cat5Subsystem {
     // State
     private final Indicator indicator;
     private GamePiece heldGamePiece = GamePiece.Unknown;
-    @SuppressWarnings("unused")
     private double motorPercent = 0;
     private boolean canReintakeAgain = true;
     private final Timer reintakeAntiEatTimer = new Timer();
@@ -67,19 +70,74 @@ public class Gripper extends Cat5Subsystem {
             .getEntry();
         isLimitSwitchDisabled = () -> isLimitSwitchDisabledEntry.getBoolean(false);
 
+        GenericEntry heldGamePieceEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.More_Vitals)
+            .add("Gripper Held Game Piece", heldGamePiece.toString())
+            .getEntry();
+        StringLogEntry heldGamePieceLogEntry = new StringLogEntry(robotContainer.dataLog, "/gripper/held-game-piece");
+        robotContainer.data.createDatapoint(() -> heldGamePiece.toString())
+            .withShuffleboardUpdater(data -> {
+                heldGamePieceEntry.setString(data);
+            })
+            .withShuffleboardHz(4)
+            .withLogUpdater(data -> {
+                heldGamePieceLogEntry.append(data);
+            });
+
+        GenericEntry limitSwitchEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.More_Vitals)
+            .add("Gripper Limit Switch", limitSwitch.get())
+            .getEntry();
+        BooleanLogEntry limitSwitchLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/gripper/limit-switch");
+        robotContainer.data.createDatapoint(() -> limitSwitch.get())
+            .withShuffleboardUpdater(data -> {
+                limitSwitchEntry.setBoolean(data);
+            })
+            .withShuffleboardHz(4)
+            .withLogUpdater(data -> {
+                limitSwitchLogEntry.append(data);
+            });
+
+        GenericEntry canReintakeAgainEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.More_Vitals)
+            .add("Gripper Can Reintake Again", canReintakeAgain)
+            .getEntry();
+        BooleanLogEntry canReintakeAgainLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/gripper/can-reintake-again");
+        robotContainer.data.createDatapoint(() -> canReintakeAgain)
+            .withShuffleboardUpdater(data -> {
+                canReintakeAgainEntry.setBoolean(data);
+            })
+            .withShuffleboardHz(4)
+            .withLogUpdater(data -> {
+                canReintakeAgainLogEntry.append(data);
+            });
+
+        if (Constants.IsDebugShuffleboardEnabled) {
+            var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Gripper);
+            layout.addDouble("Motor (%)", () -> motorPercent);
+            layout.addDouble("Reintake Anti Eat (sec)", () -> reintakeAntiEatTimer.get());
+        }
+
         new Cat5DeltaTracker<GamePiece>(robotContainer, heldGamePiece,
         last -> {
             return last != heldGamePiece;
         }, last -> {
-            Cat5.print("Held game piece: " + last.toString() + " -> " + heldGamePiece.toString());
+            Cat5.print("Gripper held game piece: " + last.toString() + " -> " + heldGamePiece.toString());
             return heldGamePiece;
         });
         new Cat5DeltaTracker<Boolean>(robotContainer, canReintakeAgain,
         last -> {
             return last != canReintakeAgain;
         }, last -> {
-            Cat5.print("Can reintake again: " + last.toString() + " -> " + canReintakeAgain);
+            Cat5.print("Gripper can reintake again: " + last.toString() + " -> " + canReintakeAgain);
             return canReintakeAgain;
+        });
+        new Cat5DeltaTracker<Command>(robotContainer, getCurrentCommand(),
+        last -> {
+            return last != getCurrentCommand();
+        }, last -> {
+            String lastString = last == null ? "None" : last.getName();
+            Command currentCommand = getCurrentCommand();
+            String currentString = currentCommand == null ? "None" : currentCommand.getName();
+            Cat5.print("Gripper current command: " + lastString + " -> " + currentString);
+            return currentCommand;
         });
     }
 
@@ -129,9 +187,9 @@ public class Gripper extends Cat5Subsystem {
                 }
             }
         })
-            .beforeStarting(() -> {
-                Cat5.print("Gripper Stop");
-            })
+            // .beforeStarting(() -> {
+            //     Cat5.print("Gripper Stop");
+            // })
             .withName("Stop");
     }
 
@@ -175,9 +233,9 @@ public class Gripper extends Cat5Subsystem {
                 stopCommand.schedule();
             }
         })
-            .beforeStarting(() -> {
-                Cat5.print("Gripper Intake");
-            })
+            // .beforeStarting(() -> {
+            //     Cat5.print("Gripper Intake");
+            // })
             .withName("Intake");
     }
 
@@ -186,9 +244,9 @@ public class Gripper extends Cat5Subsystem {
             setMotors(percent);
         })
             .withTimeout(seconds)
-            .beforeStarting(() -> {
-                Cat5.print("Gripper " + name);
-            })
+            // .beforeStarting(() -> {
+            //     Cat5.print("Gripper " + name);
+            // })
             .withName(name);
     }
 

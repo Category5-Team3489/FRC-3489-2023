@@ -9,7 +9,8 @@ public enum Cat5ShuffleboardTab {
     Auto,
     Swerve_Debug,
     Debug,
-    Limelight;
+    Limelight,
+    Gripper;
 
     public ShuffleboardTab get() {
         return Shuffleboard.getTab(toString());

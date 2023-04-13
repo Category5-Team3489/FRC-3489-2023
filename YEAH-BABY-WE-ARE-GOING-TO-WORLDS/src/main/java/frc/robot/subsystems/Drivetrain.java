@@ -96,11 +96,11 @@ public class Drivetrain extends Cat5Subsystem {
         super(robotContainer);
         this.navx = navx;
 
-        offsetsConfig = new OffsetsConfig(robotContainer, this);
-
         driveCommand = new Drive(robotContainer, this);
 
         setDefaultCommand(driveCommand);
+
+        offsetsConfig = new OffsetsConfig(robotContainer, this);
         
         omegaController.enableContinuousInput(-180.0, 180.0);
         omegaController.setTolerance(OmegaToleranceDegrees);

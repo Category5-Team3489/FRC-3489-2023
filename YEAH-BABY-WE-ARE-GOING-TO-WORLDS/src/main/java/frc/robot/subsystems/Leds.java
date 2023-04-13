@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
-public class Leds {
-    // TODO
+import frc.robot.RobotContainer;
+
+public class Leds extends Cat5Subsystem {
+    public Leds(RobotContainer robotContainer) {
+        super(robotContainer);
+    }
 }

@@ -18,8 +18,10 @@ import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Indicator;
+import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
+import frc.robot.subsystems.Wrist;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -63,12 +65,19 @@ public class RobotContainer implements Cat5Updatable {
     // Subsystems
     @SuppressWarnings("unused")
     private final Camera camera;
+
     private final NavX2 navx;
     @SuppressWarnings("unused")
     private final Limelight limelight;
     private final Drivetrain drivetrain;
+
     private final Indicator indicator;
     private final Gripper gripper;
+    @SuppressWarnings("unused")
+    private final Wrist wrist;
+
+    @SuppressWarnings("unused")
+    private final Leds leds;
 
 
     public RobotContainer(Robot robot, DataLog dataLog) {
@@ -97,7 +106,12 @@ public class RobotContainer implements Cat5Updatable {
         initComplete();
         gripper = new Gripper(this, indicator);
         initComplete();
-        
+        wrist = new Wrist(this);
+        initComplete();
+
+        leds = new Leds(this);
+        initComplete();
+
         Cat5.print("Initialization complete!");
 
         configureBindings();
@@ -130,6 +144,8 @@ public class RobotContainer implements Cat5Updatable {
         // TODO Drive command, set default command
 
         // TODO Delta trackers on subsystem active commands enums
+
+        // TODO Implement LEDS and use leds... EVERYWHERE, + priority stuff for them, game piece indicator default
     }
 
     private void configureBindings() {
@@ -138,15 +154,19 @@ public class RobotContainer implements Cat5Updatable {
         }));
 
         input.gripperStop.onTrue(gripper.stopCommand);
-        input.gripperIntake.onTrue(gripper.intakeCommand);
+        input.gripperIntake.onTrue(runOnce(() -> {
+            gripper.setHeldGamePiece(GamePiece.Unknown);
+            gripper.intakeCommand.schedule();
+        }));
         input.gripperOuttake.onTrue(runOnce(() -> {
-
+            gripper.setHeldGamePiece(GamePiece.Unknown);
+            // TODO schedule coresponding command
         }));
 
-        input.wristLow.onTrue(runOnce(() -> {
+        input.wristPickup.onTrue(runOnce(() -> {
 
         }));
-        input.wristHigh.onTrue(runOnce(() -> {
+        input.wristCarry.onTrue(runOnce(() -> {
 
         }));
 

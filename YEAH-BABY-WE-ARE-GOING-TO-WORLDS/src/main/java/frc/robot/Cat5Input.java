@@ -26,8 +26,8 @@ public class Cat5Input {
     public Trigger gripperStop = man.button(1);
     public Trigger gripperIntake = man.button(2);
     public Trigger gripperOuttake = man.button(3);
-    public Trigger wristLow = man.button(4);
-    public Trigger wristHigh = man.button(6);
+    public Trigger wristPickup = man.button(4);
+    public Trigger wristCarry = man.button(6);
     public Trigger armDoubleSubstation = man.button(8);
     public Trigger armHome = man.button(10);
     public Trigger armPickup = man.button(12);
@@ -52,8 +52,8 @@ public class Cat5Input {
         triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperStop", new Pair<Trigger, Consumer<Trigger>>(gripperStop, gripperStop -> this.gripperStop = gripperStop)));
         triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperIntake", new Pair<Trigger, Consumer<Trigger>>(gripperIntake, gripperIntake -> this.gripperIntake = gripperIntake)));
         triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperOuttake", new Pair<Trigger, Consumer<Trigger>>(gripperOuttake, gripperOuttake -> this.gripperOuttake = gripperOuttake)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristLow", new Pair<Trigger, Consumer<Trigger>>(wristLow, wristLow -> this.wristLow = wristLow)));
-        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristHigh", new Pair<Trigger, Consumer<Trigger>>(wristHigh, wristHigh -> this.wristHigh = wristHigh)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristPickup", new Pair<Trigger, Consumer<Trigger>>(wristPickup, wristPickup -> this.wristPickup = wristPickup)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristCarry", new Pair<Trigger, Consumer<Trigger>>(wristCarry, wristCarry -> this.wristCarry = wristCarry)));
         triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armDoubleSubstation", new Pair<Trigger, Consumer<Trigger>>(armDoubleSubstation, armDoubleSubstation -> this.armDoubleSubstation = armDoubleSubstation)));
         triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armHome", new Pair<Trigger, Consumer<Trigger>>(armHome, armHome -> this.armHome = armHome)));
         triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armPickup", new Pair<Trigger, Consumer<Trigger>>(armPickup, armPickup -> this.armPickup = armPickup)));

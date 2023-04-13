@@ -8,40 +8,43 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Cat5Input;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import frc.robot.Cat5;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.WristConstants.WristState;
-import frc.robot.data.shuffleboard.Cat5ShuffleboardTab;
-import frc.robot.enums.GridPosition;
+import frc.robot.data.Cat5DeltaTracker;
+import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
+import frc.robot.enums.WristState;
 
-import static frc.robot.Constants.WristConstants.*;
+public class Wrist extends Cat5Subsystem {
+    // Constants
+    private static final double MotorRevolutionsPerRevolution = (100.0 / 1.0) * (2.0 / 1.0);
+    private static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
+    public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
-public class Wrist extends Cat5Subsystem{
+    private static final double CorrectionMultiplier = 7.5;
+
+    private static final int StallSmartCurrentLimitAmps = 20;
+    private static final double ProportionalGainPercentPerRevolutionOfError = 0.5;
+    private static final double MinOutputPercent = -0.30;
+    private static final double MaxOutputPercent = 0.30;
+
+    private static final int MotorDeviceId = 12;
     
     // Devices
     private final CANSparkMax motor = new CANSparkMax(MotorDeviceId, MotorType.kBrushless); // Negative up, positive down
     private final SparkMaxPIDController pidController;
     private final RelativeEncoder encoder;
-    
-    // Commands
-    private final CommandBase gotoTargetCommand = getGotoTargetCommand();
 
     // State
-    private final Indicator indicator;
-    private WristState state = WristState.Start;
-    private double rotations = WristState.Start.getRotations();
+    private WristState state = WristState.Home;
+    private double targetDegrees = state.getDegrees();
 
-    private Wrist(RobotContainer robotContainer, Indicator indicator) {
+    public Wrist(RobotContainer robotContainer) {
         super(robotContainer);
-        this.indicator = indicator;
 
-        setDefaultCommand(gotoTargetCommand);
-
-        //#region Devices
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
 
@@ -49,7 +52,7 @@ public class Wrist extends Cat5Subsystem{
         motor.setIdleMode(IdleMode.kBrake);
         motor.enableVoltageCompensation(12.0);
         motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
-        motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 50);//20 // TODO Should this be done in other places or with other frames?
+        motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 50);
@@ -57,46 +60,76 @@ public class Wrist extends Cat5Subsystem{
         pidController.setP(ProportionalGainPercentPerRevolutionOfError);
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
-        //#endregion
+
+        GenericEntry stateEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Even_More_Vitals)
+            .add("Wrist State", state.toString())
+            .getEntry();
+        StringLogEntry stateLogEntry = new StringLogEntry(robotContainer.dataLog, "/wrist/state");
+        robotContainer.data.createDatapoint(() -> state.toString())
+            .withShuffleboardUpdater(data -> {
+                stateEntry.setString(data);
+            })
+            .withShuffleboardHz(4)
+            .withLogUpdater(data -> {
+                stateLogEntry.append(data);
+            });
+
+        GenericEntry targetDegreesEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Even_More_Vitals)
+            .add("Wrist Target Degrees", targetDegrees)
+            .getEntry();
+        DoubleLogEntry targetDegreesLogEntry = new DoubleLogEntry(robotContainer.dataLog, "/wrist/target-degrees");
+        robotContainer.data.createDatapoint(() -> targetDegrees)
+            .withShuffleboardUpdater(data -> {
+                targetDegreesEntry.setDouble(data);
+            })
+            .withShuffleboardHz(4)
+            .withLogUpdater(data -> {
+                targetDegreesLogEntry.append(data);
+            });
+
+        GenericEntry encoderDegreesEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Even_More_Vitals)
+            .add("Wrist Encoder Degrees", getEncoderAngleDegrees())
+            .getEntry();
+        DoubleLogEntry encoderDegreesLogEntry = new DoubleLogEntry(robotContainer.dataLog, "/wrist/encoder-degrees");
+        robotContainer.data.createDatapoint(() -> getEncoderAngleDegrees())
+            .withShuffleboardUpdater(data -> {
+                encoderDegreesEntry.setDouble(data);
+            })
+            .withShuffleboardHz(4)
+            .withLogUpdater(data -> {
+                encoderDegreesLogEntry.append(data);
+            });
+
+        new Cat5DeltaTracker<WristState>(robotContainer, state,
+        last -> {
+            return last != state;
+        }, last -> {
+            Cat5.print("Wrist state: " + last.toString() + " -> " + state.toString());
+            return state;
+        });
     }
 
     @Override
     public void periodic() {
         double correctionPercent = robotContainer.input.getWristCorrectionPercent();
-        rotations -= correctionPercent * 7.5 * Robot.kDefaultPeriod;
-        // if (Arm.get().getGridPosition() == GridPosition.High || Arm.get().getGridPosition() == GridPosition.Mid) {
-        //     rotations = MathUtil.clamp(rotations, WristState.MinAtHigh.getRotations(), WristState.Max.getRotations());
+        targetDegrees -= correctionPercent * CorrectionMultiplier * DegreesPerMotorRevolution * Robot.kDefaultPeriod;
+        // if (Arm.get().getGridPosition() == GridPosition.Mid || Arm.get().getGridPosition() == GridPosition.High) {
+        //     degrees = MathUtil.clamp(rotations, WristState.MinAtHigh.getRotations(), WristState.Max.getRotations());
         // }
         // else {
-        //     rotations = MathUtil.clamp(rotations, WristState.Min.getRotations(), WristState.Max.getRotations());
+        //     degrees = MathUtil.clamp(rotations, WristState.Min.getRotations(), WristState.Max.getRotations());
         // }
+
+        pidController.setReference(targetDegrees, ControlType.kPosition, 0);
     }
 
-    // //#region Encoder
-    // private double getEncoderAngleDegrees() {
-    //     double rotations = encoder.getPosition();
-    //     return rotations * DegreesPerMotorRevolution;
-    // }
-    // //#endregion
-
-    //#region Commands
-    private CommandBase getGotoTargetCommand() {
-        return run(() -> {
-            pidController.setReference(rotations, ControlType.kPosition, 0);
-        })
-            .withName("Goto Target");
+    private double getEncoderAngleDegrees() {
+        double rotations = encoder.getPosition();
+        return rotations * DegreesPerMotorRevolution;
     }
-    //#endregion
 
-    //#region Public
-    public WristState getState() {
-        return state;
-    }
-    
     public void setState(WristState state) {
         this.state = state;
-
-        rotations = state.getRotations();
+        targetDegrees = state.getDegrees();
     }
-    //#endregion
 }
