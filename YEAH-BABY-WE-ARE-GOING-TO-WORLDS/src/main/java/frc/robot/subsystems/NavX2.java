@@ -23,7 +23,7 @@ public class NavX2 extends Cat5Subsystem {
     public NavX2(RobotContainer robotContainer) {
         super(robotContainer);
 
-        GenericEntry headingEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Vitals)
+        GenericEntry headingEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Driver)
             .add("NavX2 Heading (deg)", 0.0)
             .getEntry();
         DoubleLogEntry headingLogEntry = new DoubleLogEntry(robotContainer.dataLog, "/navx/heading");
@@ -36,7 +36,7 @@ public class NavX2 extends Cat5Subsystem {
                 headingLogEntry.append(data);
             });
 
-        GenericEntry connectedEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Vitals)
+        GenericEntry connectedEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Driver)
             .add("NavX2 Connected", false)
             .getEntry();
         BooleanLogEntry connectedLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/navx/connected");

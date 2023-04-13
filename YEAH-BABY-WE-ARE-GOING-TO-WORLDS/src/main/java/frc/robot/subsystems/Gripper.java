@@ -64,13 +64,13 @@ public class Gripper extends Cat5Subsystem {
 
         setDefaultCommand(stopCommand);
 
-        GenericEntry isLimitSwitchDisabledEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Workarounds)
+        GenericEntry isLimitSwitchDisabledEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Driver)
             .add("Disable Limit Switch", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .getEntry();
         isLimitSwitchDisabled = () -> isLimitSwitchDisabledEntry.getBoolean(false);
 
-        GenericEntry heldGamePieceEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.More_Vitals)
+        GenericEntry heldGamePieceEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Gripper Held Game Piece", heldGamePiece.toString())
             .getEntry();
         StringLogEntry heldGamePieceLogEntry = new StringLogEntry(robotContainer.dataLog, "/gripper/held-game-piece");
@@ -83,7 +83,7 @@ public class Gripper extends Cat5Subsystem {
                 heldGamePieceLogEntry.append(data);
             });
 
-        GenericEntry limitSwitchEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.More_Vitals)
+        GenericEntry limitSwitchEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Gripper Limit Switch", limitSwitch.get())
             .getEntry();
         BooleanLogEntry limitSwitchLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/gripper/limit-switch");
@@ -96,7 +96,7 @@ public class Gripper extends Cat5Subsystem {
                 limitSwitchLogEntry.append(data);
             });
 
-        GenericEntry canReintakeAgainEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.More_Vitals)
+        GenericEntry canReintakeAgainEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Gripper Can Reintake Again", canReintakeAgain)
             .getEntry();
         BooleanLogEntry canReintakeAgainLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/gripper/can-reintake-again");
@@ -267,5 +267,9 @@ public class Gripper extends Cat5Subsystem {
 
     public void setHeldGamePiece(GamePiece heldGamePiece) {
         this.heldGamePiece = heldGamePiece;
+    }
+
+    public void resetCanReintakeAgain() {
+        canReintakeAgain = true;
     }
 }

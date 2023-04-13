@@ -25,6 +25,7 @@ import frc.robot.configs.drivetrain.OffsetsConfig;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.enums.GridPosition;
+import frc.robot.enums.LimelightPipeline;
 import frc.robot.enums.ModulePosition;
 
 public class Drivetrain extends Cat5Subsystem {
@@ -92,13 +93,15 @@ public class Drivetrain extends Cat5Subsystem {
     // State
     private final NavX2 navx;
     private final Arm arm;
+    private final Limelight limelight;
     private Rotation2d targetHeading = null;
     private final PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
-    public Drivetrain(RobotContainer robotContainer, NavX2 navx, Arm arm) {
+    public Drivetrain(RobotContainer robotContainer, NavX2 navx, Arm arm, Limelight limelight) {
         super(robotContainer);
         this.navx = navx;
         this.arm = arm;
+        this.limelight = limelight;
 
         driveCommand = new Drive(robotContainer, this);
 
@@ -109,7 +112,7 @@ public class Drivetrain extends Cat5Subsystem {
         omegaController.enableContinuousInput(-180.0, 180.0);
         omegaController.setTolerance(OmegaToleranceDegrees);
 
-        if (Constants.IsSDSDebugEnabled) {
+        if (Constants.IsSwerveDebugEnabled) {
             ShuffleboardTab layout = Cat5ShuffleboardTab.Swerve_Debug.get();
 
             frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
@@ -222,10 +225,14 @@ public class Drivetrain extends Cat5Subsystem {
             return;
         }
 
-        if (!isDriveCommandActive() && robotContainer.input.isBeingDriven()) {
-            driveCommand.schedule();
+        if (robotContainer.input.isBeingDriven()) {
+            limelight.setDesiredPipeline(LimelightPipeline.Camera);
 
-            Cat5.print("Drove out of non-drive command during teleop");
+            if (!isDriveCommandActive()) {
+                driveCommand.schedule();
+    
+                Cat5.print("Drove out of non-drive command during teleop");
+            }
         }
     }
 

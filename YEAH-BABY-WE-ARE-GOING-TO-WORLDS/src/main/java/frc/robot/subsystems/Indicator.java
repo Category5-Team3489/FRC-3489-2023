@@ -15,7 +15,7 @@ public class Indicator extends Cat5Subsystem {
     public Indicator(RobotContainer robotContainer) {
         super(robotContainer);
 
-        GenericEntry indicatedGamePieceEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.More_Vitals)
+        GenericEntry indicatedGamePieceEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Indicator Indicated Game Piece", indicatedGamePiece.toString())
             .getEntry();
         StringLogEntry indicatedGamePieceLogEntry = new StringLogEntry(robotContainer.dataLog, "/indicator/indicated-game-piece");

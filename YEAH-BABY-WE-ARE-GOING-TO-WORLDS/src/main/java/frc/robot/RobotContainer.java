@@ -26,6 +26,7 @@ import frc.robot.subsystems.Indicator;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.NavX2;
+import frc.robot.subsystems.Odometry;
 import frc.robot.subsystems.Wrist;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -84,6 +85,9 @@ public class RobotContainer implements Cat5Updatable {
     @SuppressWarnings("unused")
     private final Leds leds;
 
+    @SuppressWarnings("unused")
+    private final Odometry odometry;
+
     public RobotContainer(Robot robot, DataLog dataLog) {
         this.robot = robot;
         this.dataLog = dataLog;
@@ -112,10 +116,15 @@ public class RobotContainer implements Cat5Updatable {
         initComplete();
         limelight = new Limelight(this);
         initComplete();
-        drivetrain = new Drivetrain(this, navx, arm);
+        drivetrain = new Drivetrain(this, navx, arm, limelight);
         initComplete();
 
+        
+
         leds = new Leds(this);
+        initComplete();
+
+        odometry = new Odometry(this, drivetrain, navx);
         initComplete();
 
         Cat5.print("Initialization complete!");
@@ -168,6 +177,7 @@ public class RobotContainer implements Cat5Updatable {
         input.gripperIntake.onTrue(runOnce(() -> {
             // TODO Move to Cat5Actions
             gripper.setHeldGamePiece(GamePiece.Unknown);
+            gripper.resetCanReintakeAgain();
             gripper.intakeCommand.schedule();
         }));
         input.gripperOuttake.onTrue(runOnce(() -> {

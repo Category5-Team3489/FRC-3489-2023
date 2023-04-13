@@ -1,2 +1,27 @@
 // 10
 Determine drivetrain method parameter polarity
+
+
+
+Using limelight cursor for human player station pickup
+
+Make limelight pipeline for driver camera, with good crosshair for human player station pickup
+^^^ Can the crosshair hit a certain point on the arm to make correcting the arm height easier
+
+
+
+Test new 1/2 sec ramp rate, does it need to be even slower, down from 1/3 sec
+
+Wrist angle for human player station pickup,
+
+see if double homing increases arm consistency
+
+How far to left and right can arm be to still pickup piece
+    floor
+    human player station
+
+How close can we get to wall and still see campose in shuffleboard
+
+How close can the robot move to the wall before the arm is fully raised in the human player station pickup automation
+
+What is the estimated distance when at the wall with the arm raised

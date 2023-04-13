@@ -12,6 +12,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Cat5;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -63,7 +64,7 @@ public class Wrist extends Cat5Subsystem {
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
 
-        GenericEntry stateEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Even_More_Vitals)
+        GenericEntry stateEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Wrist State", state.toString())
             .getEntry();
         StringLogEntry stateLogEntry = new StringLogEntry(robotContainer.dataLog, "/wrist/state");
@@ -76,7 +77,7 @@ public class Wrist extends Cat5Subsystem {
                 stateLogEntry.append(data);
             });
 
-        GenericEntry targetDegreesEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Even_More_Vitals)
+        GenericEntry targetDegreesEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Wrist Target Degrees", targetDegrees)
             .getEntry();
         DoubleLogEntry targetDegreesLogEntry = new DoubleLogEntry(robotContainer.dataLog, "/wrist/target-degrees");
@@ -89,7 +90,7 @@ public class Wrist extends Cat5Subsystem {
                 targetDegreesLogEntry.append(data);
             });
 
-        GenericEntry encoderDegreesEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Even_More_Vitals)
+        GenericEntry encoderDegreesEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Wrist Encoder Degrees", getEncoderAngleDegrees())
             .getEntry();
         DoubleLogEntry encoderDegreesLogEntry = new DoubleLogEntry(robotContainer.dataLog, "/wrist/encoder-degrees");
@@ -113,16 +114,20 @@ public class Wrist extends Cat5Subsystem {
 
     @Override
     public void periodic() {
-        double correctionPercent = robotContainer.input.getWristCorrectionPercent();
-        targetDegrees -= correctionPercent * CorrectionMultiplier * DegreesPerMotorRevolution * Robot.kDefaultPeriod;
-        if (robotContainer.getGridPosition() == GridPosition.Mid || robotContainer.getGridPosition() == GridPosition.High) {
-            targetDegrees = MathUtil.clamp(targetDegrees, WristState.HighestWithHighArm.getDegrees(), WristState.Lowest.getDegrees());
-        }
-        else {
-            targetDegrees = MathUtil.clamp(targetDegrees, WristState.Carry.getDegrees(), WristState.Lowest.getDegrees());
+        if (DriverStation.isTeleopEnabled()) {
+            double correctionPercent = robotContainer.input.getWristCorrectionPercent();
+            targetDegrees -= correctionPercent * CorrectionMultiplier * DegreesPerMotorRevolution * Robot.kDefaultPeriod;
+            if (robotContainer.getGridPosition() == GridPosition.Mid || robotContainer.getGridPosition() == GridPosition.High) {
+                targetDegrees = MathUtil.clamp(targetDegrees, WristState.HighestWithHighArm.getDegrees(), WristState.Lowest.getDegrees());
+            }
+            else {
+                targetDegrees = MathUtil.clamp(targetDegrees, WristState.Carry.getDegrees(), WristState.Lowest.getDegrees());
+            }
         }
 
-        pidController.setReference(targetDegrees, ControlType.kPosition, 0);
+        if (DriverStation.isEnabled()) {
+            pidController.setReference(targetDegrees * MotorRevolutionsPerDegree, ControlType.kPosition, 0);
+        }
     }
 
     private double getEncoderAngleDegrees() {

@@ -28,7 +28,7 @@ public class OffsetsConfig {
         backLeftOffsetRadians = Preferences.getDouble(BackLeftOffsetRadiansPreferencesKey, 0);
         backRightOffsetRadians = Preferences.getDouble(BackRightOffsetRadiansPreferencesKey, 0);
 
-        if (!Constants.IsDebugShuffleboardEnabled) {
+        if (!Constants.IsSwerveDebugEnabled) {
             return;
         }
         

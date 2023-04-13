@@ -31,7 +31,8 @@ public class Camera extends Cat5Subsystem {
             camera.setResolution(PixelWidth, PixelHeight);
             camera.setFPS(FPS);
 
-            Cat5ShuffleboardTab.Main.get().add(server.getSource());
+            Cat5ShuffleboardTab.Main.get().add(server.getSource())
+                .withSize(5, 4);
         }
         catch (Exception e) {
             Cat5.warning("Camera had trouble initializing", false);

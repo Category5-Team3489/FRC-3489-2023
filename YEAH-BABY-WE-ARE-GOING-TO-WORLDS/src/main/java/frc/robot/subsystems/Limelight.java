@@ -47,7 +47,7 @@ public class Limelight extends Cat5Subsystem {
 
         activePipelineTimer.restart();
 
-        GenericEntry responsiveEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Vitals)
+        GenericEntry responsiveEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Driver)
             .add("Limelight Responsive", false)
             .getEntry();
         BooleanLogEntry responsiveLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/limelight/responsive");
