@@ -7,13 +7,18 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.autos.Cat5Autos;
 import frc.robot.data.Cat5Data;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayouts;
+import frc.robot.enums.ArmState;
 import frc.robot.enums.GamePiece;
+import frc.robot.enums.GridPosition;
+import frc.robot.enums.WristState;
 import frc.robot.interfaces.Cat5Updatable;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gripper;
@@ -73,12 +78,11 @@ public class RobotContainer implements Cat5Updatable {
 
     private final Indicator indicator;
     private final Gripper gripper;
-    @SuppressWarnings("unused")
     private final Wrist wrist;
+    private final Arm arm;
 
     @SuppressWarnings("unused")
     private final Leds leds;
-
 
     public RobotContainer(Robot robot, DataLog dataLog) {
         this.robot = robot;
@@ -95,18 +99,20 @@ public class RobotContainer implements Cat5Updatable {
         camera = new Camera(this);
         initComplete();
 
-        navx = new NavX2(this);
-        initComplete();
-        limelight = new Limelight(this);
-        initComplete();
-        drivetrain = new Drivetrain(this, navx);
-        initComplete();
-
         indicator = new Indicator(this);
         initComplete();
         gripper = new Gripper(this, indicator);
         initComplete();
         wrist = new Wrist(this);
+        initComplete();
+        arm = new Arm(this);
+        initComplete();
+
+        navx = new NavX2(this);
+        initComplete();
+        limelight = new Limelight(this);
+        initComplete();
+        drivetrain = new Drivetrain(this, navx, arm);
         initComplete();
 
         leds = new Leds(this);
@@ -157,56 +163,164 @@ public class RobotContainer implements Cat5Updatable {
 
         }));
 
+        // TODO Move to Cat5Actions
         input.gripperStop.onTrue(gripper.stopCommand);
         input.gripperIntake.onTrue(runOnce(() -> {
+            // TODO Move to Cat5Actions
             gripper.setHeldGamePiece(GamePiece.Unknown);
             gripper.intakeCommand.schedule();
         }));
         input.gripperOuttake.onTrue(runOnce(() -> {
+            // TODO Move to Cat5Actions
             gripper.setHeldGamePiece(GamePiece.Unknown);
-            // TODO schedule coresponding command
+            switch (arm.getGridPosition()) {
+                case Low:
+                    if (gripper.getHeldGamePiece() == GamePiece.Cube) {
+                        gripper.lowOuttakeCubeCommand.schedule();
+                    }
+                    else {
+                        gripper.lowOuttakeConeCommand.schedule();
+                    }
+                    break;
+                case Mid:
+                    if (gripper.getHeldGamePiece() == GamePiece.Cube) {
+                        gripper.midOuttakeCubeCommand.schedule();
+                    }
+                    else {
+                        gripper.midOuttakeConeCommand.schedule();
+                    }
+                    break;
+                case High:
+                    if (gripper.getHeldGamePiece() == GamePiece.Cube) {
+                        gripper.highOuttakeCubeCommand.schedule();
+                    }
+                    else {
+                        gripper.highOuttakeConeCommand.schedule();
+                    }
+                    break;
+            }
         }));
 
         input.wristPickup.onTrue(runOnce(() -> {
-
+            wrist.setState(WristState.Pickup);
         }));
         input.wristCarry.onTrue(runOnce(() -> {
-
+            wrist.setState(WristState.Carry);
         }));
 
-        input.armDoubleSubstation.onTrue(runOnce(() -> {
-
-        }));
+        input.armDoubleSubstation.onTrue(sequence(
+            runOnce(() -> {
+                arm.setState(ArmState.DoubleSubstation);
+            }),
+            waitSeconds(0.4),
+            runOnce(() -> {
+                wrist.setState(WristState.DoubleSubstation);
+                gripper.intakeCommand.schedule();
+            })
+        ));
         input.armHome.onTrue(runOnce(() -> {
-
+            if (arm.getState() == ArmState.Home) {
+                arm.forceHome();
+            }
+            arm.setState(ArmState.Home);
+            wrist.setState(WristState.Carry);
+            gripper.stopCommand.schedule();
         }));
-        input.armPickup.onTrue(runOnce(() -> {
-
-        }));
-        input.armLow.onTrue(runOnce(() -> {
-
-        }));
-        input.armMid.onTrue(runOnce(() -> {
-
-        }));
-        input.armHigh.onTrue(runOnce(() -> {
-
-        }));
+        input.armPickup.onTrue(sequence(
+            runOnce(() -> {
+                arm.setState(ArmState.Pickup);
+            }),
+            waitSeconds(0.4),
+            runOnce(() -> {
+                wrist.setState(WristState.Pickup);
+                gripper.intakeCommand.schedule();
+            })
+        ));
+        input.armLow.onTrue(sequence(
+            runOnce(() -> {
+                if (gripper.getHeldGamePiece() == GamePiece.Cube) {
+                    arm.setState(ArmState.LowCube);
+                }
+                else {
+                    arm.setState(ArmState.LowCone);
+                }
+            }),
+            waitSeconds(0.4),
+            runOnce(() -> {
+                wrist.setState(WristState.Pickup);
+            })
+        ));
+        input.armMid.onTrue(sequence(
+            runOnce(() -> {
+                if (gripper.getHeldGamePiece() == GamePiece.Cube) {
+                    arm.setState(ArmState.MidCube);
+                }
+                else {
+                    if (arm.getState() == ArmState.MidCone) {
+                        arm.setState(ArmState.ScoreMidCone);
+                    }
+                    else if (arm.getState() == ArmState.ScoreMidCone) {
+                        arm.setState(ArmState.MidCone);
+                    }
+                    else {
+                        arm.setState(ArmState.MidCone);
+                    }
+                }
+            }),
+            waitSeconds(0.4),
+            runOnce(() -> {
+                wrist.setState(WristState.Carry);
+            })
+        ));
+        input.armHigh.onTrue(sequence(
+            runOnce(() -> {
+                if (gripper.getHeldGamePiece() == GamePiece.Cube) {
+                    arm.setState(ArmState.HighCube);
+                }
+                else {
+                    arm.setState(ArmState.HighCone);
+                }
+            }),
+            waitSeconds(0.4),
+            runOnce(() -> {
+                if (gripper.getHeldGamePiece() == GamePiece.Cube) {
+                    wrist.setState(WristState.HighCube);
+                }
+                else {
+                    wrist.setState(WristState.HighCone);
+                }
+            })
+        ));
 
         input.navxZeroYaw.onTrue(navx.getZeroYawCommand());
 
-        // TODO Disallow > 165 deg turns
         input.drivetrainNorth.onTrue(runOnce(() -> {
-            // 0
+            Rotation2d north = Rotation2d.fromDegrees(0);
+            double delta = Math.abs(navx.getRotation().getDegrees() - north.getDegrees());
+            if (delta < 165) {
+                drivetrain.setTargetHeading(north);
+            }
         }));
         input.drivetrainEast.onTrue(runOnce(() -> {
-            // -90
+            Rotation2d east = Rotation2d.fromDegrees(-90);
+            double delta = Math.abs(navx.getRotation().getDegrees() - east.getDegrees());
+            if (delta < 165) {
+                drivetrain.setTargetHeading(east);
+            }
         }));
         input.drivetrainSouth.onTrue(runOnce(() -> {
-            // -180
+            Rotation2d south = Rotation2d.fromDegrees(-180);
+            double delta = Math.abs(navx.getRotation().getDegrees() - south.getDegrees());
+            if (delta < 165) {
+                drivetrain.setTargetHeading(south);
+            }
         }));
         input.drivetrainWest.onTrue(runOnce(() -> {
-            // -270
+            Rotation2d west = Rotation2d.fromDegrees(-270);
+            double delta = Math.abs(navx.getRotation().getDegrees() - west.getDegrees());
+            if (delta < 165) {
+                drivetrain.setTargetHeading(west);
+            }
         }));
     }
 
@@ -229,11 +343,10 @@ public class RobotContainer implements Cat5Updatable {
         // Cat5Utils.time();
         // System.out.println("Detected game piece: \"" + detected.toString() + "\" on enable, set as held game piece in gripper");
 
-        // TODO
-        // Wrist.get().setState(WristState.Carry);
+        wrist.setState(WristState.Carry);
 
-        // TODO
-        // Arm.get().command(ArmCommand.ForceHome);
+        // TODO Force home
+        arm.setState(ArmState.Home);
     }
 
     public void autonomousInit() {
@@ -249,13 +362,21 @@ public class RobotContainer implements Cat5Updatable {
     }
     //#endregion
 
-    //#region Wrappers
+    //#region Pass
     public void resetTargetHeading() {
         drivetrain.resetTargetHeading();
     }
     
     public double getAverageDriveVelocityMetersPerSecond() {
         return drivetrain.getAverageDriveVelocityMetersPerSecond();
+    }
+
+    public GridPosition getGridPosition() {
+        return arm.getGridPosition();
+    }
+
+    public void pickedUpGamePiece() {
+        Cat5.print("Picked up " + gripper.getHeldGamePiece() + ", with arm at " + Cat5.prettyDouble(arm.getTargetAngleDegrees()) + " degrees");
     }
     //#endregion
 

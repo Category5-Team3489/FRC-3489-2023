@@ -88,7 +88,7 @@ public class Arm extends Cat5Subsystem<Arm> {
         //#region Shuffleboard
         var layout = getLayout(Cat5ShuffleboardTab.Main, BuiltInLayouts.kList)
             .withSize(2, 1);
-        
+
         // layout.add("Subsystem Info", this);
 
         // layout.addBoolean("Is Homed", () -> isHomed);

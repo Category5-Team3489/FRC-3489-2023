@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
@@ -16,6 +17,7 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.data.Cat5DeltaTracker;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
+import frc.robot.enums.GridPosition;
 import frc.robot.enums.WristState;
 
 public class Wrist extends Cat5Subsystem {
@@ -113,12 +115,12 @@ public class Wrist extends Cat5Subsystem {
     public void periodic() {
         double correctionPercent = robotContainer.input.getWristCorrectionPercent();
         targetDegrees -= correctionPercent * CorrectionMultiplier * DegreesPerMotorRevolution * Robot.kDefaultPeriod;
-        // if (Arm.get().getGridPosition() == GridPosition.Mid || Arm.get().getGridPosition() == GridPosition.High) {
-        //     degrees = MathUtil.clamp(rotations, WristState.MinAtHigh.getRotations(), WristState.Max.getRotations());
-        // }
-        // else {
-        //     degrees = MathUtil.clamp(rotations, WristState.Min.getRotations(), WristState.Max.getRotations());
-        // }
+        if (robotContainer.getGridPosition() == GridPosition.Mid || robotContainer.getGridPosition() == GridPosition.High) {
+            targetDegrees = MathUtil.clamp(targetDegrees, WristState.HighestWithHighArm.getDegrees(), WristState.Lowest.getDegrees());
+        }
+        else {
+            targetDegrees = MathUtil.clamp(targetDegrees, WristState.Carry.getDegrees(), WristState.Lowest.getDegrees());
+        }
 
         pidController.setReference(targetDegrees, ControlType.kPosition, 0);
     }

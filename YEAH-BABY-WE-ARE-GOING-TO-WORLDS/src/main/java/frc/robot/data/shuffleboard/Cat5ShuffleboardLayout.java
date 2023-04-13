@@ -16,6 +16,7 @@ public enum Cat5ShuffleboardLayout {
     Debug_Target_Data(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList),
     Debug_Campose(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList),
     Debug_Pipeline(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList),
+    Debug_Distance_Estimation(Cat5ShuffleboardTab.Limelight, BuiltInLayouts.kList),
     Debug_Gripper(Cat5ShuffleboardTab.Gripper, BuiltInLayouts.kList);
 
     private final Cat5ShuffleboardTab tab;

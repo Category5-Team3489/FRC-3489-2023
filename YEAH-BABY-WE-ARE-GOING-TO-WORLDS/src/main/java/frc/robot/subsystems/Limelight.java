@@ -84,6 +84,12 @@ public class Limelight extends Cat5Subsystem {
                 layout.addString("Desired Pipeline", () -> desiredPipeline.toString());
                 layout.addInteger("Active Pipeline", () -> activePipeline);
             }
+            {
+                var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Distance_Estimation);
+                layout.addDouble("Mid Cone Distance (m)", () -> 0.254 / Math.tan(Math.toRadians(10.0 - getTargetY())));
+                layout.addDouble("Mid Cube Distance (m)", () -> 0.403098 / Math.tan(Math.toRadians(10.0 - getTargetY())));
+                layout.addDouble("Double Substation Distance (m)", () -> 0.695452 / Math.tan(Math.toRadians(10.0 - getTargetY())));
+            }
         }
     }
     

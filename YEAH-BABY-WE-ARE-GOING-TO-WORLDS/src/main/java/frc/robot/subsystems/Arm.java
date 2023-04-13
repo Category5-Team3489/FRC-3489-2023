@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.enums.ArmState;
 import frc.robot.enums.GridPosition;
@@ -44,6 +45,10 @@ public class Arm extends Cat5Subsystem {
     private final DigitalInput limitSwitch = new DigitalInput(LimitSwitchChannel);
     private final SparkMaxPIDController pidController;
     private final RelativeEncoder encoder;
+
+    // Commands
+    private final CommandBase gotoHomeCommand = getGotoHomeCommand();
+    private final CommandBase gotoTargetCommand = getGotoTargetCommand();
 
     // State
     private boolean isHomed = false;
@@ -85,6 +90,17 @@ public class Arm extends Cat5Subsystem {
             }
     
             setState(ArmState.Home);
+        }
+
+        if (isHomed) {
+            double correctionPercent = robotContainer.input.getArmCorrectionPercent();
+            targetAngleDegrees += correctionPercent * CorrectionMaxDegreesPerSecond * Robot.kDefaultPeriod;
+            targetAngleDegrees = MathUtil.clamp(targetAngleDegrees, MinAngleDegrees, MaxAngleDegrees);
+
+            gotoTargetCommand.schedule();
+        }
+        else {
+            gotoHomeCommand.schedule();
         }
     }
 
@@ -144,6 +160,11 @@ public class Arm extends Cat5Subsystem {
             pidController.setReference(targetRevolutions, ControlType.kPosition, 0, arbFeedforward * 12.0, ArbFFUnits.kVoltage);
         })
             .withName("Goto Target");
+    }
+
+    public void forceHome() {
+        lastLimitSwitchValue = false;
+        isHomed = false;
     }
 
     public ArmState getState() {

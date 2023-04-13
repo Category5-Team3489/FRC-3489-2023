@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Cat5;
@@ -23,12 +24,13 @@ import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardTab;
+import frc.robot.enums.GridPosition;
 import frc.robot.enums.ModulePosition;
 
 public class Drivetrain extends Cat5Subsystem {
     // Constants
     public static final double PovSpeedMetersPerSecond = 0.4;
-    public static final double FullSpeedRateLimiter100PercentPerSecond = 3.0; // TODO Think about decreasing to 2.0
+    public static final double FullSpeedRateLimiter100PercentPerSecond = 2.0; // 3.0
 
     private static final double WheelsLeftToRightMeters = 0.54;
     private static final double WheelsFrontToBackMeters = 0.54;
@@ -89,12 +91,14 @@ public class Drivetrain extends Cat5Subsystem {
     
     // State
     private final NavX2 navx;
+    private final Arm arm;
     private Rotation2d targetHeading = null;
     private final PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
-    public Drivetrain(RobotContainer robotContainer, NavX2 navx) {
+    public Drivetrain(RobotContainer robotContainer, NavX2 navx, Arm arm) {
         super(robotContainer);
         this.navx = navx;
+        this.arm = arm;
 
         driveCommand = new Drive(robotContainer, this);
 
@@ -207,23 +211,22 @@ public class Drivetrain extends Cat5Subsystem {
 
     @Override
     public void periodic() {
-        // TODO
-        // if (Arm.get().getGridPosition() == GridPosition.Mid || Arm.get().getGridPosition() == GridPosition.High) {
-        //     omegaController.setTolerance(OmegaTippyToleranceDegrees);
-        // }
-        // else {
-        //     omegaController.setTolerance(OmegaToleranceDegrees);
-        // }
+        if (arm.getGridPosition() == GridPosition.Mid || arm.getGridPosition() == GridPosition.High) {
+            omegaController.setTolerance(OmegaTippyToleranceDegrees);
+        }
+        else {
+            omegaController.setTolerance(OmegaToleranceDegrees);
+        }
 
-        // if (!DriverStation.isTeleopEnabled()) {
-        //     return;
-        // }
+        if (!DriverStation.isTeleopEnabled()) {
+            return;
+        }
 
-        // if (!isDriveCommandActive() && Cat5Inputs.isBeingDriven()) {
-        //     driveCommand.schedule();
+        if (!isDriveCommandActive() && robotContainer.input.isBeingDriven()) {
+            driveCommand.schedule();
 
-        //     Cat5.print("Drove out of non-drive command during teleop");
-        // }
+            Cat5.print("Drove out of non-drive command during teleop");
+        }
     }
 
     public boolean isDriveCommandActive() {

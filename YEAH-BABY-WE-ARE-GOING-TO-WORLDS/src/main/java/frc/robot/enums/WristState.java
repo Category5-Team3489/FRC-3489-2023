@@ -5,7 +5,7 @@ import static frc.robot.subsystems.Wrist.*;
 public enum WristState {
     Home(0 * DegreesPerMotorRevolution),
     Lowest(5 * DegreesPerMotorRevolution),
-    Highest(-13 * DegreesPerMotorRevolution),
+    Carry(-13 * DegreesPerMotorRevolution),
     HighestWithHighArm(-30 * DegreesPerMotorRevolution),
 
     Pickup(-1 * DegreesPerMotorRevolution),
