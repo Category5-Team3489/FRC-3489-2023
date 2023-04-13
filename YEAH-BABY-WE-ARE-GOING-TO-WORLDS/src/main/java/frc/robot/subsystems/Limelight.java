@@ -4,13 +4,17 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Cat5;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.enums.LimelightPipeline;
 
 public class Limelight extends Cat5Subsystem {
@@ -43,7 +47,44 @@ public class Limelight extends Cat5Subsystem {
 
         activePipelineTimer.restart();
 
-        // TODO robotContainer.layouts.vitals.addBoolean("Limelight Updating", () -> isActivePipeline(desiredPipeline));
+        GenericEntry updatingEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Vitals)
+            .add("Limelight Updating", false)
+            .getEntry();
+        BooleanLogEntry updatingLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/limelight/updating");
+        robotContainer.data.createDatapoint(() -> isActivePipeline(desiredPipeline))
+            .withShuffleboardUpdater(data -> {
+                updatingEntry.setBoolean(data);
+            })
+            .withLogUpdater(data -> {
+                updatingLogEntry.append(data);
+            });
+
+        if (Constants.IsDebugShuffleboardEnabled) {
+            {
+                var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Target_Data);
+                layout.addInteger("Tag Id", () -> getTagId());
+                layout.addDouble("Target X", () -> getTargetX());
+                layout.addDouble("Target Y", () -> getTargetY());
+                layout.addDouble("Target Area", () -> getTargetArea());
+            }
+            {
+                var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Campose);
+                layout.addBoolean("Is Campose Valid", () -> isCamposeValid());
+                layout.addString("Campose", () -> {
+                    var campose = getCampose();
+                    if (campose != null) {
+                        return campose.toString();
+                    }
+                    return "null";
+                });
+            }
+            {
+                var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Pipeline);
+                layout.addDouble("Active Pipeline Timer", () -> activePipelineTimer.get());
+                layout.addString("Desired Pipeline", () -> desiredPipeline.toString());
+                layout.addInteger("Active Pipeline", () -> activePipeline);
+            }
+        }
     }
     
     @Override
@@ -104,5 +145,12 @@ public class Limelight extends Cat5Subsystem {
     }
     public double getTargetArea() {
         return targetAreaEntry.getDouble(Double.NaN);
+    }
+
+    public void printTargetData() {
+        Cat5.print("tid: " + getTagId());
+        Cat5.print("tx: " + getTargetX());
+        Cat5.print("ty: " + getTargetY());
+        Cat5.print("ta: " + getTargetArea());
     }
 }

@@ -24,7 +24,6 @@ public class NavX2 extends Cat5Subsystem {
         super(robotContainer);
 
         GenericEntry headingEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Vitals)
-            .withSize(2, 4)
             .add("NavX2 Heading (deg)", 0.0)
             .getEntry();
         DoubleLogEntry headingLogEntry = new DoubleLogEntry(robotContainer.dataLog, "/navx/heading");
@@ -32,12 +31,12 @@ public class NavX2 extends Cat5Subsystem {
             .withShuffleboardUpdater(data -> {
                 headingEntry.setDouble(data);
             })
+            .withShuffleboardHz(4)
             .withLogUpdater(data -> {
                 headingLogEntry.append(data);
             });
 
         GenericEntry connectedEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Vitals)
-            .withSize(2, 4)
             .add("NavX2 Connected", false)
             .getEntry();
         BooleanLogEntry connectedLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/navx/connected");
@@ -55,7 +54,7 @@ public class NavX2 extends Cat5Subsystem {
             headingOffset = new Rotation2d();
             navx.zeroYaw();
             robotContainer.resetTargetHeading();
-            Cat5.print("NavX2 zeroed yaw");
+            Cat5.print("NavX2 zeroed yaw and heading offset");
         })
             .ignoringDisable(true)
             .withName("Zero Yaw");

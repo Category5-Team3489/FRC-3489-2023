@@ -1,10 +1,18 @@
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.enums.GamePiece;
 
 public class Cat5Input {
@@ -13,25 +21,65 @@ public class Cat5Input {
     private final CommandJoystick man = new CommandJoystick(1);
 
     // Triggers
-    public final Trigger automate = man.button(5)
+    public Trigger automate = man.button(5)
         .debounce(0.1, DebounceType.kBoth);
-    public final Trigger gripperStop = man.button(1);
-    public final Trigger gripperIntake = man.button(2);
-    public final Trigger gripperOuttake = man.button(3);
-    public final Trigger wristLow = man.button(4);
-    public final Trigger wristHigh = man.button(6);
-    public final Trigger armDoubleSubstation = man.button(8);
-    public final Trigger armHome = man.button(10);
-    public final Trigger armPickup = man.button(12);
-    public final Trigger armLow = man.button(11);
-    public final Trigger armMid = man.button(9)
+    public Trigger gripperStop = man.button(1);
+    public Trigger gripperIntake = man.button(2);
+    public Trigger gripperOuttake = man.button(3);
+    public Trigger wristLow = man.button(4);
+    public Trigger wristHigh = man.button(6);
+    public Trigger armDoubleSubstation = man.button(8);
+    public Trigger armHome = man.button(10);
+    public Trigger armPickup = man.button(12);
+    public Trigger armLow = man.button(11);
+    public Trigger armMid = man.button(9)
         .debounce(0.1, DebounceType.kBoth);
-    public final Trigger armHigh = man.button(7);
-    public final Trigger navxZeroYaw = xbox.start();
-    public final Trigger drivetrainNorth = xbox.y();
-    public final Trigger drivetrainEast = xbox.b();
-    public final Trigger drivetrainSouth = xbox.a();
-    public final Trigger drivetrainWest = xbox.x();
+    public Trigger armHigh = man.button(7);
+    public Trigger navxZeroYaw = xbox.start();
+    public Trigger drivetrainNorth = xbox.y();
+    public Trigger drivetrainEast = xbox.b();
+    public Trigger drivetrainSouth = xbox.a();
+    public Trigger drivetrainWest = xbox.x();
+
+    public Cat5Input(RobotContainer robotContainer) {
+        if (Robot.isReal()) {
+            return;
+        }
+
+        ArrayList<Pair<String, Pair<Trigger, Consumer<Trigger>>>> triggers = new ArrayList<Pair<String, Pair<Trigger, Consumer<Trigger>>>>();
+
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("automate", new Pair<Trigger, Consumer<Trigger>>(automate, (automate) -> this.automate = automate)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperStop", new Pair<Trigger, Consumer<Trigger>>(gripperStop, (gripperStop) -> this.gripperStop = gripperStop)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperIntake", new Pair<Trigger, Consumer<Trigger>>(gripperIntake, (gripperIntake) -> this.gripperIntake = gripperIntake)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("gripperOuttake", new Pair<Trigger, Consumer<Trigger>>(gripperOuttake, (gripperOuttake) -> this.gripperOuttake = gripperOuttake)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristLow", new Pair<Trigger, Consumer<Trigger>>(wristLow, (wristLow) -> this.wristLow = wristLow)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("wristHigh", new Pair<Trigger, Consumer<Trigger>>(wristHigh, (wristHigh) -> this.wristHigh = wristHigh)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armDoubleSubstation", new Pair<Trigger, Consumer<Trigger>>(armDoubleSubstation, (armDoubleSubstation) -> this.armDoubleSubstation = armDoubleSubstation)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armHome", new Pair<Trigger, Consumer<Trigger>>(armHome, (armHome) -> this.armHome = armHome)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armPickup", new Pair<Trigger, Consumer<Trigger>>(armPickup, (armPickup) -> this.armPickup = armPickup)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armLow", new Pair<Trigger, Consumer<Trigger>>(armLow, (armLow) -> this.armLow = armLow)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armMid", new Pair<Trigger, Consumer<Trigger>>(armMid, (armMid) -> this.armMid = armMid)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("armHigh", new Pair<Trigger, Consumer<Trigger>>(armHigh, (armHigh) -> this.armHigh = armHigh)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("navxZeroYaw", new Pair<Trigger, Consumer<Trigger>>(navxZeroYaw, (navxZeroYaw) -> this.navxZeroYaw = navxZeroYaw)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainNorth", new Pair<Trigger, Consumer<Trigger>>(drivetrainNorth, (drivetrainNorth) -> this.drivetrainNorth = drivetrainNorth)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainEast", new Pair<Trigger, Consumer<Trigger>>(drivetrainEast, (drivetrainEast) -> this.drivetrainEast = drivetrainEast)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainSouth", new Pair<Trigger, Consumer<Trigger>>(drivetrainSouth, (drivetrainSouth) -> this.drivetrainSouth = drivetrainSouth)));
+        triggers.add(new Pair<String, Pair<Trigger, Consumer<Trigger>>>("drivetrainWest", new Pair<Trigger, Consumer<Trigger>>(drivetrainWest, (drivetrainWest) -> this.drivetrainWest = drivetrainWest)));
+
+        for (Pair<String, Pair<Trigger, Consumer<Trigger>>> e : triggers) {
+            GenericEntry entry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Buttons)
+                .add(e.getFirst(), false)
+                .withWidget(BuiltInWidgets.kToggleSwitch)
+                .getEntry();
+            BooleanSupplier supplier = () -> entry.getBoolean(false);
+            e.getSecond().getSecond()
+                .accept(
+                    e.getSecond()
+                        .getFirst()
+                        .or(supplier)
+                );
+        }
+    }
     
     // Methods
     public double getDriveXPercent() {

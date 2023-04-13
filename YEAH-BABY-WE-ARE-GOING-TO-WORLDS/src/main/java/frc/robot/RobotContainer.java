@@ -9,7 +9,7 @@ import java.util.HashSet;
 
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.autos.Cat5Autos;
 import frc.robot.data.Cat5Data;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayouts;
 import frc.robot.enums.GamePiece;
@@ -30,9 +30,11 @@ public class RobotContainer implements Cat5Updatable {
     public final Cat5ShuffleboardLayouts layouts;
     public final Cat5Data data;
     public final Cat5Input input;
+    private final Cat5Autos autos;
 
     //#region Subsystem Init
     private HashSet<String> subsystems = new HashSet<String>();
+    private String lastInitializedSubsystem = "";
 
     public void initSubsystem(String name) {
         boolean isUnique = subsystems.add(name);
@@ -41,7 +43,12 @@ public class RobotContainer implements Cat5Updatable {
         }
         else {
             Cat5.print("Initializing " + name + " subsystem...");
+            lastInitializedSubsystem = name;
         }
+    }
+
+    private void initComplete() {
+        Cat5.print("Initialized " + lastInitializedSubsystem + " subsystem!");
     }
     //#endregion
 
@@ -69,20 +76,29 @@ public class RobotContainer implements Cat5Updatable {
         this.dataLog = dataLog;
         layouts = new Cat5ShuffleboardLayouts();
         data = new Cat5Data();
-        input = new Cat5Input();
+        input = new Cat5Input(this);
+        autos = new Cat5Autos();
 
         registerUpdatable(data);
 
         Cat5.print("Initializing...");
         camera = new Camera(this);
+        initComplete();
         navx = new NavX2(this);
+        initComplete();
         limelight = new Limelight(this);
+        initComplete();
         drivetrain = new Drivetrain(this, navx);
+        initComplete();
         indicator = new Indicator(this);
+        initComplete();
         gripper = new Gripper(this, indicator);
+        initComplete();
         Cat5.print("Initialization complete!");
 
         configureBindings();
+
+        addAutos();
 
         // TODO When outtaking with gripper, always set held game piece to Unknown
 
@@ -100,6 +116,12 @@ public class RobotContainer implements Cat5Updatable {
 
         // limelight 10deg down from horizontal
         // limelight 34in off of floor
+
+        // TODO Shuffleboard blink indicator, picked up piece at human player station
+
+        // TODO Go through district champs code
+
+        // TODO Use Limelight.printTargetData
     }
 
     private void configureBindings() {
@@ -108,9 +130,7 @@ public class RobotContainer implements Cat5Updatable {
         }));
 
         input.gripperStop.onTrue(gripper.stopCommand);
-        input.gripperIntake.onTrue(runOnce(() -> {
-
-        }));
+        input.gripperIntake.onTrue(gripper.intakeCommand);
         input.gripperOuttake.onTrue(runOnce(() -> {
 
         }));
@@ -143,6 +163,7 @@ public class RobotContainer implements Cat5Updatable {
 
         input.navxZeroYaw.onTrue(navx.getZeroYawCommand());
 
+        // TODO Disallow > 165 deg turns
         input.drivetrainNorth.onTrue(runOnce(() -> {
             // 0
         }));
@@ -155,6 +176,14 @@ public class RobotContainer implements Cat5Updatable {
         input.drivetrainWest.onTrue(runOnce(() -> {
             // -270
         }));
+    }
+
+    private void addAutos() {
+        autos.addAuto(() -> print("Doing nothing... Because this is the nothing auto!")
+            .withName("NothingAuto")
+        );
+
+        autos.addSelectorWidget();
     }
 
     //#region Events
@@ -199,7 +228,7 @@ public class RobotContainer implements Cat5Updatable {
     //#endregion
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return autos.getAutonomousCommand();
     }
 
     @Override

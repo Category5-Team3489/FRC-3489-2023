@@ -4,6 +4,7 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -60,8 +61,7 @@ public class Gripper extends Cat5Subsystem {
 
         setDefaultCommand(stopCommand);
 
-        var isLimitSwitchDisabledEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Workarounds)
-            .withSize(2, 4)
+        GenericEntry isLimitSwitchDisabledEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Workarounds)
             .add("Disable Limit Switch", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .getEntry();

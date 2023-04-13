@@ -20,13 +20,14 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.configs.drivetrain.DriveMotorConfig;
 import frc.robot.configs.drivetrain.OffsetsConfig;
+import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.enums.ModulePosition;
 
 public class Drivetrain extends Cat5Subsystem {
     // Constants
     public static final double PovSpeedMetersPerSecond = 0.4;
-    public static final double FullSpeedRateLimiter100PercentsPerSecond = 3;
+    public static final double FullSpeedRateLimiter100PercentPerSecond = 3.0; // TODO Think about decreasing to 2.0
 
     private static final double WheelsLeftToRightMeters = 0.54;
     private static final double WheelsFrontToBackMeters = 0.54;
@@ -98,7 +99,7 @@ public class Drivetrain extends Cat5Subsystem {
         omegaController.setTolerance(OmegaToleranceDegrees);
 
         if (Constants.IsSDSDebugEnabled) {
-            ShuffleboardTab layout = Cat5ShuffleboardTab.SDS_Debug.get();
+            ShuffleboardTab layout = Cat5ShuffleboardTab.Swerve_Debug.get();
 
             frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
                 layout.getLayout("Front Left Module", BuiltInLayouts.kList)
@@ -176,6 +177,24 @@ public class Drivetrain extends Cat5Subsystem {
                 BackRightEncoderDeviceId,
                 0
             );
+        }
+
+        if (Constants.IsDebugShuffleboardEnabled) {
+            {
+                var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Drive_Velocities);
+                layout.addDouble("Front Left (m per s)", () -> frontLeftModule.getDriveVelocity());
+                layout.addDouble("Front Right (m per s)", () -> frontRightModule.getDriveVelocity());
+                layout.addDouble("Back Left (m per s)", () -> backLeftModule.getDriveVelocity());
+                layout.addDouble("Back Right (m per s)", () -> backRightModule.getDriveVelocity());
+                layout.addDouble("Average (m per s)", () -> getAverageDriveVelocityMetersPerSecond());
+            }
+            {
+                var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Drive_Stator_Current);
+                layout.addDouble("Front Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontLeft).getStatorCurrent());
+                layout.addDouble("Front Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.FrontRight).getStatorCurrent());
+                layout.addDouble("Back Left (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackLeft).getStatorCurrent());
+                layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());    
+            }
         }
     }
 

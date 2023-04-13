@@ -9,10 +9,13 @@ public class Cat5ShuffleboardLayouts {
 
     public ShuffleboardLayout get(Cat5ShuffleboardLayout layout) {
         if (layouts.containsKey(layout)) {
-            return layouts.get(layout);
+            return layouts.get(layout)
+                .withSize(2, 4);
         }
+        
         ShuffleboardLayout shuffleboardLayout = layout.create();
         layouts.put(layout, shuffleboardLayout);
-        return shuffleboardLayout;
+        return shuffleboardLayout
+            .withSize(2, 4);
     }
 }
