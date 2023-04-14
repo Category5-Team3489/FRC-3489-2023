@@ -250,19 +250,19 @@ public class Drivetrain extends Cat5Subsystem {
         omegaController.reset();
     }
 
-    // public void brakeTranslation() {
-    //     setFrontLeftPercentAngle(0, Math.toRadians(45 + 90));
-    //     setFrontRightPercentAngle(0, Math.toRadians(45));
-    //     setBackLeftPercentAngle(0, Math.toRadians(45));
-    //     setBackRightPercentAngle(0, Math.toRadians(45 + 90));
-    // }
+    public void brakeTranslation() {
+        setFrontLeftPercentAngle(0, Math.toRadians(45 + 90));
+        setFrontRightPercentAngle(0, Math.toRadians(45));
+        setBackLeftPercentAngle(0, Math.toRadians(45));
+        setBackRightPercentAngle(0, Math.toRadians(45 + 90));
+    }
 
-    // public void brakeRotation() {
-    //     setFrontLeftPercentAngle(0, Math.toRadians(45));
-    //     setFrontRightPercentAngle(0, Math.toRadians(45 + 90));
-    //     setBackLeftPercentAngle(0, Math.toRadians(45 + 90));
-    //     setBackRightPercentAngle(0, Math.toRadians(45));
-    // }
+    public void brakeRotation() {
+        setFrontLeftPercentAngle(0, Math.toRadians(45));
+        setFrontRightPercentAngle(0, Math.toRadians(45 + 90));
+        setBackLeftPercentAngle(0, Math.toRadians(45 + 90));
+        setBackRightPercentAngle(0, Math.toRadians(45));
+    }
 
     // percent: postive forward, angleDegrees zero forward
     public void drivePercentAngle(double percent, double angleDegrees) {

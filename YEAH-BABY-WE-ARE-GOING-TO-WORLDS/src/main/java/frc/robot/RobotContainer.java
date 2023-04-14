@@ -157,6 +157,7 @@ public class RobotContainer implements Cat5Updatable {
         // TODO x = 0.254m / tan(10deg - ty), mid cone node distance from limelight
         // TODO x = 0.403098m / tan(10deg - ty), mid cube node distance from limelight
         // TODO x = 0.695452 / tan(10deg - ty), human player station
+        // TODO high pole is 45.81in to top of tape, 41.81in to bottom
 
         // TODO 18.13 in to center of cube node tag
 

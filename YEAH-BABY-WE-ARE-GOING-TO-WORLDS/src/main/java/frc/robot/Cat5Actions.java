@@ -213,7 +213,7 @@ public class Cat5Actions {
     public Command drivetrainCardinalDirection(double degrees) {
         return runOnce(() -> {
             Rotation2d target = Rotation2d.fromDegrees(degrees);
-            double delta = Math.abs(navx.getRotation().getDegrees() - target.getDegrees());
+            double delta = Math.abs(navx.getRotation().minus(target).getDegrees());
             if (delta < 165) {
                 drivetrain.setTargetHeading(target);
             }
