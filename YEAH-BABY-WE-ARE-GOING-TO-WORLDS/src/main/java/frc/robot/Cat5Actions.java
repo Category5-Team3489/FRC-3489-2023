@@ -1,6 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.HighCubeNode;
+import frc.robot.commands.MidConeNode;
+import frc.robot.commands.MidCubeNode;
 import frc.robot.enums.ArmState;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.WristState;
@@ -55,6 +58,56 @@ public class Cat5Actions {
         this.arm = arm;
         this.leds = leds;
         this.odometry = odometry;
+    }
+
+    public Command automation() {
+        return runOnce(() -> {
+            switch (arm.getGridPosition()) {
+                case Low:
+                    Cat5.print("Low automation not implemented!");
+                    break;
+                case Mid:
+                    if (gripper.getHeldGamePiece() == GamePiece.Cube) {
+                        automationMidCube().schedule();
+                    }
+                    else {
+                        automationMidCone().schedule();
+                    }
+                    break;
+                case High:
+                    if (gripper.getHeldGamePiece() == GamePiece.Cube) {
+                        automationHighCube().schedule();
+                    }
+                    else {
+                        Cat5.print("High cone automation not implemented!");
+                    }
+                    break;
+            }
+        });
+    }
+    private Command automationMidCone() {
+        return sequence(
+            new MidConeNode(limelight, drivetrain),
+            runOnce(() -> {
+                arm.setState(ArmState.ScoreMidCone);
+            }),
+            waitSeconds(0.3),
+            gripperOuttake()
+        );
+    }
+    private Command automationMidCube() {
+        return sequence(
+            new MidCubeNode(limelight, drivetrain),
+            waitSeconds(0.5),
+            gripperOuttake()
+        );
+    }
+    private Command automationHighCube() {
+        return sequence(
+            new HighCubeNode(limelight, drivetrain),
+            waitSeconds(0.5),
+            gripperOuttake()
+        );
     }
 
     public Command gripperStop() {

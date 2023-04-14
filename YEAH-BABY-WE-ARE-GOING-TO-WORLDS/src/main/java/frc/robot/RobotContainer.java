@@ -190,9 +190,7 @@ public class RobotContainer implements Cat5Updatable {
     }
 
     private void configureBindings() {
-        input.automate.onTrue(runOnce(() -> {
-
-        }));
+        input.automate.onTrue(actions.automation());
 
         input.gripperStop.onTrue(actions.gripperStop());
         input.gripperIntake.onTrue(actions.gripperIntake());
