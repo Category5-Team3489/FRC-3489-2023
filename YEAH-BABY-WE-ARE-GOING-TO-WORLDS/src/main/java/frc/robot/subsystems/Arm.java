@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Cat5;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.data.Cat5DeltaTracker;
@@ -86,6 +87,11 @@ public class Arm extends Cat5Subsystem {
         pidController.setP(ProportionalGainPercentPerRevolutionOfError);
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
+
+        if (Constants.IsDebugShuffleboardEnabled) {
+            var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Arm);
+            layout.addDouble("Arm Angle (deg)", () -> targetDegrees);
+        }
 
         GenericEntry limitSwitchEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Arm Limit Switch", limitSwitch.get())

@@ -11,7 +11,9 @@ public enum Cat5ShuffleboardTab {
     Debug,
     Limelight,
     Gripper,
-    Odometry;
+    Odometry,
+    Arm,
+    Wrist;
 
     public ShuffleboardTab get() {
         return Shuffleboard.getTab(toString());

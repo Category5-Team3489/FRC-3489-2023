@@ -4,6 +4,7 @@ create driver camera pipeline for pipeline index 3
 save all limelight pipelines
 reprogram radio!!!!!!!!!!
 
+Increase low outtake speed
 
 go through Cat5Actions list
 does stopping 180 deg turns work, no bugs?

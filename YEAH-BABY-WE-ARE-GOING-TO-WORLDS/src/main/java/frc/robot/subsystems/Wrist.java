@@ -14,6 +14,7 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Cat5;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.data.Cat5DeltaTracker;
@@ -63,6 +64,11 @@ public class Wrist extends Cat5Subsystem {
         pidController.setP(ProportionalGainPercentPerRevolutionOfError);
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
+
+        if (Constants.IsDebugShuffleboardEnabled) {
+            var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Wrist);
+            layout.addDouble("Wrist Angle (deg)", () -> targetDegrees);
+        }
 
         GenericEntry stateEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Wrist State", state.toString())

@@ -43,11 +43,11 @@ public class Gripper extends Cat5Subsystem {
     // Commands
     public final CommandBase stopCommand = getStopCommand();
     public final CommandBase intakeCommand = getIntakeCommand();
-    public final CommandBase lowOuttakeConeCommand = getNamePercentSecondsCommand("Low Outtake Cone", 0.2, 1.0);
-    public final CommandBase midOuttakeConeCommand = getNamePercentSecondsCommand("Mid Outtake Cone", 0.1, 2.0);
+    public final CommandBase lowOuttakeConeCommand = getNamePercentSecondsCommand("Low Outtake Cone", 0.5, 1.0); // 0.2, 1.0
+    public final CommandBase midOuttakeConeCommand = getNamePercentSecondsCommand("Mid Outtake Cone", 0.3, 2.0); // 0.1, 2.0
     public final CommandBase highOuttakeConeCommand = getNamePercentSecondsCommand("High Outtake Cone", 0.5, 0.6);
-    public final CommandBase lowOuttakeCubeCommand = getNamePercentSecondsCommand("Low Outtake Cube", 0.2, 0.5);
-    public final CommandBase midOuttakeCubeCommand = getNamePercentSecondsCommand("Mid Outtake Cube", 0.3, 0.5);
+    public final CommandBase lowOuttakeCubeCommand = getNamePercentSecondsCommand("Low Outtake Cube", 0.5, 0.5); // 0.5, 0.5
+    public final CommandBase midOuttakeCubeCommand = getNamePercentSecondsCommand("Mid Outtake Cube", 0.5, 0.5); // 0.3, 0.5
     public final CommandBase highOuttakeCubeCommand = getNamePercentSecondsCommand("High Outtake Cube", 1.0, 0.6);
     public final CommandBase unstowPieceCommand = getNamePercentSecondsCommand("Unstow Piece", -0.2, 0.5);
 

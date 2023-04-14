@@ -30,7 +30,6 @@ public class Cat5Actions {
     private final Camera camera;
 
     private final NavX2 navx;
-    @SuppressWarnings("unused")
     private final Limelight limelight;
     private final Drivetrain drivetrain;
 
@@ -111,7 +110,11 @@ public class Cat5Actions {
     }
 
     public Command gripperStop() {
-        return gripper.stopCommand;
+        return runOnce(() -> {
+            gripper.setHeldGamePiece(GamePiece.Unknown);
+            gripper.resetCanReintakeAgain();
+            gripper.stopCommand.schedule();
+        });
     }
     public Command gripperIntake() {
         return runOnce(() -> {
@@ -266,10 +269,12 @@ public class Cat5Actions {
     public Command drivetrainCardinalDirection(double degrees) {
         return runOnce(() -> {
             Rotation2d target = Rotation2d.fromDegrees(degrees);
-            double delta = Math.abs(navx.getRotation().minus(target).getDegrees());
-            if (delta < 165) {
-                drivetrain.setTargetHeading(target);
-            }
+            drivetrain.setTargetHeading(target);
+
+            // double delta = Math.abs(navx.getRotation().minus(target).getDegrees());
+            // if (delta < 165) {
+            //     drivetrain.setTargetHeading(target);
+            // }
         });
     }
 }

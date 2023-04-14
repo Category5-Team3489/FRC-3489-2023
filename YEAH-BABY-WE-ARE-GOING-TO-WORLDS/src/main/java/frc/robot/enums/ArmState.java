@@ -7,11 +7,11 @@ import static frc.robot.subsystems.Arm.*;
 public enum ArmState {
     Home(GridPosition.Low, MinDegrees, IdleMode.kBrake),
     Homing(GridPosition.Low, MinDegrees, IdleMode.kCoast),
-    DoubleSubstation(GridPosition.High, 12.76, IdleMode.kBrake),
+    DoubleSubstation(GridPosition.High, 25.18, IdleMode.kBrake), // 12.76
     Pickup(GridPosition.Low, -70, IdleMode.kBrake),
     LowCone(GridPosition.Low, -70, IdleMode.kBrake),
     LowCube(GridPosition.Low, -70, IdleMode.kBrake),
-    MidCone(GridPosition.Mid, 10.77, IdleMode.kBrake),
+    MidCone(GridPosition.Mid, 14.62, IdleMode.kBrake),
     ScoreMidCone(GridPosition.Mid, -13.33, IdleMode.kBrake),
     MidCube(GridPosition.Mid, -4.08, IdleMode.kBrake),
     HighCone(GridPosition.High, 22.86, IdleMode.kBrake),

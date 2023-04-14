@@ -19,7 +19,7 @@ import frc.robot.enums.LimelightPipeline;
 
 public class Limelight extends Cat5Subsystem {
     // Constants
-    private final static LimelightPipeline DefaultPipeline = LimelightPipeline.Fiducial;
+    private final static LimelightPipeline DefaultPipeline = LimelightPipeline.Camera;
     private static final double CamposeValidActivePipelineSeconds = 0.5;
     private static final double CamposeValidTargetArea = 0.005;
     private static final double CamposeValidAverageDriveVelocityLimitMetersPerSecond = 0.25;
