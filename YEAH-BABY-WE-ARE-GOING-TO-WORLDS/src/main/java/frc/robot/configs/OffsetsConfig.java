@@ -1,4 +1,4 @@
-package frc.robot.configs.drivetrain;
+package frc.robot.configs;
 
 import edu.wpi.first.wpilibj.Preferences;
 import frc.robot.Cat5;

@@ -1,22 +1,10 @@
 Priority:
 
 Perhaps:
-Super slow accel button
-Use states for arm and wrist
-Slow this everywhere motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20); // TODO Should this be done in other places or with other frames?
-History of arm commands with Stack, have max size
-Some shuffleboard abstraction for suppliers that will register them somewhere
-    Semi random updates, so everything doesn't update at once
-    Provide update rate in hz
-Only allow arm to home once unless force homed?
-    Only home on not homed and limit switch rising edge
 
 Eventually:
 Limelight autoplacement controls led strips to indicate things
-Pickup position button toggles gripper position?
 Set drive motors to coast mode for offset config
-Pass odometry object into drive commands?
-Log high arm currents and low velocities?
 Confetti led pattern when robot is in endgame and balanced
 Pure pursuit
 Sequence to pickup a tipped over cone with wrist, gripper and arm
@@ -36,14 +24,5 @@ Slow down cardinal direction turning and heading keeping when arm is up
     Use arm distance from center of robot to make proportional?
 Quick press of rotation trigger all the way down does an incremental rotation
 Offset arm constant force spring with model
-
-
-Idea Archive:
-Is rotation of robot finicky?
-Lower arm height slightly at human player station
-No arm correction, just move wrist instead
-Move to carry position after picking a game piece up automatically // ISSUE WITH THIS IF AT HUMAN PLAYER STATION OR NOT FLOOR PICKUP POS
-Manipulator POV for wrist control, bump up and down to go between two positions?
-
 
 

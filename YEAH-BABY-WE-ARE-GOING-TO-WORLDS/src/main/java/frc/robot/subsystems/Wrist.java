@@ -27,7 +27,7 @@ public class Wrist extends Cat5Subsystem {
     private static final double MotorRevolutionsPerDegree = MotorRevolutionsPerRevolution / 360.0;
     public static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
-    private static final double CorrectionMultiplier = 7.5;
+    private static final double CorrectionDegreesPerSecond = 13.5;
 
     private static final int StallSmartCurrentLimitAmps = 20;
     private static final double ProportionalGainPercentPerRevolutionOfError = 0.5;
@@ -69,39 +69,24 @@ public class Wrist extends Cat5Subsystem {
             .getEntry();
         StringLogEntry stateLogEntry = new StringLogEntry(robotContainer.dataLog, "/wrist/state");
         robotContainer.data.createDatapoint(() -> state.toString())
-            .withShuffleboardUpdater(data -> {
+            .withShuffleboard(data -> {
                 stateEntry.setString(data);
-            })
-            .withShuffleboardHz(4)
-            .withLogUpdater(data -> {
+            }, 5)
+            .withLog(data -> {
                 stateLogEntry.append(data);
-            });
+            }, 5);
 
-        GenericEntry targetDegreesEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
-            .add("Wrist Target Degrees", targetDegrees)
-            .getEntry();
         DoubleLogEntry targetDegreesLogEntry = new DoubleLogEntry(robotContainer.dataLog, "/wrist/target-degrees");
         robotContainer.data.createDatapoint(() -> targetDegrees)
-            .withShuffleboardUpdater(data -> {
-                targetDegreesEntry.setDouble(data);
-            })
-            .withShuffleboardHz(4)
-            .withLogUpdater(data -> {
+            .withLog(data -> {
                 targetDegreesLogEntry.append(data);
-            });
+            }, 25);
 
-        GenericEntry encoderDegreesEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
-            .add("Wrist Encoder Degrees", getEncoderAngleDegrees())
-            .getEntry();
         DoubleLogEntry encoderDegreesLogEntry = new DoubleLogEntry(robotContainer.dataLog, "/wrist/encoder-degrees");
-        robotContainer.data.createDatapoint(() -> getEncoderAngleDegrees())
-            .withShuffleboardUpdater(data -> {
-                encoderDegreesEntry.setDouble(data);
-            })
-            .withShuffleboardHz(4)
-            .withLogUpdater(data -> {
+        robotContainer.data.createDatapoint(() -> getEncoderDegrees())
+            .withLog(data -> {
                 encoderDegreesLogEntry.append(data);
-            });
+            }, 25);
 
         new Cat5DeltaTracker<WristState>(robotContainer, state,
         last -> {
@@ -116,23 +101,23 @@ public class Wrist extends Cat5Subsystem {
     public void periodic() {
         if (DriverStation.isTeleopEnabled()) {
             double correctionPercent = robotContainer.input.getWristCorrectionPercent();
-            targetDegrees -= correctionPercent * CorrectionMultiplier * DegreesPerMotorRevolution * Robot.kDefaultPeriod;
-            if (robotContainer.getGridPosition() == GridPosition.Mid || robotContainer.getGridPosition() == GridPosition.High) {
-                targetDegrees = MathUtil.clamp(targetDegrees, WristState.HighestWithHighArm.getDegrees(), WristState.Lowest.getDegrees());
+            targetDegrees += correctionPercent * CorrectionDegreesPerSecond * Robot.kDefaultPeriod;
+            if (robotContainer.getArmGridPosition() == GridPosition.Mid || robotContainer.getArmGridPosition() == GridPosition.High) {
+                targetDegrees = MathUtil.clamp(targetDegrees, WristState.Lowest.getDegrees(), WristState.HighestWithArmRaised.getDegrees());
             }
             else {
-                targetDegrees = MathUtil.clamp(targetDegrees, WristState.Carry.getDegrees(), WristState.Lowest.getDegrees());
+                targetDegrees = MathUtil.clamp(targetDegrees, WristState.Lowest.getDegrees(), WristState.Carry.getDegrees());
             }
         }
 
         if (DriverStation.isEnabled()) {
-            pidController.setReference(targetDegrees * MotorRevolutionsPerDegree, ControlType.kPosition, 0);
+            pidController.setReference(-targetDegrees * MotorRevolutionsPerDegree, ControlType.kPosition, 0);
         }
     }
 
-    private double getEncoderAngleDegrees() {
+    private double getEncoderDegrees() {
         double rotations = encoder.getPosition();
-        return rotations * DegreesPerMotorRevolution;
+        return -rotations * DegreesPerMotorRevolution;
     }
 
     public void setState(WristState state) {

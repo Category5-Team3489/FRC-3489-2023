@@ -1,5 +1,3 @@
-// 10
-Determine drivetrain method parameter polarity
 
 
 
@@ -25,3 +23,28 @@ How close can we get to wall and still see campose in shuffleboard
 How close can the robot move to the wall before the arm is fully raised in the human player station pickup automation
 
 What is the estimated distance when at the wall with the arm raised
+
+
+
+Auto human player station pickup sequence:
+
+While left trigger is pressed:
+    Set target heading to zero degrees
+    Raise arm to human player station height
+    While 1 meter or more away from wall:
+        Strafe to 0.77m left of the april tag
+        Move towards wall at a faster speed
+    else
+        move towards wall at slow, constant speed
+    When held game piece goes from unknown to not unknown:
+        Leds flash
+        Print something
+
+
+// 10
+Determine drivetrain method parameter polarity
+
+
+
+
+

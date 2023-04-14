@@ -5,8 +5,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import static frc.robot.subsystems.Arm.*;
 
 public enum ArmState {
-    Home(GridPosition.Low, MinAngleDegrees, IdleMode.kBrake),
-    Homing(GridPosition.Low, MinAngleDegrees, IdleMode.kCoast),
+    Home(GridPosition.Low, MinDegrees, IdleMode.kBrake),
+    Homing(GridPosition.Low, MinDegrees, IdleMode.kCoast),
     DoubleSubstation(GridPosition.High, 12.76, IdleMode.kBrake),
     Pickup(GridPosition.Low, -70, IdleMode.kBrake),
     LowCone(GridPosition.Low, -70, IdleMode.kBrake),

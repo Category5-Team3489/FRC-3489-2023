@@ -7,13 +7,15 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.autos.Cat5Autos;
+import frc.robot.commands.autos.Cat5Autos;
 import frc.robot.data.Cat5Data;
+import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayouts;
-import frc.robot.enums.ArmState;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
 import frc.robot.enums.WristState;
@@ -35,10 +37,11 @@ public class RobotContainer implements Cat5Updatable {
     // State
     public final Robot robot;
     public final DataLog dataLog;
-    public final Cat5ShuffleboardLayouts layouts;
-    public final Cat5Data data;
-    public final Cat5Input input;
-    private final Cat5Autos autos;
+    public final Cat5ShuffleboardLayouts layouts = new Cat5ShuffleboardLayouts(this);
+    public final Cat5Data data = new Cat5Data();
+    public final Cat5Input input = new Cat5Input(this);
+    private final Cat5Autos autos = new Cat5Autos();
+    private final Cat5Actions actions;
 
     //#region Subsystem Init
     private HashSet<String> subsystems = new HashSet<String>();
@@ -69,11 +72,9 @@ public class RobotContainer implements Cat5Updatable {
     //#endregion
 
     // Subsystems
-    @SuppressWarnings("unused")
     private final Camera camera;
 
     private final NavX2 navx;
-    @SuppressWarnings("unused")
     private final Limelight limelight;
     private final Drivetrain drivetrain;
 
@@ -82,19 +83,13 @@ public class RobotContainer implements Cat5Updatable {
     private final Wrist wrist;
     private final Arm arm;
 
-    @SuppressWarnings("unused")
     private final Leds leds;
 
-    @SuppressWarnings("unused")
     private final Odometry odometry;
 
     public RobotContainer(Robot robot, DataLog dataLog) {
         this.robot = robot;
         this.dataLog = dataLog;
-        layouts = new Cat5ShuffleboardLayouts();
-        data = new Cat5Data();
-        input = new Cat5Input(this);
-        autos = new Cat5Autos();
 
         registerUpdatable(data);
 
@@ -119,8 +114,6 @@ public class RobotContainer implements Cat5Updatable {
         drivetrain = new Drivetrain(this, navx, arm, limelight);
         initComplete();
 
-        
-
         leds = new Leds(this);
         initComplete();
 
@@ -129,11 +122,33 @@ public class RobotContainer implements Cat5Updatable {
 
         Cat5.print("Initialization complete!");
 
+        actions = new Cat5Actions(this, camera, navx, limelight, drivetrain, indicator, gripper, wrist, arm, leds, odometry);
+
         configureBindings();
 
         addAutos();
 
-        // TODO When outtaking with gripper, always set held game piece to Unknown
+        // Log match time
+        DoubleLogEntry matchTimeLogEntry = new DoubleLogEntry(dataLog, "/match-time");
+        data.createDatapoint(() -> Timer.getMatchTime())
+            .withLog(data -> {
+                matchTimeLogEntry.append(data);
+            }, 5);
+
+        // TODO Read through all new code to find test items!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            // TODO Indicate in shuffleboard with blinking widget when a game piece is picked up, heldGamePiece, unknown -> !unknown
+
+            // TODO Move to carry position after picking a game piece up automatically // ISSUE WITH THIS IF AT HUMAN PLAYER STATION OR NOT FLOOR PICKUP POS
+
+                // TODO When arm is starting to move, or stopiing, do the unstowPiece or another gripper command!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // USE Arm.isAroundTarget and inital state transition, in set state look for changes with held game piece being not unknown!?????
+
+            // TODO Test 165deg or > turns being disallowed
+
+            // TODO Reset odometry on navx heading jump
 
         // TODO Leds and prints for actions
 
@@ -165,6 +180,12 @@ public class RobotContainer implements Cat5Updatable {
         // TODO Increase logging and shuffleboard frequencies?
 
         // TODO Arm, DeltaTracker, shuffleboard vitals and shuffleboard debug
+
+        // TODO make dataLog private and make functions to handle shuffleboard and logging stuff, put inside of Cat5Data
+
+        // TODO Log limelight: tx, ty, tid, ta
+
+        // TODO Log even more stuff??????!??!?!??!
     }
 
     private void configureBindings() {
@@ -172,166 +193,26 @@ public class RobotContainer implements Cat5Updatable {
 
         }));
 
-        // TODO Move to Cat5Actions
-        input.gripperStop.onTrue(gripper.stopCommand);
-        input.gripperIntake.onTrue(runOnce(() -> {
-            // TODO Move to Cat5Actions
-            gripper.setHeldGamePiece(GamePiece.Unknown);
-            gripper.resetCanReintakeAgain();
-            gripper.intakeCommand.schedule();
-        }));
-        input.gripperOuttake.onTrue(runOnce(() -> {
-            // TODO Move to Cat5Actions
-            gripper.setHeldGamePiece(GamePiece.Unknown);
-            switch (arm.getGridPosition()) {
-                case Low:
-                    if (gripper.getHeldGamePiece() == GamePiece.Cube) {
-                        gripper.lowOuttakeCubeCommand.schedule();
-                    }
-                    else {
-                        gripper.lowOuttakeConeCommand.schedule();
-                    }
-                    break;
-                case Mid:
-                    if (gripper.getHeldGamePiece() == GamePiece.Cube) {
-                        gripper.midOuttakeCubeCommand.schedule();
-                    }
-                    else {
-                        gripper.midOuttakeConeCommand.schedule();
-                    }
-                    break;
-                case High:
-                    if (gripper.getHeldGamePiece() == GamePiece.Cube) {
-                        gripper.highOuttakeCubeCommand.schedule();
-                    }
-                    else {
-                        gripper.highOuttakeConeCommand.schedule();
-                    }
-                    break;
-            }
-        }));
+        input.gripperStop.onTrue(actions.gripperStop());
+        input.gripperIntake.onTrue(actions.gripperIntake());
+        input.gripperOuttake.onTrue(actions.gripperOuttake());
 
-        input.wristPickup.onTrue(runOnce(() -> {
-            wrist.setState(WristState.Pickup);
-        }));
-        input.wristCarry.onTrue(runOnce(() -> {
-            wrist.setState(WristState.Carry);
-        }));
+        input.wristPickup.onTrue(actions.wristPickup());
+        input.wristCarry.onTrue(actions.wristCarry());
 
-        input.armDoubleSubstation.onTrue(sequence(
-            runOnce(() -> {
-                arm.setState(ArmState.DoubleSubstation);
-            }),
-            waitSeconds(0.4),
-            runOnce(() -> {
-                wrist.setState(WristState.DoubleSubstation);
-                gripper.intakeCommand.schedule();
-            })
-        ));
-        input.armHome.onTrue(runOnce(() -> {
-            if (arm.getState() == ArmState.Home) {
-                arm.forceHome();
-            }
-            arm.setState(ArmState.Home);
-            wrist.setState(WristState.Carry);
-            gripper.stopCommand.schedule();
-        }));
-        input.armPickup.onTrue(sequence(
-            runOnce(() -> {
-                arm.setState(ArmState.Pickup);
-            }),
-            waitSeconds(0.4),
-            runOnce(() -> {
-                wrist.setState(WristState.Pickup);
-                gripper.intakeCommand.schedule();
-            })
-        ));
-        input.armLow.onTrue(sequence(
-            runOnce(() -> {
-                if (gripper.getHeldGamePiece() == GamePiece.Cube) {
-                    arm.setState(ArmState.LowCube);
-                }
-                else {
-                    arm.setState(ArmState.LowCone);
-                }
-            }),
-            waitSeconds(0.4),
-            runOnce(() -> {
-                wrist.setState(WristState.Pickup);
-            })
-        ));
-        input.armMid.onTrue(sequence(
-            runOnce(() -> {
-                if (gripper.getHeldGamePiece() == GamePiece.Cube) {
-                    arm.setState(ArmState.MidCube);
-                }
-                else {
-                    if (arm.getState() == ArmState.MidCone) {
-                        arm.setState(ArmState.ScoreMidCone);
-                    }
-                    else if (arm.getState() == ArmState.ScoreMidCone) {
-                        arm.setState(ArmState.MidCone);
-                    }
-                    else {
-                        arm.setState(ArmState.MidCone);
-                    }
-                }
-            }),
-            waitSeconds(0.4),
-            runOnce(() -> {
-                wrist.setState(WristState.Carry);
-            })
-        ));
-        input.armHigh.onTrue(sequence(
-            runOnce(() -> {
-                if (gripper.getHeldGamePiece() == GamePiece.Cube) {
-                    arm.setState(ArmState.HighCube);
-                }
-                else {
-                    arm.setState(ArmState.HighCone);
-                }
-            }),
-            waitSeconds(0.4),
-            runOnce(() -> {
-                if (gripper.getHeldGamePiece() == GamePiece.Cube) {
-                    wrist.setState(WristState.HighCube);
-                }
-                else {
-                    wrist.setState(WristState.HighCone);
-                }
-            })
-        ));
+        input.armDoubleSubstation.onTrue(actions.armDoubleSubstation());
+        input.armHome.onTrue(actions.armHome());
+        input.armPickup.onTrue(actions.armPickup());
+        input.armLow.onTrue(actions.armLow());
+        input.armMid.onTrue(actions.armMid());
+        input.armHigh.onTrue(actions.armHigh());
 
-        input.navxZeroYaw.onTrue(navx.getZeroYawCommand());
+        input.navxZeroYaw.onTrue(actions.navxZeroYaw());
 
-        input.drivetrainNorth.onTrue(runOnce(() -> {
-            Rotation2d north = Rotation2d.fromDegrees(0);
-            double delta = Math.abs(navx.getRotation().getDegrees() - north.getDegrees());
-            if (delta < 165) {
-                drivetrain.setTargetHeading(north);
-            }
-        }));
-        input.drivetrainEast.onTrue(runOnce(() -> {
-            Rotation2d east = Rotation2d.fromDegrees(-90);
-            double delta = Math.abs(navx.getRotation().getDegrees() - east.getDegrees());
-            if (delta < 165) {
-                drivetrain.setTargetHeading(east);
-            }
-        }));
-        input.drivetrainSouth.onTrue(runOnce(() -> {
-            Rotation2d south = Rotation2d.fromDegrees(-180);
-            double delta = Math.abs(navx.getRotation().getDegrees() - south.getDegrees());
-            if (delta < 165) {
-                drivetrain.setTargetHeading(south);
-            }
-        }));
-        input.drivetrainWest.onTrue(runOnce(() -> {
-            Rotation2d west = Rotation2d.fromDegrees(-270);
-            double delta = Math.abs(navx.getRotation().getDegrees() - west.getDegrees());
-            if (delta < 165) {
-                drivetrain.setTargetHeading(west);
-            }
-        }));
+        input.drivetrainNorth.onTrue(actions.drivetrainCardinalDirection(0));
+        input.drivetrainEast.onTrue(actions.drivetrainCardinalDirection(-90));
+        input.drivetrainSouth.onTrue(actions.drivetrainCardinalDirection(-180));
+        input.drivetrainWest.onTrue(actions.drivetrainCardinalDirection(-270));
     }
 
     private void addAutos() {
@@ -347,16 +228,13 @@ public class RobotContainer implements Cat5Updatable {
         drivetrain.resetTargetHeading();
         Cat5.print("Drivetrain reset target heading on enable");
 
-        // TODO
-        // GamePiece detected = Gripper.get().getDetectedGamePiece();
-        // Gripper.get().setHeldGamePiece(detected);
-        // Cat5Utils.time();
-        // System.out.println("Detected game piece: \"" + detected.toString() + "\" on enable, set as held game piece in gripper");
+        GamePiece detected = gripper.getDetectedGamePiece();
+        gripper.setHeldGamePiece(detected);
+        Cat5.print("Detected game piece: \"" + detected.toString() + "\" on enable, set as held game piece in gripper");
 
         wrist.setState(WristState.Carry);
 
-        // TODO Force home
-        arm.setState(ArmState.Home);
+        arm.forceHome();
     }
 
     public void autonomousInit() {
@@ -372,8 +250,8 @@ public class RobotContainer implements Cat5Updatable {
     }
     //#endregion
 
-    //#region Pass
-    public void resetTargetHeading() {
+    //#region Because of no singletons, use events instead maybe
+    public void notifyHeadingJump() {
         drivetrain.resetTargetHeading();
     }
     
@@ -381,17 +259,28 @@ public class RobotContainer implements Cat5Updatable {
         return drivetrain.getAverageDriveVelocityMetersPerSecond();
     }
 
-    public GridPosition getGridPosition() {
+    public GridPosition getArmGridPosition() {
         return arm.getGridPosition();
     }
 
     public void pickedUpGamePiece() {
-        Cat5.print("Picked up " + gripper.getHeldGamePiece() + ", with arm at " + Cat5.prettyDouble(arm.getTargetAngleDegrees()) + " degrees");
+        Cat5.print("Picked up " + gripper.getHeldGamePiece() + ", with arm at " + Cat5.prettyDouble(arm.getTargetDegrees()) + " degrees");
     }
     //#endregion
 
     public Command getAutonomousCommand() {
         return autos.getAutonomousCommand();
+    }
+
+    public void configureShuffleboardLayout(Cat5ShuffleboardLayout layout, ShuffleboardLayout shuffleboardLayout) {
+        shuffleboardLayout.withSize(2, 4);
+
+        if (layout == Cat5ShuffleboardLayout.Driver) {
+            shuffleboardLayout.withPosition(0, 0);
+        }
+        else if (layout == Cat5ShuffleboardLayout.Manipulator) {
+            shuffleboardLayout.withPosition(7, 0);
+        }
     }
 
     @Override

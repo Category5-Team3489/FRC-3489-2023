@@ -28,32 +28,31 @@ public class NavX2 extends Cat5Subsystem {
             .getEntry();
         DoubleLogEntry headingLogEntry = new DoubleLogEntry(robotContainer.dataLog, "/navx/heading");
         robotContainer.data.createDatapoint(() -> heading.getDegrees())
-            .withShuffleboardUpdater(data -> {
+            .withShuffleboard(data -> {
                 headingEntry.setDouble(data);
-            })
-            .withShuffleboardHz(4)
-            .withLogUpdater(data -> {
+            }, 25)
+            .withLog(data -> {
                 headingLogEntry.append(data);
-            });
+            }, 25);
 
         GenericEntry connectedEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Driver)
             .add("NavX2 Connected", false)
             .getEntry();
         BooleanLogEntry connectedLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/navx/connected");
         robotContainer.data.createDatapoint(() -> isConnected())
-            .withShuffleboardUpdater(data -> {
+            .withShuffleboard(data -> {
                 connectedEntry.setBoolean(data);
-            })
-            .withLogUpdater(data -> {
+            }, 5)
+            .withLog(data -> {
                 connectedLogEntry.append(data);
-            });
+            }, 5);
     }
 
     public CommandBase getZeroYawCommand() {
         return runOnce(() -> {
             headingOffset = new Rotation2d();
             navx.zeroYaw();
-            robotContainer.resetTargetHeading();
+            robotContainer.notifyHeadingJump();
             Cat5.print("NavX2 zeroed yaw and heading offset");
         })
             .ignoringDisable(true)
@@ -62,7 +61,7 @@ public class NavX2 extends Cat5Subsystem {
 
     public void setHeadingOffset(Rotation2d headingOffset) {
         this.headingOffset = headingOffset;
-        robotContainer.resetTargetHeading();
+        robotContainer.notifyHeadingJump();
         Cat5.print("NavX2 heading offset updated (deg): " + headingOffset.getDegrees());
     }
 

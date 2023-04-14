@@ -28,6 +28,8 @@ public class Odometry extends Cat5Subsystem {
             layout.addDouble("Y (m)", () -> pose.getY());
             layout.addDouble("Theta (m)", () -> pose.getRotation().getDegrees());
         }
+
+        // TODO Reset odometry on gyro changes, offset and heading
     }
 
     @Override

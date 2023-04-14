@@ -1,4 +1,4 @@
-package frc.robot.configs.drivetrain;
+package frc.robot.configs;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 

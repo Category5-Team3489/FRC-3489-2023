@@ -29,12 +29,16 @@ public class Cat5Datapoint<T> implements Cat5Updatable {
         // TODO Optimization: cache last set shuffleboard or log and only update if changed, use Comparable interface
     }
 
-    public Cat5Datapoint<T> withShuffleboardUpdater(Consumer<T> updateShuffleboard) {
+    public Cat5Datapoint<T> withShuffleboard(Consumer<T> updateShuffleboard, double shuffleboardHz) {
         this.updateShuffleboard = updateShuffleboard;
+        shuffleboardPeriod = 1.0 / shuffleboardHz;
+        shuffleboardTime = Timer.getFPGATimestamp() + (Cat5.Rng.nextDouble() * shuffleboardPeriod);
         return this;
     }
-    public Cat5Datapoint<T> withLogUpdater(Consumer<T> updateLog) {
+    public Cat5Datapoint<T> withLog(Consumer<T> updateLog, double logHz) {
         this.updateLog = updateLog;
+        logPeriod = 1.0 / logHz;
+        logTime = Timer.getFPGATimestamp() + (Cat5.Rng.nextDouble() * logPeriod);
         return this;
     }
     public Cat5Datapoint<T> withShuffleboardEnabler(BooleanSupplier enableShuffleboard) {
@@ -43,16 +47,6 @@ public class Cat5Datapoint<T> implements Cat5Updatable {
     }
     public Cat5Datapoint<T> withLogEnabler(BooleanSupplier enableLog) {
         this.enableLog = enableLog;
-        return this;
-    }
-    public Cat5Datapoint<T> withShuffleboardHz(double shuffleboardHz) {
-        shuffleboardPeriod = 1.0 / shuffleboardHz;
-        shuffleboardTime = Timer.getFPGATimestamp() + (Cat5.Rng.nextDouble() * shuffleboardPeriod);
-        return this;
-    }
-    public Cat5Datapoint<T> withLogHz(double logHz) {
-        logPeriod = 1.0 / logHz;
-        logTime = Timer.getFPGATimestamp() + (Cat5.Rng.nextDouble() * logPeriod);
         return this;
     }
 

@@ -52,12 +52,12 @@ public class Limelight extends Cat5Subsystem {
             .getEntry();
         BooleanLogEntry responsiveLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/limelight/responsive");
         robotContainer.data.createDatapoint(() -> isActivePipeline(desiredPipeline))
-            .withShuffleboardUpdater(data -> {
+            .withShuffleboard(data -> {
                 responsiveEntry.setBoolean(data);
-            })
-            .withLogUpdater(data -> {
+            }, 5)
+            .withLog(data -> {
                 responsiveLogEntry.append(data);
-            });
+            }, 5);
 
         if (Constants.IsDebugShuffleboardEnabled) {
             {

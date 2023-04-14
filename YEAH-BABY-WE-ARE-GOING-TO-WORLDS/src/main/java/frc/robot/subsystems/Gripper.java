@@ -65,49 +65,46 @@ public class Gripper extends Cat5Subsystem {
         setDefaultCommand(stopCommand);
 
         GenericEntry isLimitSwitchDisabledEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Driver)
-            .add("Disable Limit Switch", false)
+            .add("Gripper Disable Limit Switch", false)
             .withWidget(BuiltInWidgets.kToggleSwitch)
             .getEntry();
         isLimitSwitchDisabled = () -> isLimitSwitchDisabledEntry.getBoolean(false);
-
-        GenericEntry heldGamePieceEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
-            .add("Gripper Held Game Piece", heldGamePiece.toString())
-            .getEntry();
-        StringLogEntry heldGamePieceLogEntry = new StringLogEntry(robotContainer.dataLog, "/gripper/held-game-piece");
-        robotContainer.data.createDatapoint(() -> heldGamePiece.toString())
-            .withShuffleboardUpdater(data -> {
-                heldGamePieceEntry.setString(data);
-            })
-            .withShuffleboardHz(4)
-            .withLogUpdater(data -> {
-                heldGamePieceLogEntry.append(data);
-            });
 
         GenericEntry limitSwitchEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Gripper Limit Switch", limitSwitch.get())
             .getEntry();
         BooleanLogEntry limitSwitchLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/gripper/limit-switch");
         robotContainer.data.createDatapoint(() -> limitSwitch.get())
-            .withShuffleboardUpdater(data -> {
+            .withShuffleboard(data -> {
                 limitSwitchEntry.setBoolean(data);
-            })
-            .withShuffleboardHz(4)
-            .withLogUpdater(data -> {
+            }, 25)
+            .withLog(data -> {
                 limitSwitchLogEntry.append(data);
-            });
+            }, 25);
+
+        GenericEntry heldGamePieceEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
+            .add("Gripper Held Game Piece", heldGamePiece.toString())
+            .getEntry();
+        StringLogEntry heldGamePieceLogEntry = new StringLogEntry(robotContainer.dataLog, "/gripper/held-game-piece");
+        robotContainer.data.createDatapoint(() -> heldGamePiece.toString())
+            .withShuffleboard(data -> {
+                heldGamePieceEntry.setString(data);
+            }, 5)
+            .withLog(data -> {
+                heldGamePieceLogEntry.append(data);
+            }, 5);
 
         GenericEntry canReintakeAgainEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Gripper Can Reintake Again", canReintakeAgain)
             .getEntry();
         BooleanLogEntry canReintakeAgainLogEntry = new BooleanLogEntry(robotContainer.dataLog, "/gripper/can-reintake-again");
         robotContainer.data.createDatapoint(() -> canReintakeAgain)
-            .withShuffleboardUpdater(data -> {
+            .withShuffleboard(data -> {
                 canReintakeAgainEntry.setBoolean(data);
-            })
-            .withShuffleboardHz(4)
-            .withLogUpdater(data -> {
+            }, 5)
+            .withLog(data -> {
                 canReintakeAgainLogEntry.append(data);
-            });
+            }, 5);
 
         if (Constants.IsDebugShuffleboardEnabled) {
             var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Gripper);

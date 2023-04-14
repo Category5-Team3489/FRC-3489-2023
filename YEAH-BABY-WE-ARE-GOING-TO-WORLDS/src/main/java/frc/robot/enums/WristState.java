@@ -3,15 +3,15 @@ package frc.robot.enums;
 import static frc.robot.subsystems.Wrist.*;
 
 public enum WristState {
-    Home(0 * DegreesPerMotorRevolution),
-    Lowest(5 * DegreesPerMotorRevolution),
-    Carry(-13 * DegreesPerMotorRevolution),
-    HighestWithHighArm(-30 * DegreesPerMotorRevolution),
+    Home(0 * -DegreesPerMotorRevolution),
+    Lowest(5 * -DegreesPerMotorRevolution),
+    Carry(-13 * -DegreesPerMotorRevolution),
+    HighestWithArmRaised(-30 * -DegreesPerMotorRevolution),
 
-    Pickup(-1 * DegreesPerMotorRevolution),
-    HighCone(-18.05 * DegreesPerMotorRevolution),
-    HighCube(-8.65 * DegreesPerMotorRevolution),
-    DoubleSubstation(-6.29 * DegreesPerMotorRevolution);
+    Pickup(-1 * -DegreesPerMotorRevolution),
+    HighCone(-18.05 * -DegreesPerMotorRevolution),
+    HighCube(-8.65 * -DegreesPerMotorRevolution),
+    DoubleSubstation(-6.29 * -DegreesPerMotorRevolution);
 
     private final double degrees;
 
