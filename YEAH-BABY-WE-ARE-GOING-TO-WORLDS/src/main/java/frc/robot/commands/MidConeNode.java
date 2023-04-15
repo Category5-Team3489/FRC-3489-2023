@@ -18,8 +18,8 @@ public class MidConeNode extends CommandBase {
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
     private static double MaxOmegaDegreesPerSecond = 90;
-    private static double TargetXSetpointDegrees = -3.09;
-    private static double TargetYSetpointDegrees = -5.18;
+    private static double TargetXSetpointDegrees = -5.72;
+    private static double TargetYSetpointDegrees = -5.48;
     public static double FeedforwardMetersPerSecond = 0.05;
 
     private final Limelight limelight;
@@ -33,6 +33,7 @@ public class MidConeNode extends CommandBase {
     public MidConeNode(Limelight limelight, Drivetrain drivetrain) {
         this.limelight = limelight;
         this.drivetrain = drivetrain;
+        
         addRequirements(drivetrain);
     }
 

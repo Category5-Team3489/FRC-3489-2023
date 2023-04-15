@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -24,10 +23,10 @@ public class Robot extends TimedRobot {
         DriverStation.silenceJoystickConnectionWarning(isSimulation());
 
         // Allow limelight dashboard access through roboRIO usb
-        for (int port = 5800; port <= 5805; port++) {
-            PortForwarder.add(port, "limelight.local", port);
-            PortForwarder.add(port, "10.34.89.11", port);
-        }
+        // for (int port = 5800; port <= 5805; port++) {
+        //     PortForwarder.add(port, "limelight.local", port);
+        //     PortForwarder.add(port, "10.34.89.11", port);
+        // }
 
         // No live window loop overruns
         LiveWindow.setEnabled(false);
@@ -36,7 +35,7 @@ public class Robot extends TimedRobot {
         // Configure logging
         DataLogManager.logNetworkTables(false);
         var dataLog = DataLogManager.getLog();
-        DriverStation.startDataLog(dataLog, true);
+        DriverStation.startDataLog(dataLog, false);
 
         robotContainer = new RobotContainer(this, dataLog);
     }

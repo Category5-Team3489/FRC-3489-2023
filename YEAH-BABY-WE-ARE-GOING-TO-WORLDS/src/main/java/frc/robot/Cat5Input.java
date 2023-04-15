@@ -103,10 +103,16 @@ public class Cat5Input {
     public double getDriveSpeedLimiterPercent() {
         double speedLimiterPercent = 1.0 / 2.0;
 
-        if (xbox.leftBumper().getAsBoolean()) {
+        boolean leftBumper = xbox.leftBumper().getAsBoolean();
+        boolean rightBumper = xbox.rightBumper().getAsBoolean();
+
+        if (leftBumper && rightBumper) {
+            speedLimiterPercent = 1.0 / 8.0;
+        }
+        else if (leftBumper) {
             speedLimiterPercent = 1.0 / 3.0;
         }
-        else if (xbox.rightBumper().getAsBoolean()) {
+        else if (rightBumper) {
             speedLimiterPercent = 1.0;
         }
 

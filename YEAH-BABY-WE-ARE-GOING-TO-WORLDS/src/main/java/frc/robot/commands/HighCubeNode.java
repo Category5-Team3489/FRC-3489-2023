@@ -32,6 +32,7 @@ public class HighCubeNode extends CommandBase {
     public HighCubeNode(Limelight limelight, Drivetrain drivetrain) {
         this.limelight = limelight;
         this.drivetrain = drivetrain;
+        
         addRequirements(drivetrain);
     }
 

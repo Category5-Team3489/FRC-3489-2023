@@ -185,9 +185,6 @@ public class Gripper extends Cat5Subsystem {
                 }
             }
         })
-            // .beforeStarting(() -> {
-            //     Cat5.print("Gripper Stop");
-            // })
             .withName("Stop");
     }
 
@@ -228,9 +225,6 @@ public class Gripper extends Cat5Subsystem {
                 robotContainer.pickedUpGamePiece();
             }
         })
-            // .beforeStarting(() -> {
-            //     Cat5.print("Gripper Intake");
-            // })
             .withName("Intake");
     }
 
@@ -239,9 +233,6 @@ public class Gripper extends Cat5Subsystem {
             setMotors(percent);
         })
             .withTimeout(seconds)
-            // .beforeStarting(() -> {
-            //     Cat5.print("Gripper " + name);
-            // })
             .withName(name);
     }
 

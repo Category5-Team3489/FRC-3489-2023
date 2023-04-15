@@ -29,6 +29,8 @@ public class AllignHighCube extends CommandBase {
     public AllignHighCube(Limelight limelight, Drivetrain drivetrain) {
         this.limelight = limelight;
         this.drivetrain = drivetrain;
+
+        addRequirements(drivetrain);
     }
 
     @Override

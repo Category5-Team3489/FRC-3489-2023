@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.HighConeNode;
 import frc.robot.commands.HighCubeNode;
 import frc.robot.commands.MidConeNode;
 import frc.robot.commands.MidCubeNode;
@@ -78,7 +79,7 @@ public class Cat5Actions {
                         automationHighCube().schedule();
                     }
                     else {
-                        Cat5.print("High cone automation not implemented!");
+                        automationHighCone().schedule();
                     }
                     break;
             }
@@ -91,6 +92,13 @@ public class Cat5Actions {
                 arm.setState(ArmState.ScoreMidCone);
             }),
             waitSeconds(0.3),
+            gripperOuttake()
+        );
+    }
+    private Command automationHighCone() {
+        return sequence(
+            new HighConeNode(limelight, drivetrain),
+            waitSeconds(0.5),
             gripperOuttake()
         );
     }
@@ -107,6 +115,12 @@ public class Cat5Actions {
             waitSeconds(0.5),
             gripperOuttake()
         );
+    }
+
+    public Command waitUntilDriving() {
+        return waitUntil(() -> {
+            return drivetrain.isDriveCommandActive();
+        });
     }
 
     public Command gripperStop() {

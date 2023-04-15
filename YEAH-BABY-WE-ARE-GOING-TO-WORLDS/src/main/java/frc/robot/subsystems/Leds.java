@@ -23,7 +23,7 @@ public class Leds extends Cat5Subsystem {
 
     @Override
     public void periodic() {
-        if (!DriverStation.isEnabled()) {
+        if (DriverStation.isDisabled()) {
             return;
         }
 

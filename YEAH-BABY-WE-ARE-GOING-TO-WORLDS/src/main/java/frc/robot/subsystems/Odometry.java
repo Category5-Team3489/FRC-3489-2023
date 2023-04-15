@@ -11,7 +11,7 @@ public class Odometry extends Cat5Subsystem {
     // State
     private final Drivetrain drivetrain;
     private final NavX2 navx;
-    private SwerveDriveOdometry odometry = null;
+    private SwerveDriveOdometry odometry;
     private Pose2d pose = new Pose2d();
     // private TimeInterpolatableBuffer<Pose2d> poseBuffer = TimeInterpolatableBuffer.createBuffer(Cat5::lerpUnclamped, 4);
 
@@ -28,12 +28,14 @@ public class Odometry extends Cat5Subsystem {
             layout.addDouble("Y (m)", () -> pose.getY());
             layout.addDouble("Theta (m)", () -> pose.getRotation().getDegrees());
         }
-
-        // TODO Reset odometry on gyro changes, offset and heading
     }
 
     @Override
     public void periodic() {
         pose = odometry.update(navx.getRotation(), drivetrain.getModulePositions());
+    }
+
+    public void notifyHeadingJump() {
+        odometry = new SwerveDriveOdometry(Drivetrain.Kinematics, navx.getRotation(), drivetrain.getModulePositions());
     }
 }

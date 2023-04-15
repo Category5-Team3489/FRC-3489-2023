@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
@@ -13,13 +15,16 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Cat5;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.Drive;
+import frc.robot.commands.LeftDoubleSubstation;
 import frc.robot.configs.DriveMotorConfig;
 import frc.robot.configs.OffsetsConfig;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
@@ -30,6 +35,7 @@ import frc.robot.enums.ModulePosition;
 
 public class Drivetrain extends Cat5Subsystem {
     // Constants
+    private static final double AroundTargetHeadingThresholdDegrees = 10;
     public static final double PovSpeedMetersPerSecond = 0.4;
     public static final double FullSpeedRateLimiter100PercentPerSecond = 2.0; // 3.0
 
@@ -87,8 +93,12 @@ public class Drivetrain extends Cat5Subsystem {
     public final SwerveModule backLeftModule;
     public final SwerveModule backRightModule;
 
+    // Suppliers
+    private final BooleanSupplier isCameraDisabledWhenDriving;
+
     // Commands
     private final Drive driveCommand;
+    private final LeftDoubleSubstation leftDoubleSubstationCommand;
     
     // State
     private final NavX2 navx;
@@ -104,6 +114,7 @@ public class Drivetrain extends Cat5Subsystem {
         this.limelight = limelight;
 
         driveCommand = new Drive(robotContainer, this);
+        leftDoubleSubstationCommand = new LeftDoubleSubstation(limelight, this);
 
         setDefaultCommand(driveCommand);
 
@@ -193,6 +204,12 @@ public class Drivetrain extends Cat5Subsystem {
             );
         }
 
+        GenericEntry isCameraDisabledWhenDrivingEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Driver)
+            .add("Disable Camera When Driving", false)
+            .withWidget(BuiltInWidgets.kToggleSwitch)
+            .getEntry();
+        isCameraDisabledWhenDriving = () -> isCameraDisabledWhenDrivingEntry.getBoolean(false);
+
         if (Constants.IsDebugShuffleboardEnabled) {
             {
                 var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Drive_Velocities);
@@ -226,12 +243,22 @@ public class Drivetrain extends Cat5Subsystem {
         }
 
         if (robotContainer.input.isBeingDriven()) {
-            limelight.setDesiredPipeline(LimelightPipeline.Camera);
+            if (!isCameraDisabledWhenDriving.getAsBoolean()) {
+                limelight.setDesiredPipeline(LimelightPipeline.Camera);
+            }
 
             if (!isDriveCommandActive()) {
                 driveCommand.schedule();
     
                 Cat5.print("Drove out of non-drive command during teleop");
+            }
+        }
+        else {
+            if (robotContainer.input.shouldAutomateLeftDoubleSubstation()) {
+                leftDoubleSubstationCommand.schedule();
+            }
+            else {
+                leftDoubleSubstationCommand.cancel();   
             }
         }
     }
@@ -248,6 +275,14 @@ public class Drivetrain extends Cat5Subsystem {
     public void resetTargetHeading() {
         targetHeading = null;
         omegaController.reset();
+    }
+
+    public boolean isAroundTargetHeading() {
+        if (targetHeading == null) {
+            return false;
+        }
+
+        return Math.abs(navx.getRotation().minus(targetHeading).getDegrees()) < AroundTargetHeadingThresholdDegrees;
     }
 
     public void brakeTranslation() {

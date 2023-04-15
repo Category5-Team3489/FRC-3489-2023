@@ -15,7 +15,7 @@ public class LeftDoubleSubstation extends CommandBase {
     private static double MaxDistanceMetersPerSecond = 0.75;
     private static double StrafeToleranceDegrees = 1.5;
     private static double DistanceToleranceDegrees = 1.5;
-    private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
+    private static Rotation2d TargetAngle = Rotation2d.fromDegrees(0);
     private static double SpeedLimiter = 0.5;
     private static double MaxOmegaDegreesPerSecond = 90;
     private static double TargetXSetpointDegrees = -0.14;
@@ -32,6 +32,7 @@ public class LeftDoubleSubstation extends CommandBase {
     public LeftDoubleSubstation(Limelight limelight, Drivetrain drivetrain) {
         this.limelight = limelight;
         this.drivetrain = drivetrain;
+        
         addRequirements(drivetrain);
     }
 

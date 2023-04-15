@@ -143,13 +143,6 @@ public class RobotContainer implements Cat5Updatable {
 
             // TODO Move to carry position after picking a game piece up automatically // ISSUE WITH THIS IF AT HUMAN PLAYER STATION OR NOT FLOOR PICKUP POS
 
-                // TODO When arm is starting to move, or stopiing, do the unstowPiece or another gripper command!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // USE Arm.isAroundTarget and inital state transition, in set state look for changes with held game piece being not unknown!?????
-
-            // TODO Test 165deg or > turns being disallowed
-
-            // TODO Reset odometry on navx heading jump
-
         // TODO Leds and prints for actions
 
         // TODO Human player station pickup, 30.315in, 0.77m to left and right of april tag is good position to center robot on
@@ -225,7 +218,8 @@ public class RobotContainer implements Cat5Updatable {
     //#region Events
     public void disabledExit() {
         drivetrain.resetTargetHeading();
-        Cat5.print("Drivetrain reset target heading on enable");
+
+        odometry.notifyHeadingJump();
 
         GamePiece detected = gripper.getDetectedGamePiece();
         gripper.setHeldGamePiece(detected);
@@ -252,6 +246,7 @@ public class RobotContainer implements Cat5Updatable {
     //#region Because of no singletons, use events instead maybe
     public void notifyHeadingJump() {
         drivetrain.resetTargetHeading();
+        odometry.notifyHeadingJump();
     }
     
     public double getAverageDriveVelocityMetersPerSecond() {
@@ -264,6 +259,10 @@ public class RobotContainer implements Cat5Updatable {
 
     public void pickedUpGamePiece() {
         Cat5.print("Picked up " + gripper.getHeldGamePiece() + ", with arm at " + Cat5.prettyDouble(arm.getTargetDegrees()) + " degrees");
+        
+        if (arm.getGridPosition() == GridPosition.Low) {
+            actions.armHome().schedule();
+        }
     }
     //#endregion
 

@@ -25,6 +25,7 @@ import frc.robot.RobotContainer;
 import frc.robot.data.Cat5DeltaTracker;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.enums.ArmState;
+import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
 
 public class Arm extends Cat5Subsystem {
@@ -276,11 +277,15 @@ public class Arm extends Cat5Subsystem {
 
     public void setState(ArmState state) {
         if (this.state != state && this.state == ArmState.Home && state != ArmState.Home && state != ArmState.Homing) {
-            gripper.unstowPieceCommand.schedule();
+            if (gripper.getHeldGamePiece() != GamePiece.Unknown) {
+                gripper.unstowPieceCommand.schedule();
+            }
         }
 
         if (this.state != state && this.state != ArmState.Homing && state != ArmState.Homing) {
-            keepPieceWhenAroundTarget(state).schedule();
+            if (gripper.getHeldGamePiece() != GamePiece.Unknown) {
+                keepPieceWhenAroundTarget(state).schedule();
+            }
         }
 
         this.state = state;

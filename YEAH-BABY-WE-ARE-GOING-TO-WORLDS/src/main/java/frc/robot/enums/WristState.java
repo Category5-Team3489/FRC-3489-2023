@@ -8,7 +8,7 @@ public enum WristState {
     Carry(-13 * -DegreesPerMotorRevolution),
     HighestWithArmRaised(-30 * -DegreesPerMotorRevolution),
 
-    Pickup(-1 * -DegreesPerMotorRevolution),
+    Pickup(8.59), // -1 * -DegreesPerMotorRevolution
     HighCone(-18.05 * -DegreesPerMotorRevolution),
     HighCube(-8.65 * -DegreesPerMotorRevolution),
     DoubleSubstation(-6.29 * -DegreesPerMotorRevolution);
