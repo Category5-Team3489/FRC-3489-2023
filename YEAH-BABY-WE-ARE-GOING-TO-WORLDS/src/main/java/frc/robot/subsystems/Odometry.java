@@ -38,4 +38,8 @@ public class Odometry extends Cat5Subsystem {
     public void notifyHeadingJump() {
         odometry = new SwerveDriveOdometry(Drivetrain.Kinematics, navx.getRotation(), drivetrain.getModulePositions());
     }
+
+    public Pose2d getPose() {
+        return pose;
+    }
 }

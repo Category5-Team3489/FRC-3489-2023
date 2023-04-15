@@ -24,27 +24,22 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Cat5Actions {
-    @SuppressWarnings("unused")
-    private final RobotContainer robotContainer;
+    public final RobotContainer robotContainer;
 
-    @SuppressWarnings("unused")
-    private final Camera camera;
+    public final Camera camera;
 
-    private final NavX2 navx;
-    private final Limelight limelight;
-    private final Drivetrain drivetrain;
+    public final NavX2 navx;
+    public final Limelight limelight;
+    public final Drivetrain drivetrain;
 
-    @SuppressWarnings("unused")
-    private final Indicator indicator;
-    private final Gripper gripper;
-    private final Wrist wrist;
-    private final Arm arm;
+    public final Indicator indicator;
+    public final Gripper gripper;
+    public final Wrist wrist;
+    public final Arm arm;
 
-    @SuppressWarnings("unused")
-    private final Leds leds;
+    public final Leds leds;
 
-    @SuppressWarnings("unused")
-    private final Odometry odometry;
+    public final Odometry odometry;
 
     public Cat5Actions(RobotContainer robotContainer, Camera camera, NavX2 navx, Limelight limelight, Drivetrain drivetrain, Indicator indicator, Gripper gripper, Wrist wrist, Arm arm, Leds leds, Odometry odometry) {
         this.robotContainer = robotContainer;
@@ -139,7 +134,6 @@ public class Cat5Actions {
     }
     public Command gripperOuttake() {
         return runOnce(() -> {
-            gripper.setHeldGamePiece(GamePiece.Unknown);
             switch (arm.getGridPosition()) {
                 case Low:
                     if (gripper.getHeldGamePiece() == GamePiece.Cube) {
@@ -166,6 +160,7 @@ public class Cat5Actions {
                     }
                     break;
             }
+            gripper.setHeldGamePiece(GamePiece.Unknown);
         });
     }
 

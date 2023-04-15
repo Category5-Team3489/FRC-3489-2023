@@ -7,7 +7,7 @@ import static frc.robot.subsystems.Arm.*;
 public enum ArmState {
     Home(GridPosition.Low, MinDegrees, IdleMode.kBrake),
     Homing(GridPosition.Low, MinDegrees, IdleMode.kCoast),
-    DoubleSubstation(GridPosition.High, 22, IdleMode.kBrake), // 12.76
+    DoubleSubstation(GridPosition.High, 22, IdleMode.kBrake),
     Pickup(GridPosition.Low, -70, IdleMode.kBrake),
     LowCone(GridPosition.Low, -51.5, IdleMode.kBrake),
     LowCube(GridPosition.Low, -51.5, IdleMode.kBrake),

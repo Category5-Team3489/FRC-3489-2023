@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.autos.Cat5Autos;
+import frc.robot.commands.autos.PlaceMidConeOnly;
+import frc.robot.commands.autos.TestDrive;
 import frc.robot.data.Cat5Data;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayouts;
@@ -212,6 +214,10 @@ public class RobotContainer implements Cat5Updatable {
         autos.addAuto(() -> print("Doing nothing... Because this is the nothing auto!")
             .withName("NothingAuto")
         );
+
+        autos.addAuto(() -> new PlaceMidConeOnly(actions));
+
+        autos.addAuto(() -> new TestDrive(actions));
 
         autos.addSelectorWidget();
     }

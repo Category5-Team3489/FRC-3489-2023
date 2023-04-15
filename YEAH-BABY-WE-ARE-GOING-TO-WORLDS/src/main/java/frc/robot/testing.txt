@@ -1,7 +1,4 @@
 
-test piece keeping
-test piece unstowing
-
 shorten gripper limit switch arm
 
 save all limelight pipelines
@@ -11,15 +8,7 @@ wrist moves, with corrections?
 arm moves, with corrections?
 how does campose change with robot movements, write down
 
-Using limelight cursor for human player station pickup
-Make limelight pipeline for driver camera, with good crosshair for human player station pickup
-^^^ Can the crosshair hit a certain point on the arm to make correcting the arm height easier
-
 How close can we get to wall and still see campose in shuffleboard
-
-Wrist angle for human player station pickup,
-
-see if double homing increases arm consistency
 
 // Not too important
 How far to left and right can arm be to still pickup piece
@@ -29,8 +18,6 @@ How far to left and right can arm be to still pickup piece
 How close can the robot move to the wall before the arm is fully raised in the human player station pickup automation
 
 What is the estimated distance when at the wall with the arm raised
-
-
 
 
 
