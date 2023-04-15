@@ -7,6 +7,7 @@ import frc.robot.enums.GamePiece;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class PlaceMidConeOnly extends SequentialCommandGroup {
@@ -15,6 +16,7 @@ public class PlaceMidConeOnly extends SequentialCommandGroup {
             runOnce(() -> {
                 actions.navx.setHeadingOffset(Rotation2d.fromDegrees(180));
                 actions.gripper.setHeldGamePiece(GamePiece.Cone);
+                actions.odometry.resetWithPosition(0, 0);
             }), 
             actions.armMid(),
             waitSeconds(2),

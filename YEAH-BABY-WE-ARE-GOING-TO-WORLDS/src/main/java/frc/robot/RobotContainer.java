@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.Timer;
@@ -138,6 +139,10 @@ public class RobotContainer implements Cat5Updatable {
                 matchTimeLogEntry.append(data);
             }, 5);
 
+        // TODO Make auto actions use runOnce
+
+        // TODO reset odometry at beginning of auto with action, then drive to specific points to avoid drift, reset odometry to pos
+
         // TODO Read through all new code to find test items!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -183,6 +188,12 @@ public class RobotContainer implements Cat5Updatable {
         // TODO Log limelight: tx, ty, tid, ta
 
         // TODO Log even more stuff??????!??!?!??!
+
+        /*
+         * TODO Check pitch every second, move a couple inches until level for auto balance
+         * 
+         * TODO Low auto placement with april tag????
+         */
     }
 
     private void configureBindings() {
@@ -226,7 +237,7 @@ public class RobotContainer implements Cat5Updatable {
     public void disabledExit() {
         drivetrain.resetTargetHeading();
 
-        odometry.notifyHeadingJump();
+        odometry.resetWithPosition(0, 0);
 
         GamePiece detected = gripper.getDetectedGamePiece();
         gripper.setHeldGamePiece(detected);
@@ -253,7 +264,7 @@ public class RobotContainer implements Cat5Updatable {
     //#region Because of no singletons, use events instead maybe
     public void notifyHeadingJump() {
         drivetrain.resetTargetHeading();
-        odometry.notifyHeadingJump();
+        odometry.resetWithPosition(0, 0);
     }
     
     public double getAverageDriveVelocityMetersPerSecond() {
