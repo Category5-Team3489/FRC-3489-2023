@@ -1,17 +1,15 @@
 
-mount HP april tag
-create driver camera pipeline for pipeline index 3
-save all limelight pipelines
-reprogram radio!!!!!!!!!!
+test piece keeping
+test piece unstowing
 
-Increase low outtake speed
+shorten gripper limit switch arm
+
+save all limelight pipelines
 
 go through Cat5Actions list
-does stopping 180 deg turns work, no bugs?
 wrist moves, with corrections?
 arm moves, with corrections?
 how does campose change with robot movements, write down
-Test new 1/2 sec ramp rate, does it need to be even slower, down from 1/3 sec
 
 Using limelight cursor for human player station pickup
 Make limelight pipeline for driver camera, with good crosshair for human player station pickup

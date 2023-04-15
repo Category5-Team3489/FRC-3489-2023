@@ -226,7 +226,7 @@ public class Drivetrain extends Cat5Subsystem {
         }
 
         if (robotContainer.input.isBeingDriven()) {
-            // FIXME limelight.setDesiredPipeline(LimelightPipeline.Camera);
+            limelight.setDesiredPipeline(LimelightPipeline.Camera);
 
             if (!isDriveCommandActive()) {
                 driveCommand.schedule();

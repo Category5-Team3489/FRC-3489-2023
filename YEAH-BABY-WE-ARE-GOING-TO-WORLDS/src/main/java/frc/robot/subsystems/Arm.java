@@ -17,6 +17,7 @@ import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.Cat5;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -38,7 +39,7 @@ public class Arm extends Cat5Subsystem {
     public static final double MinDegrees = -114;
     public static final double MaxDegrees = 37.0;
 
-    private static final double HomingPercent = -0.8; // TODO TEST THIS SPEED INCREASE -0.4
+    private static final double HomingPercent = -0.8;
     private static final double HorizontalResistGravityPercent = 0.025;
 
     private static final int StallSmartCurrentLimitAmps = 30;
@@ -61,6 +62,7 @@ public class Arm extends Cat5Subsystem {
     private final CommandBase gotoTargetCommand = getGotoTargetCommand();
 
     // State
+    private final Gripper gripper;
     private boolean isHomed = false;
     private boolean lastLimitSwitchValue = false;
     private GridPosition gridPosition = GridPosition.Low;
@@ -68,8 +70,9 @@ public class Arm extends Cat5Subsystem {
     private IdleMode idleMode = IdleMode.kCoast;
     private ArmState state = ArmState.Homing;
 
-    public Arm(RobotContainer robotContainer) {
+    public Arm(RobotContainer robotContainer, Gripper gripper) {
         super(robotContainer);
+        this.gripper = gripper;
 
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
@@ -204,17 +207,6 @@ public class Arm extends Cat5Subsystem {
         return false;
     }
 
-    public void setState(ArmState state) {
-        this.state = state;
-
-        gridPosition = state.getGridPosition();
-        targetDegrees = MathUtil.clamp(state.getDegrees(), MinDegrees, MaxDegrees);
-        if (idleMode != state.getIdleMode()) {
-            idleMode = state.getIdleMode();
-            motor.setIdleMode(idleMode);
-        }
-    }
-
     private double getEncoderDegrees() {
         double rotations = encoder.getPosition();
         return rotations * DegreesPerMotorRevolution;
@@ -254,6 +246,21 @@ public class Arm extends Cat5Subsystem {
             .withName("Goto Target");
     }
 
+    private CommandBase keepPieceWhenAroundTarget(ArmState state) {
+        return new FunctionalCommand(() -> {
+            // onInit
+        },
+        () -> {
+            // onExecute
+        }, (interrupted) -> {
+            // onEnd
+            gripper.keepPieceCommand.schedule();
+        }, () -> {
+            // isFinished
+            return isAroundTarget();
+        });
+    }
+
     public void forceHome() {
         lastLimitSwitchValue = false;
         isHomed = false;
@@ -265,6 +272,25 @@ public class Arm extends Cat5Subsystem {
 
     public ArmState getState() {
         return state;
+    }
+
+    public void setState(ArmState state) {
+        if (this.state != state && this.state == ArmState.Home && state != ArmState.Home && state != ArmState.Homing) {
+            gripper.unstowPieceCommand.schedule();
+        }
+
+        if (this.state != state && this.state != ArmState.Homing && state != ArmState.Homing) {
+            keepPieceWhenAroundTarget(state).schedule();
+        }
+
+        this.state = state;
+
+        gridPosition = state.getGridPosition();
+        targetDegrees = MathUtil.clamp(state.getDegrees(), MinDegrees, MaxDegrees);
+        if (idleMode != state.getIdleMode()) {
+            idleMode = state.getIdleMode();
+            motor.setIdleMode(idleMode);
+        }
     }
 
     public GridPosition getGridPosition() {

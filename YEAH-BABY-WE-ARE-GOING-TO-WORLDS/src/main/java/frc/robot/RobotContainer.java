@@ -104,7 +104,7 @@ public class RobotContainer implements Cat5Updatable {
         initComplete();
         wrist = new Wrist(this);
         initComplete();
-        arm = new Arm(this);
+        arm = new Arm(this, gripper);
         initComplete();
 
         navx = new NavX2(this);
@@ -114,7 +114,7 @@ public class RobotContainer implements Cat5Updatable {
         drivetrain = new Drivetrain(this, navx, arm, limelight);
         initComplete();
 
-        leds = new Leds(this);
+        leds = new Leds(this, indicator);
         initComplete();
 
         odometry = new Odometry(this, drivetrain, navx);
