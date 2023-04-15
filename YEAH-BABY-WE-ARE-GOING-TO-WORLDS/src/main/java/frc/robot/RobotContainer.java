@@ -16,6 +16,7 @@ import frc.robot.commands.autos.Cat5Autos;
 import frc.robot.data.Cat5Data;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayouts;
+import frc.robot.enums.ArmState;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
 import frc.robot.enums.WristState;
@@ -191,9 +192,9 @@ public class RobotContainer implements Cat5Updatable {
 
         input.wristPickup.onTrue(actions.wristPickup());
         input.wristCarry.onTrue(actions.wristCarry());
-
+ 
         input.armDoubleSubstation.onTrue(actions.armDoubleSubstation());
-        input.armHome.onTrue(actions.armHome());
+        input.armHome.onTrue(actions.armHome(true));
         input.armPickup.onTrue(actions.armPickup());
         input.armLow.onTrue(actions.armLow());
         input.armMid.onTrue(actions.armMid());
@@ -260,8 +261,8 @@ public class RobotContainer implements Cat5Updatable {
     public void pickedUpGamePiece() {
         Cat5.print("Picked up " + gripper.getHeldGamePiece() + ", with arm at " + Cat5.prettyDouble(arm.getTargetDegrees()) + " degrees");
         
-        if (arm.getGridPosition() == GridPosition.Low) {
-            actions.armHome().schedule();
+        if (arm.getState() == ArmState.Pickup) {
+            actions.armHome(false).schedule();
         }
     }
     //#endregion

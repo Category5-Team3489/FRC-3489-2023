@@ -9,9 +9,9 @@ public enum ArmState {
     Homing(GridPosition.Low, MinDegrees, IdleMode.kCoast),
     DoubleSubstation(GridPosition.High, 22, IdleMode.kBrake), // 12.76
     Pickup(GridPosition.Low, -70, IdleMode.kBrake),
-    LowCone(GridPosition.Low, -70, IdleMode.kBrake),
-    LowCube(GridPosition.Low, -70, IdleMode.kBrake),
-    MidCone(GridPosition.Mid, 14.62, IdleMode.kBrake),
+    LowCone(GridPosition.Low, -51.5, IdleMode.kBrake),
+    LowCube(GridPosition.Low, -51.5, IdleMode.kBrake),
+    MidCone(GridPosition.Mid, 20.83, IdleMode.kBrake),
     ScoreMidCone(GridPosition.Mid, -13.33, IdleMode.kBrake),
     MidCube(GridPosition.Mid, 1.17, IdleMode.kBrake),
     HighCone(GridPosition.High, 22.86, IdleMode.kBrake),

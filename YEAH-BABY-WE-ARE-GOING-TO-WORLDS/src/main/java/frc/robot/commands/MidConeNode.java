@@ -13,19 +13,19 @@ public class MidConeNode extends CommandBase {
     private static double ProportionalGain = 0.25;
     private static double MaxStrafeMetersPerSecond = 0.5;
     private static double MaxDistanceMetersPerSecond = 1;
-    private static double StrafeToleranceDegrees = 0.27;
-    private static double DistanceToleranceDegrees = 0.27;
+    private static double StrafeToleranceDegrees = 0.6;
+    private static double DistanceToleranceDegrees = 0.25;
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
-    private static double MaxOmegaDegreesPerSecond = 90;
+    private static double MaxOmegaDegreesPerSecond = 45;
     private static double TargetXSetpointDegrees = -5.72;
     private static double TargetYSetpointDegrees = -5.48;
-    public static double FeedforwardMetersPerSecond = 0.05;
+    public static double FeedforwardMetersPerSecond = 0.02;
 
     private final Limelight limelight;
     private final Drivetrain drivetrain;
-    private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
-    private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
+    private PIDController strafeController = new PIDController(0.15, 0, 0);
+    private PIDController distanceController = new PIDController(0.25, 0, 0);
 
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;

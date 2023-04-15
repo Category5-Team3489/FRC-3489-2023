@@ -192,10 +192,12 @@ public class Cat5Actions {
             })
         );
     }
-    public Command armHome() {
+    public Command armHome(boolean allowForceHoming) {
         return runOnce(() -> {
-            if (arm.getState() == ArmState.Home) {
-                arm.forceHome();
+            if (arm.getState() == ArmState.Home && gripper.getHeldGamePiece() == GamePiece.Unknown) {
+                if (allowForceHoming) {
+                    arm.forceHome();
+                }
             }
             arm.setState(ArmState.Home);
             wrist.setState(WristState.Carry);
