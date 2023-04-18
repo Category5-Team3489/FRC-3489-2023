@@ -112,7 +112,7 @@ public class Cat5Actions {
         );
     }
 
-    public Command waitUntilDriving() {
+    public Command waitForDriveCommand() {
         return waitUntil(() -> {
             return drivetrain.isDriveCommandActive();
         });

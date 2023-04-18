@@ -35,6 +35,10 @@ public class Odometry extends Cat5Subsystem {
         pose = odometry.update(navx.getRotation(), drivetrain.getModulePositions());
     }
 
+    public void reset() {
+        resetWithPosition(0, 0);
+    }
+
     public void resetWithPosition(double xMeters, double yMeters) {
         Rotation2d gyroAngle = navx.getRotation();
         odometry = new SwerveDriveOdometry(Drivetrain.Kinematics, gyroAngle, drivetrain.getModulePositions(), new Pose2d(xMeters, yMeters, gyroAngle));

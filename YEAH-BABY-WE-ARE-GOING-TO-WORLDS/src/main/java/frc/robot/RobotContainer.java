@@ -7,7 +7,6 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.Timer;
@@ -236,8 +235,7 @@ public class RobotContainer implements Cat5Updatable {
     //#region Events
     public void disabledExit() {
         drivetrain.resetTargetHeading();
-
-        odometry.resetWithPosition(0, 0);
+        odometry.reset();
 
         GamePiece detected = gripper.getDetectedGamePiece();
         gripper.setHeldGamePiece(detected);
@@ -264,7 +262,7 @@ public class RobotContainer implements Cat5Updatable {
     //#region Because of no singletons, use events instead maybe
     public void notifyHeadingJump() {
         drivetrain.resetTargetHeading();
-        odometry.resetWithPosition(0, 0);
+        odometry.reset();
     }
     
     public double getAverageDriveVelocityMetersPerSecond() {

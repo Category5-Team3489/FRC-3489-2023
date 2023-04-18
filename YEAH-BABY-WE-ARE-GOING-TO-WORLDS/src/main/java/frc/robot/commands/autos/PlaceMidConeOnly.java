@@ -7,7 +7,6 @@ import frc.robot.enums.GamePiece;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class PlaceMidConeOnly extends SequentialCommandGroup {
@@ -16,17 +15,17 @@ public class PlaceMidConeOnly extends SequentialCommandGroup {
             runOnce(() -> {
                 actions.navx.setHeadingOffset(Rotation2d.fromDegrees(180));
                 actions.gripper.setHeldGamePiece(GamePiece.Cone);
-                actions.odometry.resetWithPosition(0, 0);
+                actions.odometry.reset();
             }), 
             actions.armMid(),
             waitSeconds(2),
             actions.automation(),
-            actions.waitUntilDriving(),
+            actions.waitForDriveCommand(),
             runOnce(() -> {
                 actions.armHome(true).schedule();
                 new DriveMeters(actions.drivetrain, actions.odometry, 0, 3, 180, 2.5, 0.1, 90).schedule();
             }),
-            actions.waitUntilDriving()
+            actions.waitForDriveCommand()
             //new DriveMeters(actions.drivetrain, actions.odometry, 0, 0, 0, 0, 0, 0)
         );
     }

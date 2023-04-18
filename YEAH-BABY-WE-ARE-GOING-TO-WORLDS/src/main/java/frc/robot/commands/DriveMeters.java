@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -9,17 +8,19 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Odometry;
 
 public class DriveMeters extends CommandBase {
+    // Constants
+    private static final double ProportionalGain100PercentPerMeter = 1.0;
+
     // State
     private final Drivetrain drivetrain;
     private final Odometry odometry;
-    private double xMeters;
-    private double yMeters;
+    private final double xMeters;
+    private final double yMeters;
     private final double targetHeadingDegrees;
     private final double metersPerSecond;
     private final double toleranceMeters;
     private final double degreesPerSecond;
-    private final PIDController xController = new PIDController(6, 0, 0);
-    private final PIDController yController = new PIDController(6, 0, 0);
+    private double errorMeters = Double.MAX_VALUE;
     
     public DriveMeters(Drivetrain drivetrain, Odometry odometry, double xMeters, double yMeters, double targetHeadingDegrees, double metersPerSecond, double toleranceMeters, double degreesPerSecond) {
         this.drivetrain = drivetrain;
@@ -30,34 +31,44 @@ public class DriveMeters extends CommandBase {
         this.metersPerSecond = metersPerSecond;
         this.toleranceMeters = toleranceMeters;
         this.degreesPerSecond = degreesPerSecond;
+        
         addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
-        Pose2d poseMeters = odometry.getPose();
-        xMeters += poseMeters.getX();
-        yMeters += poseMeters.getY();
-
-        xController.setTolerance(toleranceMeters);
-        yController.setTolerance(toleranceMeters);
+        errorMeters = Double.MAX_VALUE;
     }
 
     @Override
     public void execute() {
-        Pose2d poseMeters = odometry.getPose();
+        Pose2d currentMeters = odometry.getPose();
+        
+        double xErrorMeters = xMeters - currentMeters.getX();
+        double yErrorMeters = yMeters - currentMeters.getY();
+        errorMeters = Math.hypot(xErrorMeters, yErrorMeters);
 
-        double xMetersPerSecond = xController.calculate(poseMeters.getX(), xMeters);
-        xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -metersPerSecond, metersPerSecond);
+        // Don't divide by zero
+        if (errorMeters < toleranceMeters) {
+            return;
+        }
 
-        double yMetersPerSecond = yController.calculate(poseMeters.getY(), yMeters);
-        yMetersPerSecond = MathUtil.clamp(yMetersPerSecond, -metersPerSecond, metersPerSecond);
+        double controllerPercent = errorMeters * ProportionalGain100PercentPerMeter;
+        controllerPercent = MathUtil.clamp(controllerPercent, 0, 1.0);
+
+        double xMetersPerSecond = (xErrorMeters / errorMeters) * metersPerSecond * controllerPercent;
+        double yMetersPerSecond = (yErrorMeters / errorMeters) * metersPerSecond * controllerPercent;
 
         drivetrain.driveFieldRelative(xMetersPerSecond, yMetersPerSecond, 1.0, Rotation2d.fromDegrees(targetHeadingDegrees), degreesPerSecond);
     }
 
     @Override
     public boolean isFinished() {
-        return xController.atSetpoint() && yController.atSetpoint();
+        return errorMeters < toleranceMeters;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        drivetrain.brakeTranslation();
     }
 }

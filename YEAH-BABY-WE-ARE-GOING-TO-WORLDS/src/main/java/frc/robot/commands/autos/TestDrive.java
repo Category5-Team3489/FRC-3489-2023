@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class TestDrive extends SequentialCommandGroup {
     public TestDrive(Cat5Actions actions) {
         addCommands(
-            new DriveMeters(actions.drivetrain, actions.odometry, 1, 3, 0, 2.5, 0.1, 90)
+            new DriveMeters(actions.drivetrain, actions.odometry, 0, 0, 0, 2.5, 0.1, 90)
         );
     }
 }
