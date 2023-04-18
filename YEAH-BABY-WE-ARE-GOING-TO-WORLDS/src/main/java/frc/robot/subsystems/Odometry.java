@@ -44,7 +44,7 @@ public class Odometry extends Cat5Subsystem {
         odometry = new SwerveDriveOdometry(Drivetrain.Kinematics, gyroAngle, drivetrain.getModulePositions(), new Pose2d(xMeters, yMeters, gyroAngle));
     }
 
-    public Pose2d getPose() {
+    public Pose2d getPoseMeters() {
         return pose;
     }
 }

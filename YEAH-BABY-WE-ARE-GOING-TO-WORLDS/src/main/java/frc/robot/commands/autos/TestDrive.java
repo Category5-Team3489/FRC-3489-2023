@@ -6,8 +6,6 @@ import frc.robot.commands.DriveMeters;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-
 public class TestDrive extends SequentialCommandGroup {
     public TestDrive(Cat5Actions actions) {
         addCommands(

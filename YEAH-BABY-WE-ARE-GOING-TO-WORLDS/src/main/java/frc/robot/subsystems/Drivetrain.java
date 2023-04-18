@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Cat5;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -27,6 +28,7 @@ import frc.robot.commands.Drive;
 import frc.robot.commands.LeftDoubleSubstation;
 import frc.robot.configs.DriveMotorConfig;
 import frc.robot.configs.OffsetsConfig;
+import frc.robot.data.Cat5DeltaTracker;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardTab;
 import frc.robot.enums.GridPosition;
@@ -35,7 +37,7 @@ import frc.robot.enums.ModulePosition;
 
 public class Drivetrain extends Cat5Subsystem {
     // Constants
-    private static final double AroundTargetHeadingThresholdDegrees = 10;
+    private static final double AroundTargetHeadingThresholdDegrees = 5;
     public static final double PovSpeedMetersPerSecond = 0.4;
     public static final double FullSpeedRateLimiter100PercentPerSecond = 2.0; // 3.0
 
@@ -227,6 +229,17 @@ public class Drivetrain extends Cat5Subsystem {
                 layout.addDouble("Back Right (A)", () -> DriveMotorConfig.getDriveMotor(ModulePosition.BackRight).getStatorCurrent());    
             }
         }
+
+        new Cat5DeltaTracker<Command>(robotContainer, getCurrentCommand(),
+        last -> {
+            return last != getCurrentCommand();
+        }, last -> {
+            String lastString = last == null ? "None" : last.getName();
+            Command currentCommand = getCurrentCommand();
+            String currentString = currentCommand == null ? "None" : currentCommand.getName();
+            Cat5.print("Drivetrain current command: " + lastString + " -> " + currentString);
+            return currentCommand;
+        });
     }
 
     @Override

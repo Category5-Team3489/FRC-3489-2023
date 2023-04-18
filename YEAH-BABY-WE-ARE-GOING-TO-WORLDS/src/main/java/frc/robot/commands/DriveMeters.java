@@ -20,7 +20,7 @@ public class DriveMeters extends CommandBase {
     private final double metersPerSecond;
     private final double toleranceMeters;
     private final double degreesPerSecond;
-    private double errorMeters = Double.MAX_VALUE;
+    private double errorMeters;
     
     public DriveMeters(Drivetrain drivetrain, Odometry odometry, double xMeters, double yMeters, double targetHeadingDegrees, double metersPerSecond, double toleranceMeters, double degreesPerSecond) {
         this.drivetrain = drivetrain;
@@ -36,16 +36,11 @@ public class DriveMeters extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        errorMeters = Double.MAX_VALUE;
-    }
-
-    @Override
     public void execute() {
-        Pose2d currentMeters = odometry.getPose();
+        Pose2d poseMeters = odometry.getPoseMeters();
         
-        double xErrorMeters = xMeters - currentMeters.getX();
-        double yErrorMeters = yMeters - currentMeters.getY();
+        double xErrorMeters = xMeters - poseMeters.getX();
+        double yErrorMeters = yMeters - poseMeters.getY();
         errorMeters = Math.hypot(xErrorMeters, yErrorMeters);
 
         // Don't divide by zero

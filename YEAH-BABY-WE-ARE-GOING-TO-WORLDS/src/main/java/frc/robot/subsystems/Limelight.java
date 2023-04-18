@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
@@ -152,6 +153,18 @@ public class Limelight extends Cat5Subsystem {
     public double getTargetArea() {
         return targetAreaEntry.getDouble(Double.NaN);
     }
+
+    public Translation2d getMidRetroreflectivePoseMeters() {
+        double yMeters = 0.254 / Math.tan(Math.toRadians(10.0 - getTargetY()));
+        double xMeters = Math.tan(Math.toRadians(getTargetX())) * yMeters;
+        return new Translation2d(xMeters, yMeters);
+    }
+
+    // public Translation2d getHighRetroreflectivePoseMeters() {
+    //     double yMeters = 0.254 / Math.tan(Math.toRadians(10.0 - getTargetY()));
+    //     double xMeters = Math.tan(Math.toRadians(getTargetX())) * yMeters;
+    //     return new Translation2d(xMeters, yMeters);
+    // }
 
     public void printTargetData() {
         Cat5.print("tid: " + getTagId());
