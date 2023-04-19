@@ -12,8 +12,12 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.autos.Balance;
+import frc.robot.commands.autos.BumpBalance;
 import frc.robot.commands.autos.Cat5Autos;
 import frc.robot.commands.autos.PlaceMidConeOnly;
+import frc.robot.commands.autos.Taxi;
+import frc.robot.commands.autos.TaxiFar;
 import frc.robot.commands.autos.TestDrive;
 import frc.robot.data.Cat5Data;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
@@ -222,8 +226,11 @@ public class RobotContainer implements Cat5Updatable {
         );
 
         autos.addAuto(() -> new PlaceMidConeOnly(actions));
-
         autos.addAuto(() -> new TestDrive(actions));
+        autos.addAuto(() -> new Balance(actions));
+        autos.addAuto(() -> new BumpBalance(actions));
+        autos.addAuto(() -> new Taxi(actions));
+        autos.addAuto(() -> new TaxiFar(actions));
 
         autos.addSelectorWidget();
     }

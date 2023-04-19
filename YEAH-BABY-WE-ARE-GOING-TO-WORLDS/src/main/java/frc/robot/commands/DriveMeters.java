@@ -45,6 +45,7 @@ public class DriveMeters extends CommandBase {
 
         // Don't divide by zero
         if (errorMeters < toleranceMeters) {
+            drivetrain.brakeTranslation();
             return;
         }
 

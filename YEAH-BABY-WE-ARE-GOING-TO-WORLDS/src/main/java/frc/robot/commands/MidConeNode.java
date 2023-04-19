@@ -10,7 +10,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
 public class MidConeNode extends CommandBase {
-    private static double ProportionalGain = 0.25;
+    // private static double ProportionalGain = 0.25;
     private static double MaxStrafeMetersPerSecond = 0.5;
     private static double MaxDistanceMetersPerSecond = 1;
     private static double StrafeToleranceDegrees = 0.6;

@@ -88,9 +88,11 @@ public class Limelight extends Cat5Subsystem {
             {
                 // TODO Will get changed, just display x, y and mode
                 var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Distance_Estimation);
-                layout.addDouble("Mid Cone Distance (m)", () -> 0.254 / Math.tan(Math.toRadians(10.0 - getTargetY())));
+                // layout.addDouble("Mid Cone Distance (m)", () -> 0.254 / Math.tan(Math.toRadians(10.0 - getTargetY())));
                 layout.addDouble("Mid Cube Distance (m)", () -> 0.403098 / Math.tan(Math.toRadians(10.0 - getTargetY())));
                 layout.addDouble("Double Substation Distance (m)", () -> 0.695452 / Math.tan(Math.toRadians(10.0 - getTargetY())));
+                layout.addDouble("Mid Retroreflective X (m)", () -> getMidRetroreflectivePoseMeters().getX());
+                layout.addDouble("Mid Retroreflective Y (m)", () -> getMidRetroreflectivePoseMeters().getY());
             }
         }
     }
