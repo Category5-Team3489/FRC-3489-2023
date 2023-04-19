@@ -16,7 +16,7 @@ public class MidConeNode extends CommandBase {
     private static double StrafeToleranceDegrees = 0.6;
     private static double DistanceToleranceDegrees = 0.25;
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
-    private static double SpeedLimiter = 0.5;
+    private static double SpeedLimiter = 0.5; // try 0.4
     private static double MaxOmegaDegreesPerSecond = 45;
     private static double TargetXSetpointDegrees = -5.72;
     private static double TargetYSetpointDegrees = -5.48;
@@ -49,8 +49,8 @@ public class MidConeNode extends CommandBase {
 
     @Override
     public void execute() {
-        if (!limelight.isActivePipeline(LimelightPipeline.MidRetroreflective)) {
-            drivetrain.driveFieldRelative(xMetersPerSecond, yMetersPerSecond, SpeedLimiter, TargetAngle, MaxOmegaDegreesPerSecond);
+        if (!limelight.isActivePipeline(LimelightPipeline.MidRetroreflective) || !drivetrain.isAroundTargetHeading()) {
+            drivetrain.driveFieldRelative(0.0, 0.0, SpeedLimiter, TargetAngle, MaxOmegaDegreesPerSecond);
             return;
         }
 

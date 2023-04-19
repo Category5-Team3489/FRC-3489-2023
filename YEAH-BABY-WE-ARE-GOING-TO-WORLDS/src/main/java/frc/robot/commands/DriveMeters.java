@@ -20,7 +20,7 @@ public class DriveMeters extends CommandBase {
     private final double metersPerSecond;
     private final double toleranceMeters;
     private final double degreesPerSecond;
-    private double errorMeters;
+    private double errorMeters = Double.MAX_VALUE;
     
     public DriveMeters(Drivetrain drivetrain, Odometry odometry, double xMeters, double yMeters, double targetHeadingDegrees, double metersPerSecond, double toleranceMeters, double degreesPerSecond) {
         this.drivetrain = drivetrain;
@@ -33,6 +33,11 @@ public class DriveMeters extends CommandBase {
         this.degreesPerSecond = degreesPerSecond;
         
         addRequirements(drivetrain);
+    }
+
+    @Override
+    public void initialize() {
+        errorMeters = Double.MAX_VALUE;
     }
 
     @Override

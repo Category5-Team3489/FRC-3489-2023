@@ -10,20 +10,20 @@ import frc.robot.subsystems.Limelight;
 
 public class AllignMidCone extends CommandBase {
     // Constants
-    private static final double ProportionalGain100PercentPerMeter = 1.0;
-    private static final double TargetXMeters = 0; // positive forward, negative backwards
-    private static final double TargetYMeters = 0; // positive left, negative right
+    private static final double ProportionalGain100PercentPerMeter = 8.0;
+    private static final double TargetXMeters = -0.023; // positive forward, negative backwards
+    private static final double TargetYMeters = 0.998; // positive left, negative right
     private static final Rotation2d TargetHeading = Rotation2d.fromDegrees(180);
     private static final double MetersPerSecond = 0.5;
     private static final double MinMetersPerSecond = 0.1;
     private static final double MinPercent = MinMetersPerSecond / MetersPerSecond;
-    private static final double ToleranceMeters = 0.05;
+    private static final double ToleranceMeters = 0.01;
     private static final double DegreesPerSecond = 45;
     
     // State
     private final Limelight limelight;
     private final Drivetrain drivetrain;
-    private double errorMeters;
+    private double errorMeters = Double.MAX_VALUE;
 
     public AllignMidCone(Limelight limelight, Drivetrain drivetrain) {
         this.limelight = limelight;
@@ -34,6 +34,8 @@ public class AllignMidCone extends CommandBase {
 
     @Override
     public void initialize() {
+        errorMeters = Double.MAX_VALUE;
+
         limelight.setDesiredPipeline(LimelightPipeline.MidRetroreflective);
     }
 
