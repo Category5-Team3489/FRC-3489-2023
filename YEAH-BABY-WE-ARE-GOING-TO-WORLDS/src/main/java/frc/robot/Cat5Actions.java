@@ -55,6 +55,7 @@ public class Cat5Actions {
         this.odometry = odometry;
     }
 
+    //#region Automation
     public Command automation() {
         return runOnce(() -> {
             switch (arm.getGridPosition()) {
@@ -80,6 +81,7 @@ public class Cat5Actions {
             }
         });
     }
+
     private Command automationMidCone() {
         return sequence(
             new MidConeNode(limelight, drivetrain),
@@ -111,13 +113,25 @@ public class Cat5Actions {
             gripperOuttake()
         );
     }
+    //#endregion
 
+    //#region Auto
     public Command waitForDriveCommand() {
         return waitUntil(() -> {
             return drivetrain.isDriveCommandActive();
         });
     }
 
+    public Command waitUntilDrivetrainIsAroundTargetHeading() {
+        return waitUntil(() -> drivetrain.isAroundTargetHeading());
+    }
+
+    public Command waitUntilArmIsAroundTarget() {
+        return waitUntil(() -> arm.isAroundTarget());
+    }
+    //#endregion
+
+    //#region General
     public Command gripperStop() {
         return runOnce(() -> {
             gripper.setHeldGamePiece(GamePiece.Unknown);
@@ -160,19 +174,23 @@ public class Cat5Actions {
                     }
                     break;
             }
+
             gripper.setHeldGamePiece(GamePiece.Unknown);
         });
     }
 
     public Command wristPickup() {
         return runOnce(() -> {
-            wrist.setState(WristState.Pickup);
+            wrist.setState(WristState.PickupOrLow);
         });
     }
     public Command wristCarry() {
         return runOnce(() -> {
-            wrist.setState(WristState.Carry);
+            wrist.setState(WristState.CarryOrHighest);
         });
+    }
+    public Command wristWaitForArm() {
+        return waitSeconds(0.4);
     }
 
     public Command armDoubleSubstation() {
@@ -180,22 +198,24 @@ public class Cat5Actions {
             runOnce(() -> {
                 arm.setState(ArmState.DoubleSubstation);
             }),
-            waitSeconds(0.4),
+            wristWaitForArm(),
             runOnce(() -> {
                 wrist.setState(WristState.DoubleSubstation);
-                gripper.intakeCommand.schedule();
-            })
+            }),
+            gripperIntake()
         );
     }
+    // TODO get rid of allowForceHoming
     public Command armHome(boolean allowForceHoming) {
         return runOnce(() -> {
-            if (arm.getState() == ArmState.Home && gripper.getHeldGamePiece() == GamePiece.Unknown) {
-                if (allowForceHoming) {
-                    arm.forceHome();
-                }
+            // TODO this will also get removed
+            if (allowForceHoming && arm.getState() == ArmState.Home && gripper.getHeldGamePiece() == GamePiece.Unknown) {
+                arm.forceHome();
             }
+
             arm.setState(ArmState.Home);
-            wrist.setState(WristState.Carry);
+            wrist.setState(WristState.CarryOrHighest);
+            gripper.resetCanReintakeAgain();
             gripper.stopCommand.schedule();
         });
     }
@@ -204,11 +224,11 @@ public class Cat5Actions {
             runOnce(() -> {
                 arm.setState(ArmState.Pickup);
             }),
-            waitSeconds(0.4),
+            wristWaitForArm(),
             runOnce(() -> {
-                wrist.setState(WristState.Pickup);
-                gripper.intakeCommand.schedule();
-            })
+                wrist.setState(WristState.PickupOrLow);
+            }),
+            gripperIntake()
         );
     }
     public Command armLow() {
@@ -221,9 +241,9 @@ public class Cat5Actions {
                     arm.setState(ArmState.LowCone);
                 }
             }),
-            waitSeconds(0.4),
+            wristWaitForArm(),
             runOnce(() -> {
-                wrist.setState(WristState.Pickup);
+                wrist.setState(WristState.PickupOrLow);
             })
         );
     }
@@ -234,10 +254,11 @@ public class Cat5Actions {
                     arm.setState(ArmState.MidCube);
                 }
                 else {
-                    if (arm.getState() == ArmState.MidCone) {
+                    ArmState state = arm.getState();
+                    if (state == ArmState.MidCone) {
                         arm.setState(ArmState.ScoreMidCone);
                     }
-                    else if (arm.getState() == ArmState.ScoreMidCone) {
+                    else if (state == ArmState.ScoreMidCone) {
                         arm.setState(ArmState.MidCone);
                     }
                     else {
@@ -245,9 +266,9 @@ public class Cat5Actions {
                     }
                 }
             }),
-            waitSeconds(0.4),
+            wristWaitForArm(),
             runOnce(() -> {
-                wrist.setState(WristState.Carry);
+                wrist.setState(WristState.Mid);
             })
         );
     }
@@ -261,7 +282,7 @@ public class Cat5Actions {
                     arm.setState(ArmState.HighCone);
                 }
             }),
-            waitSeconds(0.4),
+            wristWaitForArm(),
             runOnce(() -> {
                 if (gripper.getHeldGamePiece() == GamePiece.Cube) {
                     wrist.setState(WristState.HighCube);
@@ -288,4 +309,5 @@ public class Cat5Actions {
             // }
         });
     }
+    //#region General
 }

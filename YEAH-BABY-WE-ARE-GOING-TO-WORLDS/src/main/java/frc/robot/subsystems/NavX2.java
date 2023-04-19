@@ -30,7 +30,7 @@ public class NavX2 extends Cat5Subsystem {
         robotContainer.data.createDatapoint(() -> heading.getDegrees())
             .withShuffleboard(data -> {
                 headingEntry.setDouble(data);
-            }, 25)
+            }, 5)
             .withLog(data -> {
                 headingLogEntry.append(data);
             }, 25);

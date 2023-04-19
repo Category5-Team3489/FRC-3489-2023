@@ -11,24 +11,24 @@ public final class Cat5 {
     public static final Random Rng = new Random();
     
     public static void print(String message) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[" + prettyDouble(Timer.getMatchTime()) + "s] [" + prettyDouble(Timer.getFPGATimestamp()) + "s]: ");
+        var builder = getFormattedTimeStringBuilder();
         builder.append(message);
         System.out.println(builder.toString());
     }
-
     public static void warning(String message, boolean printTrace) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[" + prettyDouble(Timer.getMatchTime()) + "s] [" + prettyDouble(Timer.getFPGATimestamp()) + "s]: ");
+        var builder = getFormattedTimeStringBuilder();
         builder.append(message);
         DriverStation.reportWarning(builder.toString(), printTrace);
     }
-
     public static void error(String message, boolean printTrace) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[" + prettyDouble(Timer.getMatchTime()) + "s] [" + prettyDouble(Timer.getFPGATimestamp()) + "s]: ");
+        var builder = getFormattedTimeStringBuilder();
         builder.append(message);
         DriverStation.reportError(builder.toString(), printTrace);
+    }
+    private static StringBuilder getFormattedTimeStringBuilder() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[" + prettyDouble(Timer.getMatchTime()) + "s] [" + prettyDouble(Timer.getFPGATimestamp()) + "s]: ");
+        return builder;
     }
 
     public static String prettyDouble(double value) {

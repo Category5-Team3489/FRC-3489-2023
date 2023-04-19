@@ -9,20 +9,20 @@ import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 
 public class Odometry extends Cat5Subsystem {
     // State
-    private final Drivetrain drivetrain;
     private final NavX2 navx;
+    private final Drivetrain drivetrain;
     private SwerveDriveOdometry odometry;
     private Pose2d pose = new Pose2d();
-    // private TimeInterpolatableBuffer<Pose2d> poseBuffer = TimeInterpolatableBuffer.createBuffer(Cat5::lerpUnclamped, 4);
 
-    public Odometry(RobotContainer robotContainer, Drivetrain drivetrain, NavX2 navx) {
+    public Odometry(RobotContainer robotContainer, NavX2 navx, Drivetrain drivetrain) {
         super(robotContainer);
-        this.drivetrain = drivetrain;
         this.navx = navx;
+        this.drivetrain = drivetrain;
 
-        odometry = new SwerveDriveOdometry(Drivetrain.Kinematics, Rotation2d.fromDegrees(0), drivetrain.getModulePositions());
+        Rotation2d gyroAngle = navx.getRotation();
+        odometry = new SwerveDriveOdometry(Drivetrain.Kinematics, gyroAngle, drivetrain.getModulePositions(), new Pose2d(0, 0, gyroAngle));
     
-        if (Constants.IsDebugShuffleboardEnabled) {
+        if (Constants.IsShuffleboardDebugEnabled) {
             var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Odometry);
             layout.addDouble("X (m)", () -> pose.getX());
             layout.addDouble("Y (m)", () -> pose.getY());

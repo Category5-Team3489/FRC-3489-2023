@@ -114,13 +114,13 @@ public class RobotContainer implements Cat5Updatable {
         initComplete();
         limelight = new Limelight(this);
         initComplete();
-        drivetrain = new Drivetrain(this, navx, arm, limelight);
+        drivetrain = new Drivetrain(this, arm, navx, limelight);
         initComplete();
 
         leds = new Leds(this, indicator);
         initComplete();
 
-        odometry = new Odometry(this, drivetrain, navx);
+        odometry = new Odometry(this, navx, drivetrain);
         initComplete();
 
         Cat5.print("Initialization complete!");
@@ -138,7 +138,7 @@ public class RobotContainer implements Cat5Updatable {
                 matchTimeLogEntry.append(data);
             }, 5);
 
-        // TODO Make auto actions use runOnce
+        // TODO is homed shuffleboard indicator
 
         // TODO reset odometry at beginning of auto with action, then drive to specific points to avoid drift, reset odometry to pos
 
@@ -171,10 +171,6 @@ public class RobotContainer implements Cat5Updatable {
         // TODO Go through district champs code
 
         // TODO Use Limelight.printTargetData
-
-        // TODO Drive command, set default command
-
-        // TODO Delta trackers on subsystem active commands enums
 
         // TODO Implement LEDS and use leds... EVERYWHERE, + priority stuff for them, game piece indicator default
 
@@ -241,25 +237,23 @@ public class RobotContainer implements Cat5Updatable {
         gripper.setHeldGamePiece(detected);
         Cat5.print("Detected game piece: \"" + detected.toString() + "\" on enable, set as held game piece in gripper");
 
-        wrist.setState(WristState.Carry);
+        wrist.setState(WristState.CarryOrHighest);
 
         arm.forceHome();
     }
 
     public void autonomousInit() {
-        // TODO
-        // Leds.get().getCommand(LedPattern.Blue, 1.0, false)
+        // Used to do LedPattern.Blue for 1 second
 
         indicator.setIndicatedGamePiece(GamePiece.Cone);
     }
 
-    public void teleopInit() {        
-        // TODO
-        // Leds.get().getCommand(LedPattern.Green, 1.0, false)
+    public void teleopInit() {
+        // Used to do LedPattern.Green for 1 second
     }
     //#endregion
 
-    //#region Because of no singletons, use events instead maybe
+    //#region Indirect
     public void notifyHeadingJump() {
         drivetrain.resetTargetHeading();
         odometry.reset();

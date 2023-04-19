@@ -25,7 +25,8 @@ import frc.robot.Cat5;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.Drive;
-import frc.robot.commands.LeftDoubleSubstation;
+import frc.robot.commands.AutomateLeftDoubleSubstation;
+import frc.robot.commands.AutomateRightDoubleSubstation;
 import frc.robot.configs.DriveMotorConfig;
 import frc.robot.configs.OffsetsConfig;
 import frc.robot.data.Cat5DeltaTracker;
@@ -100,23 +101,25 @@ public class Drivetrain extends Cat5Subsystem {
 
     // Commands
     private final Drive driveCommand;
-    private final LeftDoubleSubstation leftDoubleSubstationCommand;
+    private final AutomateLeftDoubleSubstation automateLeftDoubleSubstationCommand;
+    private final AutomateRightDoubleSubstation automateRightDoubleSubstationCommand;
     
     // State
-    private final NavX2 navx;
     private final Arm arm;
+    private final NavX2 navx;
     private final Limelight limelight;
     private Rotation2d targetHeading = null;
     private final PIDController omegaController = new PIDController(OmegaProportionalGainDegreesPerSecondPerDegreeOfError, OmegaIntegralGainDegreesPerSecondPerDegreeSecondOfError, OmegaDerivativeGainDegreesPerSecondPerDegreePerSecondOfError);
 
-    public Drivetrain(RobotContainer robotContainer, NavX2 navx, Arm arm, Limelight limelight) {
+    public Drivetrain(RobotContainer robotContainer, Arm arm, NavX2 navx, Limelight limelight) {
         super(robotContainer);
-        this.navx = navx;
         this.arm = arm;
+        this.navx = navx;
         this.limelight = limelight;
 
         driveCommand = new Drive(robotContainer, this);
-        leftDoubleSubstationCommand = new LeftDoubleSubstation(limelight, this);
+        automateLeftDoubleSubstationCommand = new AutomateLeftDoubleSubstation(limelight, this);
+        automateRightDoubleSubstationCommand = new AutomateRightDoubleSubstation(limelight, this);
 
         setDefaultCommand(driveCommand);
 
@@ -212,7 +215,7 @@ public class Drivetrain extends Cat5Subsystem {
             .getEntry();
         isCameraDisabledWhenDriving = () -> isCameraDisabledWhenDrivingEntry.getBoolean(false);
 
-        if (Constants.IsDebugShuffleboardEnabled) {
+        if (Constants.IsShuffleboardDebugEnabled) {
             {
                 var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Drive_Velocities);
                 layout.addDouble("Front Left (m per s)", () -> frontLeftModule.getDriveVelocity());
@@ -268,10 +271,17 @@ public class Drivetrain extends Cat5Subsystem {
         }
         else {
             if (robotContainer.input.shouldAutomateLeftDoubleSubstation()) {
-                leftDoubleSubstationCommand.schedule();
+                automateLeftDoubleSubstationCommand.schedule();
             }
             else {
-                leftDoubleSubstationCommand.cancel();   
+                automateLeftDoubleSubstationCommand.cancel();   
+            }
+
+            if (robotContainer.input.shouldAutomateRightDoubleSubstation()) {
+                automateRightDoubleSubstationCommand.schedule();
+            }
+            else {
+                automateRightDoubleSubstationCommand.cancel();   
             }
         }
     }

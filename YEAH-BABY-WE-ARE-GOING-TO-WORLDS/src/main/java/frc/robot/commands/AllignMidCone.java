@@ -1,11 +1,12 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.enums.LimelightPipeline;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.Odometry;
 
 public class AllignMidCone extends CommandBase {
     // Constants
@@ -43,6 +44,32 @@ public class AllignMidCone extends CommandBase {
             return;
         }
 
-        
+        Translation2d poseMeters = limelight.getMidRetroreflectivePoseMeters();
+        double xErrorMeters = TargetXMeters - poseMeters.getX();
+        double yErrorMeters = TargetYMeters - poseMeters.getY();
+        errorMeters = Math.hypot(xErrorMeters, yErrorMeters);
+
+        // Don't divide by zero
+        if (errorMeters < ToleranceMeters) {
+            return;
+        }
+
+        double controllerPercent = errorMeters * ProportionalGain100PercentPerMeter;
+        controllerPercent = MathUtil.clamp(controllerPercent, MinPercent, 1.0);
+
+        double xMetersPerSecond = (xErrorMeters / errorMeters) * MetersPerSecond * controllerPercent;
+        double yMetersPerSecond = (yErrorMeters / errorMeters) * MetersPerSecond * controllerPercent;
+
+        drivetrain.driveFieldRelative(xMetersPerSecond, yMetersPerSecond, 1.0, TargetHeading, DegreesPerSecond);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return errorMeters < ToleranceMeters;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        drivetrain.brakeTranslation();
     }
 }

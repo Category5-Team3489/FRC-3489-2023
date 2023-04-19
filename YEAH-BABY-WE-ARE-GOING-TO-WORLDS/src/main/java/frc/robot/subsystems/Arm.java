@@ -92,7 +92,7 @@ public class Arm extends Cat5Subsystem {
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
 
-        if (Constants.IsDebugShuffleboardEnabled) {
+        if (Constants.IsShuffleboardDebugEnabled) {
             var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Arm);
             layout.addDouble("Arm Angle (deg)", () -> targetDegrees);
         }
@@ -104,7 +104,7 @@ public class Arm extends Cat5Subsystem {
         robotContainer.data.createDatapoint(() -> limitSwitch.get())
             .withShuffleboard(data -> {
                 limitSwitchEntry.setBoolean(data);
-            }, 25)
+            }, 5)
             .withLog(data -> {
                 limitSwitchLogEntry.append(data);
             }, 25);
@@ -247,7 +247,7 @@ public class Arm extends Cat5Subsystem {
             .withName("Goto Target");
     }
 
-    private CommandBase keepPieceWhenAroundTarget(ArmState state) {
+    private CommandBase getKeepPieceWhenAroundTargetCommand() {
         return new FunctionalCommand(() -> {
             // onInit
         },
@@ -276,15 +276,13 @@ public class Arm extends Cat5Subsystem {
     }
 
     public void setState(ArmState state) {
-        if (this.state != state && this.state == ArmState.Home && state != ArmState.Home && state != ArmState.Homing) {
-            if (gripper.getHeldGamePiece() != GamePiece.Unknown) {
+        if (gripper.getHeldGamePiece() != GamePiece.Unknown) {
+            if (this.state != state && this.state == ArmState.Home && state != ArmState.Home && state != ArmState.Homing) {
                 gripper.unstowPieceCommand.schedule();
             }
-        }
-
-        if (this.state != state && this.state != ArmState.Homing && state != ArmState.Homing) {
-            if (gripper.getHeldGamePiece() != GamePiece.Unknown) {
-                keepPieceWhenAroundTarget(state).schedule();
+    
+            if (this.state != state && this.state != ArmState.Homing && state != ArmState.Homing) {
+                getKeepPieceWhenAroundTargetCommand().schedule();
             }
         }
 

@@ -78,7 +78,7 @@ public class Gripper extends Cat5Subsystem {
         robotContainer.data.createDatapoint(() -> limitSwitch.get())
             .withShuffleboard(data -> {
                 limitSwitchEntry.setBoolean(data);
-            }, 25)
+            }, 5)
             .withLog(data -> {
                 limitSwitchLogEntry.append(data);
             }, 25);
@@ -107,7 +107,7 @@ public class Gripper extends Cat5Subsystem {
                 canReintakeAgainLogEntry.append(data);
             }, 5);
 
-        if (Constants.IsDebugShuffleboardEnabled) {
+        if (Constants.IsShuffleboardDebugEnabled) {
             var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Gripper);
             layout.addDouble("Motor (%)", () -> motorPercent);
             layout.addDouble("Reintake Anti Eat (sec)", () -> reintakeAntiEatTimer.get());

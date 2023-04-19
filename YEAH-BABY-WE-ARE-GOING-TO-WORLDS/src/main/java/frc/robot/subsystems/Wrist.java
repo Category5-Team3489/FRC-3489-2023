@@ -65,7 +65,7 @@ public class Wrist extends Cat5Subsystem {
         pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
         motor.burnFlash(); // Always remember this - burn flash, not motor
 
-        if (Constants.IsDebugShuffleboardEnabled) {
+        if (Constants.IsShuffleboardDebugEnabled) {
             var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Wrist);
             layout.addDouble("Wrist Angle (deg)", () -> targetDegrees);
         }
@@ -112,7 +112,7 @@ public class Wrist extends Cat5Subsystem {
                 targetDegrees = MathUtil.clamp(targetDegrees, WristState.Lowest.getDegrees(), WristState.HighestWithArmRaised.getDegrees());
             }
             else {
-                targetDegrees = MathUtil.clamp(targetDegrees, WristState.Lowest.getDegrees(), WristState.Carry.getDegrees());
+                targetDegrees = MathUtil.clamp(targetDegrees, WristState.Lowest.getDegrees(), WristState.CarryOrHighest.getDegrees());
             }
         }
 

@@ -21,9 +21,9 @@ import frc.robot.enums.LimelightPipeline;
 public class Limelight extends Cat5Subsystem {
     // Constants
     private final static LimelightPipeline DefaultPipeline = LimelightPipeline.Camera;
-    private static final double CamposeValidActivePipelineSeconds = 0.5;
-    private static final double CamposeValidTargetArea = 0.005;
-    private static final double CamposeValidAverageDriveVelocityLimitMetersPerSecond = 0.25;
+    // private static final double CamposeValidActivePipelineSeconds = 0.5;
+    // private static final double CamposeValidTargetArea = 0.005;
+    // private static final double CamposeValidAverageDriveVelocityLimitMetersPerSecond = 0.25;
 
     // Devices
     private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
@@ -60,7 +60,7 @@ public class Limelight extends Cat5Subsystem {
                 responsiveLogEntry.append(data);
             }, 5);
 
-        if (Constants.IsDebugShuffleboardEnabled) {
+        if (Constants.IsShuffleboardDebugEnabled) {
             {
                 var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Target_Data);
                 layout.addInteger("Tag Id", () -> getTagId());
@@ -70,7 +70,7 @@ public class Limelight extends Cat5Subsystem {
             }
             {
                 var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Campose);
-                layout.addBoolean("Is Campose Valid", () -> isCamposeValid());
+                // layout.addBoolean("Is Campose Valid", () -> isCamposeValid());
                 layout.addString("Campose", () -> {
                     var campose = getCampose();
                     if (campose != null) {
@@ -86,6 +86,7 @@ public class Limelight extends Cat5Subsystem {
                 layout.addInteger("Active Pipeline", () -> activePipeline);
             }
             {
+                // TODO Will get changed, just display x, y and mode
                 var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Distance_Estimation);
                 layout.addDouble("Mid Cone Distance (m)", () -> 0.254 / Math.tan(Math.toRadians(10.0 - getTargetY())));
                 layout.addDouble("Mid Cube Distance (m)", () -> 0.403098 / Math.tan(Math.toRadians(10.0 - getTargetY())));
@@ -102,10 +103,9 @@ public class Limelight extends Cat5Subsystem {
 
         long getpipe = getpipeEntry.getInteger(-1);
         if (getpipe != activePipeline) {
+            Cat5.print("Limelight pipeline: " + activePipeline + " -> " + getpipe);
             activePipeline = getpipe;
             activePipelineTimer.restart();
-
-            Cat5.print("Limelight pipeline updated: " + activePipeline);
         }
 
         if (!isActivePipeline(desiredPipeline)) {
@@ -113,12 +113,12 @@ public class Limelight extends Cat5Subsystem {
         }
     }
 
-    public boolean isCamposeValid() {
-        return isActivePipeline(LimelightPipeline.Fiducial) &&
-            activePipelineTimer.get() > CamposeValidActivePipelineSeconds &&
-            getTargetArea() > CamposeValidTargetArea &&
-            robotContainer.getAverageDriveVelocityMetersPerSecond() < CamposeValidAverageDriveVelocityLimitMetersPerSecond;
-    }
+    // public boolean isCamposeValid() {
+    //     return isActivePipeline(LimelightPipeline.Fiducial) &&
+    //         activePipelineTimer.get() > CamposeValidActivePipelineSeconds &&
+    //         getTargetArea() > CamposeValidTargetArea &&
+    //         robotContainer.getAverageDriveVelocityMetersPerSecond() < CamposeValidAverageDriveVelocityLimitMetersPerSecond;
+    // }
     public Pose3d getCampose() {
         double[] campose = camerapose_targetspaceSubscriber.get();
         if (campose.length != 0) {
@@ -167,9 +167,12 @@ public class Limelight extends Cat5Subsystem {
     // }
 
     public void printTargetData() {
-        Cat5.print("tid: " + getTagId());
-        Cat5.print("tx: " + getTargetX());
-        Cat5.print("ty: " + getTargetY());
-        Cat5.print("ta: " + getTargetArea());
+        StringBuilder builder = new StringBuilder();
+        builder.append("Limelight target data:\n");
+        builder.append("\ttid: " + getTagId() + "\n");
+        builder.append("\ttx: " + getTargetX() + "\n");
+        builder.append("\tty: " + getTargetY() + "\n");
+        builder.append("\tta: " + getTargetArea());
+        Cat5.print(builder.toString());
     }
 }
