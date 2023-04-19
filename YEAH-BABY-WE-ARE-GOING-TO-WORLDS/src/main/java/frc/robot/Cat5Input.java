@@ -41,6 +41,10 @@ public class Cat5Input {
     public Trigger drivetrainSouth = xbox.a();
     public Trigger drivetrainWest = xbox.x();
 
+    // Trigger Combos
+    // public Trigger armForceHome = armHome
+    //     .and(() -> gripperStop.getAsBoolean());
+
     public Cat5Input(RobotContainer robotContainer) {
         if (Robot.isReal()) {
             return;

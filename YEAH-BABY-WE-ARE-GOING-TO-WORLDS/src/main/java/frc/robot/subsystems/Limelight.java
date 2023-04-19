@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
@@ -86,13 +85,12 @@ public class Limelight extends Cat5Subsystem {
                 layout.addInteger("Active Pipeline", () -> activePipeline);
             }
             {
-                // TODO Will get changed, just display x, y and mode
-                var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Distance_Estimation);
+                // var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Distance_Estimation);
                 // layout.addDouble("Mid Cone Distance (m)", () -> 0.254 / Math.tan(Math.toRadians(10.0 - getTargetY())));
-                layout.addDouble("Mid Cube Distance (m)", () -> 0.403098 / Math.tan(Math.toRadians(10.0 - getTargetY())));
-                layout.addDouble("Double Substation Distance (m)", () -> 0.695452 / Math.tan(Math.toRadians(10.0 - getTargetY())));
-                layout.addDouble("Mid Retroreflective X (m)", () -> getMidRetroreflectivePoseMeters().getX());
-                layout.addDouble("Mid Retroreflective Y (m)", () -> getMidRetroreflectivePoseMeters().getY());
+                // layout.addDouble("Mid Cube Distance (m)", () -> 0.403098 / Math.tan(Math.toRadians(10.0 - getTargetY())));
+                // layout.addDouble("Double Substation Distance (m)", () -> 0.695452 / Math.tan(Math.toRadians(10.0 - getTargetY())));
+                // layout.addDouble("Mid Retroreflective X (m)", () -> getMidRetroreflectivePoseMeters().getX());
+                // layout.addDouble("Mid Retroreflective Y (m)", () -> getMidRetroreflectivePoseMeters().getY());
             }
         }
     }
@@ -156,13 +154,7 @@ public class Limelight extends Cat5Subsystem {
         return targetAreaEntry.getDouble(Double.NaN);
     }
 
-    public Translation2d getMidRetroreflectivePoseMeters() {
-        double yMeters = 0.254 / Math.tan(Math.toRadians(10.0 - getTargetY()));
-        double xMeters = Math.tan(Math.toRadians(getTargetX())) * yMeters;
-        return new Translation2d(xMeters, yMeters);
-    }
-
-    // public Translation2d getHighRetroreflectivePoseMeters() {
+    // public Translation2d getMidRetroreflectivePoseMeters() {
     //     double yMeters = 0.254 / Math.tan(Math.toRadians(10.0 - getTargetY()));
     //     double xMeters = Math.tan(Math.toRadians(getTargetX())) * yMeters;
     //     return new Translation2d(xMeters, yMeters);

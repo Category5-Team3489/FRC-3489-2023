@@ -118,8 +118,8 @@ public class Drivetrain extends Cat5Subsystem {
         this.limelight = limelight;
 
         driveCommand = new Drive(robotContainer, this);
-        automateLeftDoubleSubstationCommand = new AutomateLeftDoubleSubstation(limelight, this);
-        automateRightDoubleSubstationCommand = new AutomateRightDoubleSubstation(limelight, this);
+        automateLeftDoubleSubstationCommand = new AutomateLeftDoubleSubstation(arm, limelight, this);
+        automateRightDoubleSubstationCommand = new AutomateRightDoubleSubstation(arm, limelight, this);
 
         setDefaultCommand(driveCommand);
 

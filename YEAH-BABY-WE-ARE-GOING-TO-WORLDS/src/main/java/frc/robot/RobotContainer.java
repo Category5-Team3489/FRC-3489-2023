@@ -12,14 +12,9 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.autos.Balance;
 import frc.robot.commands.autos.BumpBalance;
 import frc.robot.commands.autos.BumpTaxi;
 import frc.robot.commands.autos.Cat5Autos;
-import frc.robot.commands.autos.PlaceMidConeOnly;
-import frc.robot.commands.autos.Taxi;
-import frc.robot.commands.autos.TaxiFar;
-import frc.robot.commands.autos.TestDrive;
 import frc.robot.data.Cat5Data;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayouts;
@@ -147,13 +142,9 @@ public class RobotContainer implements Cat5Updatable {
 
         // TODO reset odometry at beginning of auto with action, then drive to specific points to avoid drift, reset odometry to pos
 
-        // TODO Read through all new code to find test items!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // TODO Indicate in shuffleboard with blinking widget when a game piece is picked up, heldGamePiece, unknown -> !unknown
 
-            // TODO Indicate in shuffleboard with blinking widget when a game piece is picked up, heldGamePiece, unknown -> !unknown
-
-            // TODO Move to carry position after picking a game piece up automatically // ISSUE WITH THIS IF AT HUMAN PLAYER STATION OR NOT FLOOR PICKUP POS
+        // TODO Move to carry position after picking a game piece up automatically // ISSUE WITH THIS IF AT HUMAN PLAYER STATION OR NOT FLOOR PICKUP POS
 
         // TODO Leds and prints for actions
 
@@ -226,12 +217,12 @@ public class RobotContainer implements Cat5Updatable {
             .withName("NothingAuto")
         );
 
-        autos.addAuto(() -> new PlaceMidConeOnly(actions));
-        autos.addAuto(() -> new TestDrive(actions));
-        autos.addAuto(() -> new Balance(actions));
+        // autos.addAuto(() -> new PlaceMidConeOnly(actions));
+        // autos.addAuto(() -> new TestDrive(actions));
+        // autos.addAuto(() -> new Balance(actions));
         autos.addAuto(() -> new BumpBalance(actions));
-        autos.addAuto(() -> new Taxi(actions));
-        autos.addAuto(() -> new TaxiFar(actions));
+        // autos.addAuto(() -> new Taxi(actions));
+        // autos.addAuto(() -> new TaxiFar(actions));
         autos.addAuto(() -> new BumpTaxi(actions));
 
         autos.addSelectorWidget();

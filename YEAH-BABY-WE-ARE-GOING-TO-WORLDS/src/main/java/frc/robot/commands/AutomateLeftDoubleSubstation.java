@@ -5,7 +5,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Cat5;
+import frc.robot.enums.ArmState;
 import frc.robot.enums.LimelightPipeline;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
@@ -21,6 +23,7 @@ public class AutomateLeftDoubleSubstation extends CommandBase {
     private static double TargetXSetpointDegrees = -0.14;
     private static double TargetYSetpointDegrees = -11.49;
 
+    private final Arm arm;
     private final Limelight limelight;
     private final Drivetrain drivetrain;
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
@@ -29,7 +32,8 @@ public class AutomateLeftDoubleSubstation extends CommandBase {
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
     
-    public AutomateLeftDoubleSubstation(Limelight limelight, Drivetrain drivetrain) {
+    public AutomateLeftDoubleSubstation(Arm arm, Limelight limelight, Drivetrain drivetrain) {
+        this.arm = arm;
         this.limelight = limelight;
         this.drivetrain = drivetrain;
         
@@ -48,6 +52,10 @@ public class AutomateLeftDoubleSubstation extends CommandBase {
 
     @Override
     public void execute() {
+        if (arm.getState() != ArmState.DoubleSubstation) {
+            arm.setState(ArmState.DoubleSubstation);
+        }
+
         if (!limelight.isActivePipeline(LimelightPipeline.Fiducial)) {
             drivetrain.driveFieldRelative(xMetersPerSecond, yMetersPerSecond, SpeedLimiter, TargetAngle, MaxOmegaDegreesPerSecond);
             return;
