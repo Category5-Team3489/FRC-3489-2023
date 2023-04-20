@@ -1,10 +1,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.HighConeNode;
-import frc.robot.commands.HighCubeNode;
-import frc.robot.commands.MidConeNode;
-import frc.robot.commands.MidCubeNode;
+import frc.robot.commands.placement.HighConeNode;
+import frc.robot.commands.placement.HighCubeNode;
+import frc.robot.commands.placement.MidConeNode;
+import frc.robot.commands.placement.MidCubeNode;
 import frc.robot.enums.ArmState;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.WristState;
