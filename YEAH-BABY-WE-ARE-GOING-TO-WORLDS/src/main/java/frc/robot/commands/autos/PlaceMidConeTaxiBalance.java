@@ -9,8 +9,8 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class PlaceMidConeOnly extends SequentialCommandGroup {
-    public PlaceMidConeOnly(Cat5Actions actions) {
+public class PlaceMidConeTaxiBalance extends SequentialCommandGroup {
+    public PlaceMidConeTaxiBalance(Cat5Actions actions) {
         addCommands(
             runOnce(() -> {
                 actions.navx.setHeadingOffset(Rotation2d.fromDegrees(180));
@@ -23,9 +23,15 @@ public class PlaceMidConeOnly extends SequentialCommandGroup {
             actions.waitForDriveCommand(),
             runOnce(() -> {
                 actions.armHome(true).schedule();
-                new DriveMeters(actions.drivetrain, actions.odometry, 0, 3, 180, 2.5, 0.1, 90).schedule();
+                new DriveMeters(actions.drivetrain, actions.odometry, 0, 4, 180, 1.2, 0.05, 90).schedule();
+            }),
+            actions.waitForDriveCommand(),
+            waitSeconds(0.5), // todo lower
+            runOnce(() -> {
+                new DriveMeters(actions.drivetrain, actions.odometry, 0, 3, 180, 1.2, 0.05, 90).schedule();
             }),
             actions.waitForDriveCommand()
+            // new GyroBalance(actions.navx, actions.drivetrain)
         );
     }
 }

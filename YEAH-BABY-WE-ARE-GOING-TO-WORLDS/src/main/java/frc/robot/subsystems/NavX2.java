@@ -78,4 +78,8 @@ public class NavX2 extends Cat5Subsystem {
     public boolean isConnected() {
         return navx.isConnected();
     }
+
+    public double getTilt() {
+        return navx.getPitch();
+    }
 }

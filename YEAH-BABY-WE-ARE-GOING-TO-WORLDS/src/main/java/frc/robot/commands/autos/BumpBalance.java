@@ -12,8 +12,8 @@ public class BumpBalance extends SequentialCommandGroup {
             // new DrivePercentAngleSeconds(actions.drivetrain, 0, 0, 4),
             // new DrivePercentAngleSeconds(actions.drivetrain, 0.12, 0, 6.75)
 
-            new DrivePercentAngleSeconds(actions.drivetrain, -0.4, 0, 0.125),
-            new DrivePercentAngleSeconds(actions.drivetrain, 0.4, 0, 0.125),
+            new DrivePercentAngleSeconds(actions.drivetrain, -0.45, 0, 0.125),
+            new DrivePercentAngleSeconds(actions.drivetrain, 0.45, 0, 0.125),
             new DrivePercentAngleSeconds(actions.drivetrain, 0, 0, 4),
             new DrivePercentAngleSeconds(actions.drivetrain, 0.12, 0, 6.75)
         );

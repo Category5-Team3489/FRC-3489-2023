@@ -9,7 +9,7 @@ import frc.robot.subsystems.Odometry;
 
 public class DriveMeters extends CommandBase {
     // Constants
-    private static final double ProportionalGain100PercentPerMeter = 6.0;
+    private static final double ProportionalGain100PercentPerMeter = 12.0;
 
     // State
     private final Drivetrain drivetrain;
@@ -55,7 +55,7 @@ public class DriveMeters extends CommandBase {
         }
 
         double controllerPercent = errorMeters * ProportionalGain100PercentPerMeter;
-        controllerPercent = MathUtil.clamp(controllerPercent, 0, 1.0);
+        controllerPercent = MathUtil.clamp(controllerPercent, 0.1, 1.0);
 
         double xMetersPerSecond = (xErrorMeters / errorMeters) * metersPerSecond * controllerPercent;
         double yMetersPerSecond = (yErrorMeters / errorMeters) * metersPerSecond * controllerPercent;
