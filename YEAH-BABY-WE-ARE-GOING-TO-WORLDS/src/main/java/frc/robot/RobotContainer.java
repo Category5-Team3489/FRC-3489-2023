@@ -188,6 +188,7 @@ public class RobotContainer implements Cat5Updatable {
     }
 
     private void configureBindings() {
+        // Triggers
         input.automate.onTrue(actions.automation());
 
         input.gripperStop.onTrue(actions.gripperStop());
@@ -198,7 +199,7 @@ public class RobotContainer implements Cat5Updatable {
         input.wristCarry.onTrue(actions.wristCarry());
  
         input.armDoubleSubstation.onTrue(actions.armDoubleSubstation());
-        input.armHome.onTrue(actions.armHome(true));
+        input.armHome.onTrue(actions.armHome());
         input.armPickup.onTrue(actions.armPickup());
         input.armLow.onTrue(actions.armLow());
         input.armMid.onTrue(actions.armMid());
@@ -210,6 +211,9 @@ public class RobotContainer implements Cat5Updatable {
         input.drivetrainEast.onTrue(actions.drivetrainCardinalDirection(-90));
         input.drivetrainSouth.onTrue(actions.drivetrainCardinalDirection(-180));
         input.drivetrainWest.onTrue(actions.drivetrainCardinalDirection(-270));
+
+        // Trigger Combos
+        input.armForceHome.onTrue(actions.armForceHome());
     }
 
     private void addAutos() {
@@ -271,7 +275,7 @@ public class RobotContainer implements Cat5Updatable {
         Cat5.print("Picked up " + gripper.getHeldGamePiece() + ", with arm at " + Cat5.prettyDouble(arm.getTargetDegrees()) + " degrees");
         
         if (arm.getState() == ArmState.Pickup) {
-            actions.armHome(false).schedule();
+            actions.armHome().schedule();
         }
     }
     //#endregion

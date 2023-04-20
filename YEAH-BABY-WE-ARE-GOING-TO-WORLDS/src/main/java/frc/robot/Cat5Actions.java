@@ -205,14 +205,8 @@ public class Cat5Actions {
             gripperIntake()
         );
     }
-    // TODO get rid of allowForceHoming
-    public Command armHome(boolean allowForceHoming) {
+    public Command armHome() {
         return runOnce(() -> {
-            // TODO this will also get removed
-            if (allowForceHoming && arm.getState() == ArmState.Home && gripper.getHeldGamePiece() == GamePiece.Unknown) {
-                arm.forceHome();
-            }
-
             arm.setState(ArmState.Home);
             wrist.setState(WristState.CarryOrHighest);
             gripper.resetCanReintakeAgain();
@@ -307,6 +301,12 @@ public class Cat5Actions {
             // if (delta < 165) {
             //     drivetrain.setTargetHeading(target);
             // }
+        });
+    }
+
+    public Command armForceHome() {
+        return runOnce(() -> {
+            arm.forceHome();
         });
     }
     //#region General

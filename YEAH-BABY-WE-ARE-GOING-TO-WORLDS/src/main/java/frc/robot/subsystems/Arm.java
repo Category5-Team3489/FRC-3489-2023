@@ -24,6 +24,7 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.data.Cat5DeltaTracker;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
+import frc.robot.enums.ArmHomingState;
 import frc.robot.enums.ArmState;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.GridPosition;
@@ -41,6 +42,7 @@ public class Arm extends Cat5Subsystem {
     public static final double MaxDegrees = 37.0;
 
     private static final double HomingPercent = -0.8;
+    private static final double SlowHomingPercent = -0.05;
     private static final double HorizontalResistGravityPercent = 0.025;
 
     private static final int StallSmartCurrentLimitAmps = 30;
@@ -65,6 +67,7 @@ public class Arm extends Cat5Subsystem {
     // State
     private final Gripper gripper;
     private boolean isHomed = false;
+    private ArmHomingState homingState = ArmHomingState.Slam;
     private boolean lastLimitSwitchValue = false;
     private GridPosition gridPosition = GridPosition.Low;
     private double targetDegrees = MinDegrees;
@@ -115,6 +118,18 @@ public class Arm extends Cat5Subsystem {
                 isHomedLogEntry.append(data);
             }, 5);
 
+        GenericEntry homingStateEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Driver)
+            .add("Arm Homing State", homingState.toString())
+            .getEntry();
+        StringLogEntry homingStateLogEntry = new StringLogEntry(robotContainer.dataLog, "/arm/homing-state");
+        robotContainer.data.createDatapoint(() -> homingState.toString())
+            .withShuffleboard(data -> {
+                homingStateEntry.setString(data);
+            }, 5)
+            .withLog(data -> {
+                homingStateLogEntry.append(data);
+            }, 25);
+
         GenericEntry stateEntry = robotContainer.layouts.get(Cat5ShuffleboardLayout.Manipulator)
             .add("Arm State", state.toString())
             .getEntry();
@@ -139,6 +154,13 @@ public class Arm extends Cat5Subsystem {
                 encoderDegreesLogEntry.append(data);
             }, 25);
 
+        new Cat5DeltaTracker<ArmHomingState>(robotContainer, homingState,
+        last -> {
+            return last != homingState;
+        }, last -> {
+            Cat5.print("Arm homing state: " + last.toString() + " -> " + homingState.toString());
+            return homingState;
+        });
         new Cat5DeltaTracker<ArmState>(robotContainer, state,
         last -> {
             return last != state;
@@ -174,19 +196,9 @@ public class Arm extends Cat5Subsystem {
 
     @Override
     public void periodic() {
-        if (isLimitSwitchRisingEdge()) {
-            if (!isHomed) {
-                setEncoderAngleDegrees(MinDegrees);
-                isHomed = true;
-
-                setState(ArmState.Home);
-                Cat5.print("Arm now homed!");
-            }
-
-            Cat5.print("Arm limit switch rising edge!");
-        }
-
         if (isHomed) {
+            lastLimitSwitchValue = limitSwitch.get();
+
             double correctionPercent = robotContainer.input.getArmCorrectionPercent();
             targetDegrees += correctionPercent * CorrectionMaxDegreesPerSecond * Robot.kDefaultPeriod;
             targetDegrees = MathUtil.clamp(targetDegrees, MinDegrees, MaxDegrees);
@@ -196,16 +208,6 @@ public class Arm extends Cat5Subsystem {
         else {
             gotoHomeCommand.schedule();
         }
-    }
-
-    private boolean isLimitSwitchRisingEdge() {
-        if (limitSwitch.get() && !lastLimitSwitchValue) {
-            lastLimitSwitchValue = true;
-            return true;
-        }
-
-        lastLimitSwitchValue = limitSwitch.get();
-        return false;
     }
 
     private double getEncoderDegrees() {
@@ -229,11 +231,45 @@ public class Arm extends Cat5Subsystem {
 
     private CommandBase getGotoHomeCommand() {
         return run(() -> {
-            if (!isHomed) {
-                setState(ArmState.Homing);
-
-                motor.setVoltage(HomingPercent * 12.0);
+            if (isHomed) {
+                return;
             }
+
+            boolean limitSwitchValue = limitSwitch.get();
+
+            setState(ArmState.Homing);
+
+            switch (homingState) {
+                case Slam:
+                    motor.setVoltage(HomingPercent * 12.0);
+
+                    if (limitSwitchValue && !lastLimitSwitchValue) {
+                        homingState = ArmHomingState.SlowUntrigger;
+                    }
+                    break;
+                case SlowUntrigger:
+                    motor.setVoltage(-SlowHomingPercent * 12.0);
+
+                    if (!limitSwitchValue && lastLimitSwitchValue) {
+                        homingState = ArmHomingState.SlowUntrigger;
+                    }
+                    break;
+                case SlowTrigger:
+                    motor.setVoltage(SlowHomingPercent * 12.0);
+
+                    if (limitSwitchValue && !lastLimitSwitchValue) {
+                        homingState = ArmHomingState.Slam;
+
+                        setEncoderAngleDegrees(MinDegrees);
+                        isHomed = true;
+
+                        setState(ArmState.Home);
+                        Cat5.print("Arm now homed!");
+                    }
+                    break;
+            }
+
+            lastLimitSwitchValue = limitSwitchValue;
         })
             .withName("Goto Home");
     }
@@ -263,8 +299,9 @@ public class Arm extends Cat5Subsystem {
     }
 
     public void forceHome() {
-        lastLimitSwitchValue = false;
         isHomed = false;
+        homingState = ArmHomingState.Slam;
+        lastLimitSwitchValue = false;
 
         setState(ArmState.Homing);
 
