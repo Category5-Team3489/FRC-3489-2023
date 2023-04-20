@@ -3,6 +3,7 @@ package frc.robot.commands.autos;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Cat5Actions;
 import frc.robot.commands.DriveMeters;
+import frc.robot.commands.GyroBalance;
 import frc.robot.enums.GamePiece;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -26,12 +27,12 @@ public class PlaceMidConeTaxiBalance extends SequentialCommandGroup {
                 new DriveMeters(actions.drivetrain, actions.odometry, 0, 4, 180, 1.2, 0.05, 90).schedule();
             }),
             actions.waitForDriveCommand(),
-            waitSeconds(0.5), // todo lower
+            waitSeconds(0.5),
             runOnce(() -> {
-                new DriveMeters(actions.drivetrain, actions.odometry, 0, 3, 180, 1.2, 0.05, 90).schedule();
+                new DriveMeters(actions.drivetrain, actions.odometry, 0, 2.5, 180, 1.2, 0.05, 90).schedule();
             }),
-            actions.waitForDriveCommand()
-            // new GyroBalance(actions.navx, actions.drivetrain)
+            actions.waitForDriveCommand(),
+            new GyroBalance(actions.navx, actions.drivetrain)
         );
     }
 }
