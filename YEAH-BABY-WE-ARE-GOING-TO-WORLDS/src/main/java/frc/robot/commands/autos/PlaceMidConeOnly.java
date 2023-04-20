@@ -16,7 +16,7 @@ public class PlaceMidConeOnly extends SequentialCommandGroup {
                 actions.navx.setHeadingOffset(Rotation2d.fromDegrees(180));
                 actions.gripper.setHeldGamePiece(GamePiece.Cone);
                 actions.odometry.reset();
-            }), 
+            }),
             actions.armMid(),
             waitSeconds(2),
             actions.automation(),
@@ -26,7 +26,6 @@ public class PlaceMidConeOnly extends SequentialCommandGroup {
                 new DriveMeters(actions.drivetrain, actions.odometry, 0, 3, 180, 2.5, 0.1, 90).schedule();
             }),
             actions.waitForDriveCommand()
-            //new DriveMeters(actions.drivetrain, actions.odometry, 0, 0, 0, 0, 0, 0)
         );
     }
 }

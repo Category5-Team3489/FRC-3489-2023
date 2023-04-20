@@ -9,7 +9,7 @@ import frc.robot.subsystems.Odometry;
 
 public class DriveMeters extends CommandBase {
     // Constants
-    private static final double ProportionalGain100PercentPerMeter = 1.0;
+    private static final double ProportionalGain100PercentPerMeter = 6.0;
 
     // State
     private final Drivetrain drivetrain;
