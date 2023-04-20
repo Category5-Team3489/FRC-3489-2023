@@ -206,6 +206,7 @@ public class Gripper extends Cat5Subsystem {
                         canReintakeAgain && reintakeAntiEatTimer.hasElapsed(ReintakeAntiConeEatTimeout)) {
                         canReintakeAgain = false;
                         stopCommand.schedule();
+                        heldGamePiece = GamePiece.Unknown;
                     }
                 }
                 if (IsCubeReintakingEnabled) {
@@ -213,6 +214,7 @@ public class Gripper extends Cat5Subsystem {
                         canReintakeAgain && reintakeAntiEatTimer.hasElapsed(ReintakeAntiCubeEatTimeout)) {
                         canReintakeAgain = false;
                         stopCommand.schedule();
+                        heldGamePiece = GamePiece.Unknown;
                     }
                 }
 
