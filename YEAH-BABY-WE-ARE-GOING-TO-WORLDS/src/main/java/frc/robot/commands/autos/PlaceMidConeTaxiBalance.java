@@ -23,8 +23,8 @@ public class PlaceMidConeTaxiBalance extends SequentialCommandGroup {
             actions.automation(),
             actions.waitForDriveCommand(),
             runOnce(() -> {
-                actions.armHome(true).schedule();
-                new DriveMeters(actions.drivetrain, actions.odometry, 0, 4, 180, 1.2, 0.05, 90).schedule();
+                actions.armHome().schedule();
+                new DriveMeters(actions.drivetrain, actions.odometry, 0, 3, 180, 2.5, 0.1, 90).schedule();
             }),
             actions.waitForDriveCommand(),
             waitSeconds(0.5),

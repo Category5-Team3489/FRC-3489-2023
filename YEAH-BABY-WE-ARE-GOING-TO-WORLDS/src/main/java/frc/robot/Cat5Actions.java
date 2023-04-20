@@ -1,10 +1,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.HighConeNode;
-import frc.robot.commands.HighCubeNode;
-import frc.robot.commands.MidConeNode;
-import frc.robot.commands.MidCubeNode;
+import frc.robot.commands.placement.HighConeNode;
+import frc.robot.commands.placement.HighCubeNode;
+import frc.robot.commands.placement.MidConeNode;
+import frc.robot.commands.placement.MidCubeNode;
 import frc.robot.enums.ArmState;
 import frc.robot.enums.GamePiece;
 import frc.robot.enums.WristState;
@@ -205,14 +205,8 @@ public class Cat5Actions {
             gripperIntake()
         );
     }
-    // TODO get rid of allowForceHoming
-    public Command armHome(boolean allowForceHoming) {
+    public Command armHome() {
         return runOnce(() -> {
-            // TODO this will also get removed
-            if (allowForceHoming && arm.getState() == ArmState.Home && gripper.getHeldGamePiece() == GamePiece.Unknown) {
-                arm.forceHome();
-            }
-
             arm.setState(ArmState.Home);
             wrist.setState(WristState.CarryOrHighest);
             gripper.resetCanReintakeAgain();
@@ -307,6 +301,12 @@ public class Cat5Actions {
             // if (delta < 165) {
             //     drivetrain.setTargetHeading(target);
             // }
+        });
+    }
+
+    public Command armForceHome() {
+        return runOnce(() -> {
+            arm.forceHome();
         });
     }
     //#region General

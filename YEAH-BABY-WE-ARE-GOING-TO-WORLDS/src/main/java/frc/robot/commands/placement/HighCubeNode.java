@@ -1,58 +1,54 @@
-package frc.robot.commands;
+package frc.robot.commands.placement;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Cat5;
 import frc.robot.enums.LimelightPipeline;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
 
-public class HighConeNode extends CommandBase {
+public class HighCubeNode extends CommandBase {
     private static double ProportionalGain = 0.18;
     private static double MaxStrafeMetersPerSecond = 0.5;
-    private static double StrafeToleranceDegrees = 1;
+    private static double MaxDistanceMetersPerSecond = 0.75;
+    private static double StrafeToleranceDegrees = 1.5;
+    private static double DistanceToleranceDegrees = 1.5;
     private static Rotation2d TargetAngle = Rotation2d.fromDegrees(180);
     private static double SpeedLimiter = 0.5;
-    private static double MaxOmegaDegreesPerSecond = 180; // 90
-    private static double TargetXSetpointDegrees = -3.857;
-    private static double WallSpeedMetersPerSecond = -0.5;
-    private static double WallTimeoutSeconds = 2;
-
-    private Timer wallTimer = new Timer();
+    private static double MaxOmegaDegreesPerSecond = 90;
+    private static double TargetXSetpointDegrees = -4.16;
+    private static double TargetYSetpointDegrees = -19.28;
 
     private final Limelight limelight;
     private final Drivetrain drivetrain;
     private PIDController strafeController = new PIDController(ProportionalGain, 0, 0);
-    private SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(5);
+    private PIDController distanceController = new PIDController(ProportionalGain, 0, 0);
 
     private double xMetersPerSecond = 0;
     private double yMetersPerSecond = 0;
-
-    private boolean hasHitStrafeSetpoint = false;
-
-    public HighConeNode(Limelight limelight, Drivetrain drivetrain) {
+    
+    public HighCubeNode(Limelight limelight, Drivetrain drivetrain) {
         this.limelight = limelight;
         this.drivetrain = drivetrain;
-
+        
         addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
-        limelight.setDesiredPipeline(LimelightPipeline.HighRetroreflective);
+        limelight.setDesiredPipeline(LimelightPipeline.Fiducial);
 
         strafeController.setTolerance(StrafeToleranceDegrees);
+        distanceController.setTolerance(DistanceToleranceDegrees);
 
         Cat5.print(getName() + " init");
     }
 
     @Override
     public void execute() {
-        if (!limelight.isActivePipeline(LimelightPipeline.HighRetroreflective)) {
+        if (!limelight.isActivePipeline(LimelightPipeline.Fiducial)) {
             drivetrain.driveFieldRelative(xMetersPerSecond, yMetersPerSecond, SpeedLimiter, TargetAngle, MaxOmegaDegreesPerSecond);
             return;
         }
@@ -66,14 +62,13 @@ public class HighConeNode extends CommandBase {
             yMetersPerSecond = 0;
         }
 
-        if (strafeController.atSetpoint() && !hasHitStrafeSetpoint) {
-            hasHitStrafeSetpoint = true;
-
-            wallTimer.restart();
+        double targetY = limelight.getTargetY();
+        if (!Double.isNaN(targetY)) {
+            xMetersPerSecond = distanceController.calculate(targetY, TargetYSetpointDegrees);
+            xMetersPerSecond = MathUtil.clamp(xMetersPerSecond, -MaxDistanceMetersPerSecond, MaxDistanceMetersPerSecond);
         }
-
-        if (hasHitStrafeSetpoint) {
-            xMetersPerSecond = distanceRateLimiter.calculate(WallSpeedMetersPerSecond);
+        else {
+            xMetersPerSecond = 0;
         }
 
         drivetrain.driveFieldRelative(xMetersPerSecond, yMetersPerSecond, SpeedLimiter, TargetAngle, MaxOmegaDegreesPerSecond);
@@ -81,13 +76,13 @@ public class HighConeNode extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return wallTimer.hasElapsed(WallTimeoutSeconds);
+        return strafeController.atSetpoint() && distanceController.atSetpoint();
     }
 
     @Override
     public void end(boolean interrupted) {
         drivetrain.brakeTranslation();
-
+        
         Cat5.print(getName() + " end");
 
         limelight.printTargetData();

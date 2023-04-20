@@ -1,19 +1,14 @@
 
+
+
+
+
+
 shorten gripper limit switch arm
 
 save all limelight pipelines
 
-go through Cat5Actions list
-wrist moves, with corrections?
-arm moves, with corrections?
 how does campose change with robot movements, write down
-
-How close can we get to wall and still see campose in shuffleboard
-
-// Not too important
-How far to left and right can arm be to still pickup piece
-    floor
-    human player station
 
 How close can the robot move to the wall before the arm is fully raised in the human player station pickup automation
 
