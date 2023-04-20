@@ -37,7 +37,7 @@ public class Leds extends Cat5Subsystem {
                 case Blue:
                     target = LedPattern.ColorWavesOceanPalette;
                 default:
-                    target = LedPattern.Lime;
+                    target = LedPattern.StrobeWhite;
             }
         }
         else {
