@@ -15,6 +15,7 @@ import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -41,8 +42,9 @@ public class Arm extends Cat5Subsystem {
     public static final double MinDegrees = -114;
     public static final double MaxDegrees = 37.0;
 
-    private static final double HomingPercent = -0.8;
-    private static final double SlowHomingPercent = -0.05;
+    private static final double SlamHomingPercent = -0.8;
+    private static final double SlowUntriggerHomingPercent = 0.1;
+    private static final double SlowTriggerHomingPercent = -0.1;
     private static final double HorizontalResistGravityPercent = 0.025;
 
     private static final int StallSmartCurrentLimitAmps = 30;
@@ -241,23 +243,31 @@ public class Arm extends Cat5Subsystem {
 
             switch (homingState) {
                 case Slam:
-                    motor.setVoltage(HomingPercent * 12.0);
+                    motor.setVoltage(SlamHomingPercent * 12.0);
 
                     if (limitSwitchValue && !lastLimitSwitchValue) {
                         homingState = ArmHomingState.SlowUntrigger;
+
+                        if (DriverStation.isAutonomousEnabled()) {
+                            setEncoderAngleDegrees(MinDegrees);
+                            isHomed = true;
+            
+                            setState(ArmState.Home);
+                            Cat5.print("Arm now homed!");
+                        }
                     }
                     break;
                 case SlowUntrigger:
-                    motor.setVoltage(-SlowHomingPercent * 12.0);
+                    motor.setVoltage(SlowUntriggerHomingPercent * 12.0);
 
-                    if (!limitSwitchValue && lastLimitSwitchValue) {
-                        homingState = ArmHomingState.SlowUntrigger;
+                    if (!limitSwitchValue) {
+                        homingState = ArmHomingState.SlowTrigger;
                     }
                     break;
                 case SlowTrigger:
-                    motor.setVoltage(SlowHomingPercent * 12.0);
+                    motor.setVoltage(SlowTriggerHomingPercent * 12.0);
 
-                    if (limitSwitchValue && !lastLimitSwitchValue) {
+                    if (limitSwitchValue) {
                         homingState = ArmHomingState.Slam;
 
                         setEncoderAngleDegrees(MinDegrees);
