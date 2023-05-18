@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.autos.BumpBalance;
 import frc.robot.commands.autos.BumpTaxi;
 import frc.robot.commands.autos.Cat5Autos;
-import frc.robot.commands.autos.PlaceMidConeTaxiBalance;
+import frc.robot.commands.autos.PlaceMidConeTaxi;
 import frc.robot.data.Cat5Data;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayout;
 import frc.robot.data.shuffleboard.Cat5ShuffleboardLayouts;
@@ -222,7 +222,7 @@ public class RobotContainer implements Cat5Updatable {
             .withName("NothingAuto")
         );
 
-        autos.addAuto(() -> new PlaceMidConeTaxiBalance(actions));
+        autos.addAuto(() -> new PlaceMidConeTaxi(actions));
         // autos.addAuto(() -> new TestDrive(actions));
         // autos.addAuto(() -> new Balance(actions));
         autos.addAuto(() -> new BumpBalance(actions));

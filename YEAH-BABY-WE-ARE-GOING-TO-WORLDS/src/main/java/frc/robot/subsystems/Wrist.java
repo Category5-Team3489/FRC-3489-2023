@@ -52,18 +52,18 @@ public class Wrist extends Cat5Subsystem {
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
 
-        motor.restoreFactoryDefaults();
-        motor.setIdleMode(IdleMode.kBrake);
-        motor.enableVoltageCompensation(12.0);
-        motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
+        // motor.restoreFactoryDefaults();
+        // motor.setIdleMode(IdleMode.kBrake);
+        // motor.enableVoltageCompensation(12.0);
+        // motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 50);
-        pidController.setP(ProportionalGainPercentPerRevolutionOfError);
-        pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
-        motor.burnFlash(); // Always remember this - burn flash, not motor
+        // pidController.setP(ProportionalGainPercentPerRevolutionOfError);
+        // pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
+        // motor.burnFlash(); // Always remember this - burn flash, not motor
 
         if (Constants.IsShuffleboardDebugEnabled) {
             var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Wrist);

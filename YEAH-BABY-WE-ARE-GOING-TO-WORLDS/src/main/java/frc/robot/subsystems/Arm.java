@@ -40,6 +40,7 @@ public class Arm extends Cat5Subsystem {
     private static final double DegreesPerMotorRevolution = 1.0 / MotorRevolutionsPerDegree;
 
     public static final double MinDegrees = -114;
+    public static final double SlamDegrees = -114;
     public static final double MaxDegrees = 37.0;
 
     private static final double SlamHomingPercent = -0.8;
@@ -83,19 +84,19 @@ public class Arm extends Cat5Subsystem {
         pidController = motor.getPIDController();
         encoder = motor.getEncoder();
 
-        motor.restoreFactoryDefaults();
-        motor.setIdleMode(idleMode);
-        motor.enableVoltageCompensation(12.0);
-        motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
-        motor.setClosedLoopRampRate(ClosedLoopSecondsToFull);
+        // motor.restoreFactoryDefaults();
+        // motor.setIdleMode(idleMode);
+        // motor.enableVoltageCompensation(12.0);
+        // motor.setSmartCurrentLimit(StallSmartCurrentLimitAmps);
+        // motor.setClosedLoopRampRate(ClosedLoopSecondsToFull);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 50);
         motor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 50);
-        pidController.setP(ProportionalGainPercentPerRevolutionOfError);
-        pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
-        motor.burnFlash(); // Always remember this - burn flash, not motor
+        // pidController.setP(ProportionalGainPercentPerRevolutionOfError);
+        // pidController.setOutputRange(MinOutputPercent, MaxOutputPercent);
+        // motor.burnFlash(); // Always remember this - burn flash, not motor
 
         if (Constants.IsShuffleboardDebugEnabled) {
             var layout = robotContainer.layouts.get(Cat5ShuffleboardLayout.Debug_Arm);
@@ -199,7 +200,7 @@ public class Arm extends Cat5Subsystem {
     @Override
     public void periodic() {
         if (isHomed) {
-            lastLimitSwitchValue = limitSwitch.get();
+            // lastLimitSwitchValue = limitSwitch.get();
 
             double correctionPercent = robotContainer.input.getArmCorrectionPercent();
             targetDegrees += correctionPercent * CorrectionMaxDegreesPerSecond * Robot.kDefaultPeriod;
@@ -249,7 +250,7 @@ public class Arm extends Cat5Subsystem {
                         homingState = ArmHomingState.SlowUntrigger;
 
                         if (DriverStation.isAutonomousEnabled()) {
-                            setEncoderAngleDegrees(MinDegrees);
+                            setEncoderAngleDegrees(SlamDegrees);
                             isHomed = true;
             
                             setState(ArmState.Home);
@@ -270,7 +271,7 @@ public class Arm extends Cat5Subsystem {
                     if (limitSwitchValue) {
                         homingState = ArmHomingState.Slam;
 
-                        setEncoderAngleDegrees(MinDegrees);
+                        setEncoderAngleDegrees(MinDegrees + 14);
                         isHomed = true;
 
                         setState(ArmState.Home);
