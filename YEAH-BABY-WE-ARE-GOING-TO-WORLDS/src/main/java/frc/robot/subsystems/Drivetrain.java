@@ -71,20 +71,20 @@ public class Drivetrain extends Cat5Subsystem {
 
     private static final double MaxVoltage = 12;
 
-    private static final int FrontLeftDriveDeviceId = 3;
-    private static final int FrontLeftSteerDeviceId = 4;
+    private static final int FrontLeftDriveDeviceId = 1;
+    private static final int FrontLeftSteerDeviceId = 2;
     private static final int FrontLeftEncoderDeviceId = 20;
 
-    private static final int FrontRightDriveDeviceId = 5;
-    private static final int FrontRightSteerDeviceId = 6;
+    private static final int FrontRightDriveDeviceId = 3;
+    private static final int FrontRightSteerDeviceId = 4;
     private static final int FrontRightEncoderDeviceId = 21;
 
     private static final int BackLeftDriveDeviceId = 7;
     private static final int BackLeftSteerDeviceId = 8;
     private static final int BackLeftEncoderDeviceId = 22;
 
-    private static final int BackRightDriveDeviceId = 1;
-    private static final int BackRightSteerDeviceId = 2;
+    private static final int BackRightDriveDeviceId = 5;
+    private static final int BackRightSteerDeviceId = 6;
     private static final int BackRightEncoderDeviceId = 23;
 
     // Configs
