@@ -23,14 +23,19 @@ public class Leds extends Cat5Subsystem {
 
     @Override
     public void periodic() {
+        //if robot == disabled: dont set leds
         if (DriverStation.isDisabled()) {
             return;
         }
 
+        //target = color from ledPattern enum
         LedPattern target;
 
+        //change led colors based on the game piece needed (controlled by manipulator)
         GamePiece indicated = indicator.getIndicatedGamePiece();
+        // if the game piece is not selected by manipulator:
         if (indicated == GamePiece.Unknown) {
+            //set leds to green by default; if there is an alliance, leds = alliance color
             switch (DriverStation.getAlliance()) {
                 case Red:
                     target = LedPattern.ColorWavesLavaPalette;
@@ -40,6 +45,7 @@ public class Leds extends Cat5Subsystem {
                     target = LedPattern.Green;
             }
         }
+        //if there is a game piece selected by manipulator, leds = piece color
         else {
             if (indicated == GamePiece.Cone) {
                 target = LedPattern.Yellow;
@@ -49,7 +55,8 @@ public class Leds extends Cat5Subsystem {
             }
         }
 
-        leftBlinkin.set(target.getValue());
+        //set leds to selected color enum value; if ColorWavesLavaPalette(-0.39): Blinkin.set(-0.39)
+        leftBlinkin.set(target.getValue()); 
         rightBlinkin.set(target.getValue());
     }
 }
