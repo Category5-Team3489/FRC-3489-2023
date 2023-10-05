@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 
 public class Intake extends SubsystemBase{
-    public final CANSparkMax rightMotor = new CANSparkMax(1, MotorType.kBrushless);
+    public final CANSparkMax rightMotor = new CANSparkMax(2, MotorType.kBrushless);
+    public final CANSparkMax leftMotor = new CANSparkMax(8, MotorType.kBrushless);
+    
     //public final WPI_TalonSRX leftMotor = new WPI_TalonSRX(2);
 
     public Intake() {

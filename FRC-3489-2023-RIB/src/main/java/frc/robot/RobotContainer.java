@@ -33,8 +33,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   
-  // private final Intake intake = new Intake();
-  private final Leds leds = new Leds();
+  private final Intake intake = new Intake();
+  // private final Leds leds = new Leds();
   //private final Limelight limelight = new Limelight();
 
   // private final TestSubsystem s = new TestSubsystem();
@@ -63,18 +63,18 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // m_driverController.button(1)
-    //   //.debounce(0.1, DebounceType.kBoth)
-    //   .whileTrue(Commands.run(() -> intake.intake(), intake));
-    // m_driverController.button(2)
-    //   //.debounce(0.1, DebounceType.kBoth)
-    //   .whileTrue(Commands.run(() -> intake.placePiece(), intake));
-    // m_driverController.button(3)
-    //   //.debounce(0.1, DebounceType.kBoth)
-    //   .whileTrue(Commands.run(() -> intake.SlowPlacePiece(), intake));
+    m_driverController.button(1)
+      //.debounce(0.1, DebounceType.kBoth)
+      .whileTrue(Commands.run(() -> intake.intake(), intake));
+    m_driverController.button(2)
+      //.debounce(0.1, DebounceType.kBoth)
+      .whileTrue(Commands.run(() -> intake.placePiece(), intake));
+    m_driverController.button(3)
+      //.debounce(0.1, DebounceType.kBoth)
+      .whileTrue(Commands.run(() -> intake.SlowPlacePiece(), intake));
 
-    m_driverController.button(4)
-      .onTrue(Commands.runOnce(() -> leds.setSolidColor(255, 255, 255), leds));
+    // m_driverController.button(4)
+    //   .onTrue(Commands.runOnce(() -> leds.setSolidColor(255, 255, 255), leds));
 
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
