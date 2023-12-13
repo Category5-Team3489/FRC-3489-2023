@@ -9,11 +9,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+public class Drivetrain extends TimedRobot {
+
+  /*
+  https://docs.wpilib.org/en/stable/docs/software/commandbased/what-is-command-based.html
+  https://github.com/Category5-Team3489/FRC-3489-2023/tree/main/YEAH-BABY-WE-ARE-GOING-TO-WORLDS/src/main/java/frc/robot
+  */
 
   private XboxController meController = new XboxController(0);
 
@@ -33,7 +34,6 @@ public class Robot extends TimedRobot {
     backRight.follow(frontRight);
   }
 
-
   @Override
   public void robotPeriodic() {}
   
@@ -49,5 +49,4 @@ public class Robot extends TimedRobot {
     
     differentialDrive.tankDrive(leftinput, rightinput);
   }
-
 }
