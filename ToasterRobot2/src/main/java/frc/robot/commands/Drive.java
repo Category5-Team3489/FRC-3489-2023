@@ -6,25 +6,27 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 
 public class Drive extends CommandBase{
-  private final DriveTrain m_driveTrain;
+  private final DriveTrain driveTrain;
+  private final XboxController xbox;
 
-  public Drive(DriveTrain driveTrain) {
-      m_driveTrain = driveTrain;
+  public Drive(DriveTrain driveTrain, XboxController xbox) {
+      this.driveTrain = driveTrain;
+      this.xbox = xbox;
+
       // Use addRequirements() here to declare subsystem dependencies.
       addRequirements(driveTrain);
     }
 
     private DifferentialDrive differentialDrive;
-    private XboxController Controller = new XboxController(0);
 
 
   @Override
   public void execute() {
 
-    differentialDrive = new DifferentialDrive(m_driveTrain.frontLeft, m_driveTrain.frontRight);
+    differentialDrive = new DifferentialDrive(driveTrain.frontLeft, driveTrain.frontRight);
 
-    double leftinput = Controller.getLeftY();
-    double rightinput = Controller.getRightY();
+    double leftinput = xbox.getLeftY();
+    double rightinput = xbox.getRightY();
 
     
     differentialDrive.tankDrive(leftinput, rightinput);
