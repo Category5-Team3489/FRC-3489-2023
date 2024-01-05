@@ -8,6 +8,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Drive;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ToastCommand;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Toast;
@@ -36,6 +37,7 @@ public class RobotContainer {
     configureBindings();
 
     driveTrain.setDefaultCommand(new Drive(driveTrain, xbox));
+    toast.setDefaultCommand(new ToastCommand(toast, xbox));
   }
 
   /**

@@ -27,10 +27,14 @@ public class ToastCommand extends CommandBase {
     public void initialize() {
     }
 
+//Adjust the toast position to up or down based on the button pressed
     @Override
     public void execute() {
-        if(xbox.getYButtonPressed()) {
+        int povValue = xbox.getPOV();
+        if(povValue == 0) {
             toast.moveToast(true);
+        }if (povValue == 180) {
+            toast.moveToast(false);
         }
     }
 

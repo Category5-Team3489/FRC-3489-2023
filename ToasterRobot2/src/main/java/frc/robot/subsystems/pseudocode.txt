@@ -1,0 +1,17 @@
+Drivetrain
+    drive
+
+Gripper
+    intake
+    throw game piece
+    outtake
+
+Arm
+    move to position
+
+Wrist
+    move to position
+
+LEDS
+    error signals
+    signal game piece
